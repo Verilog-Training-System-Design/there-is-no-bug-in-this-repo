@@ -1,6 +1,7 @@
 //--------------------------- Info ---------------------------//
     //Module Name :　WDT
-    //Type        :   
+    //INFO        :   clk (system clock)
+    //                clk2(WDT clock) 
 //----------------------- Environment -----------------------//
 
 //------------------------- Module -------------------------//
@@ -20,6 +21,9 @@
                   2'b10,
                   2'b11;
 
+
+  logic     [31:0]  WDT_CNT;
+
 //---------------------- Main code -------------------------//
 //------------------------- FSM -------------------------//
   
@@ -29,19 +33,32 @@
   end
 
   always_comb begin
-    case (param)
+    case ()
       : 
       default: 
     endcase
   end
-//WTO
-  always_ff @(posedege clk2) begin
-    if (conditions) begin
-      WTO   <=  1'b0;  
-    end 
-    else begin
-      
+
+//-------------------Count Down module---------------------//
+  //------------------------- CNT -------------------------//
+    always_ff @(posedege clk2) begin
+      if (rst2 || WDLIVE)
+        WDT_CNT <=  32'd0;  
+      else if (WDEN)
+        WDT_CNT <=  WTOCNT;
+      else
+        WDT_CNT <=  WDT_CNT - 32'd1;    
     end
-  end
+
+  //------------------------- WTO -------------------------//
+    always_ff @(posedege clk2) begin
+      if (rst2) begin
+        WTO   <=  1'b0;  
+      end 
+      else if (WDT_CNT == 32'd0)
+        WTO   <=  1'b1;
+      else
+        WTO   <=  1'b0;
+    end
   
   endmodule
