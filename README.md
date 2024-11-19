@@ -7,7 +7,7 @@
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
 - [ ] WDT implementation
-  - [ ] 11/19 Clock problem 
+  - [ ] 11/20 Clock problem 
 - [ ] DMA_wrapper
 - [ ] DMA implementation
 - [ ] top module
