@@ -1,7 +1,8 @@
 # there-is-no-bug-in-this-repo
 
 ## tasks to do
-- [ ] CSR related instruction
+
+- [ ] CSR related
 - [ ] DRAM_wrapper
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
@@ -13,4 +14,7 @@
 - [x] task finished
 
 ## Message boards
+
 11/18 : Add task breakdown items.
+
+## Question unfixed
