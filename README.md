@@ -16,8 +16,11 @@
 - [ ] DRAM_wrapper
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
+  - [x] Input signal for WDT
+  - [ ] Slave wrapper two version integration
 - [ ] WDT implementation
-  - [ ] 11/20 Clock problem
+  - [x] 11/20 Clock problem - one bit
+  - [ ] 11/21 Clock domain - mult bit
 - [ ] DMA_wrapper
 - [ ] DMA implementation
 - [ ] top module
