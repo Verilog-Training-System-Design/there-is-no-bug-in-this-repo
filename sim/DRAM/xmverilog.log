@@ -1,0 +1,22 @@
+xmverilog(64): 22.03-s003: (c) Copyright 1995-2022 Cadence Design Systems, Inc.
+TOOL:	xmverilog	22.03-s003: Started on Nov 04, 2023 at 04:37:53 CST
+ncverilog
+	DRAM_tb.sv
+	DRAM.sv
+	+define_FSDB
+	+access+r
+xmverilog: *W,NCEXDEP: Executable (ncverilog) is deprecated. Use (xmverilog) instead.
+file: DRAM_tb.sv
+	module worklib.DRAM:sv
+		errors: 0, warnings: 0
+	module worklib.test:sv
+		errors: 0, warnings: 0
+file: DRAM.sv
+module DRAM(
+          |
+xmvlog: *W,RECOME (DRAM.sv,2|10): recompiling design unit worklib.DRAM:sv.
+	First compiled from line 2 of DRAM.sv.
+xmvlog: *E,DUPUNI: Unit "worklib.DRAM:sv" multiply defined in files "DRAM_tb.sv" and "DRAM.sv".
+xmvlog: *E,MNPDEC: Module name (DRAM) previously declared. Use -ALLOWREDEFINITION option for duplicate module names.
+xmverilog: *E,VLGERR: An error occurred during parsing.  Review the log file for errors with the code *E and fix those identified problems to proceed.  Exiting with code (status 1).
+TOOL:	xmverilog	22.03-s003: Exiting on Nov 04, 2023 at 04:37:55 CST  (total: 00:00:02)

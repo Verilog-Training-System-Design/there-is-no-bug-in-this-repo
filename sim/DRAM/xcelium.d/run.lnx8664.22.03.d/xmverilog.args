@@ -1,0 +1,8 @@
+//
+// File created by:  xmverilog
+// Do not modify this file
+//
+DRAM_tb.sv
+DRAM.sv
++define_FSDB
++access+r
