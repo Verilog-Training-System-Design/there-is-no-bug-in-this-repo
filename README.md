@@ -24,8 +24,7 @@
 - [ ] DMA_wrapper
 - [ ] DMA implementation
   - [ ] 11/21 Master Part
-  - [ ] there is a bug
-- [ ] top module there is a bug
+- [ ] top module
 - [ ] AXI modified
   - [x] Decoder address extension
   - [ ] Arbiter lock extension
@@ -33,6 +32,8 @@
   - [ ] write data channel lock extension
   - [ ] write response channel lock extension
 - [x] task finished
+- [ ] test merge branch
+- [ ] 123456789
 
 ### sim
 
