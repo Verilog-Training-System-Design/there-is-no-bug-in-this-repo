@@ -23,6 +23,7 @@
   - [ ] 11/21 Clock domain - mult bit
 - [ ] DMA_wrapper
 - [ ] DMA implementation
+  - [ ] 11/21 Master Part
 - [ ] top module
 - [ ] AXI modified
   - [x] Decoder address extension
