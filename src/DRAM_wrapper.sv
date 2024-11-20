@@ -41,20 +41,16 @@ module DRAM_wrapper (
 	output logic [`AXI_IDS_BITS-1:0] 	BID_S,
 	output logic [1:0] 					BRESP_S,
 	output logic 						BVALID_S,
-	input 								BREADY_S
-);
+	input 								BREADY_S,
 
-DRAM i_DRAM(
-    .CK(),
-    .Q(),
-    .RST(),
-    .CSn(),
-    .WEn(),
-    .RASn(),
-    .CASn(),
-    .A(),
-    .D(),
-    .VALID()
-); 
+	output logic 						DRAM_CSn,
+    output logic 						DRAM_WEn,
+    output logic 						DRAM_RASn,
+    output logic 						DRAM_CASn,
+    output logic [10:0] 				DRAM_A,
+    output logic [31:0]					DRAM_D,
+	input 								DRAM_valid,
+    input [31:0]						DRAM_Q
+);
 
 endmodule

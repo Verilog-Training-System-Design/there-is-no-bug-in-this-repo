@@ -3,8 +3,22 @@
 `include "./AXI/AXI.sv"
 
 module top (
-    input clk,
-    input rst
+    input clk		 				,
+    input clk2		 				,
+    input rst		 				,
+    input rst2		 				,
+     ROM_out      				,
+     DRAM_valid   				,
+     DRAM_Q       				,
+     ROM_read     				,
+     ROM_enable   				,
+     ROM_address  				,
+     DRAM_CSn     				,
+     DRAM_WEn     				,
+     DRAM_RASn    				,
+     DRAM_CASn    				,
+     DRAM_A       				,
+     DRAM_D
 );
 
 //WRITE ADDRESS

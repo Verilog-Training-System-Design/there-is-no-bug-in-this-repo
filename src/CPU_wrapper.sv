@@ -83,6 +83,8 @@ module CPU_wrapper (
     input                                   RLAST_M1       ,
     input                                   RVALID_M1      ,
     output logic                            RREADY_M1
+
+    input                                   DMA_interrupt
 );
 
 //WRITE ADDRESS

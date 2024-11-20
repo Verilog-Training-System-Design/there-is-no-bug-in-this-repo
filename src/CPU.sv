@@ -31,7 +31,10 @@ module CPU (
     output logic [3:0] DM_BWEB,
     output logic [31:0] DM_addr,
     output logic [31:0] DM_DI,
-    output logic DM_write
+    output logic DM_write,
+
+    input DMA_interrupt,
+    input WDT_timeout
 );
 
 //IF wire
@@ -62,7 +65,7 @@ wire [31:0] immedi;
 wire [2:0] id_ALUOp;
 wire id_ALUSrc;
 wire id_PCtoRegSrc;
-wire [2:0] id_Immtype;
+wire [3:0] id_Immtype;
 wire id_RDSrc;
 wire id_MemtoReg;
 wire id_MenWrite;
@@ -73,8 +76,10 @@ wire id_ALUSel_f;
 wire id_store_into;
 wire [1:0] id_Branch;
 wire IFID_write;
+wire id_csr_write;
 
 //EXE wire
+wire interrupt;
 wire [31:0] exe_pc_out;
 wire [31:0] exe_rd_reg1_data;
 wire [31:0] exe_rd_reg2_data;
@@ -87,6 +92,7 @@ wire [6:0] exe_funct7;
 wire [31:0] alu_out;
 wire [31:0] falu_out;
 wire [31:0] exe_imm;
+wire [1:0] exe_csr_type;
 
 wire [4:0] exe_rd_r1_addr;
 wire [4:0] exe_rd_r2_addr;
@@ -111,6 +117,7 @@ wire exe_f_RegWrite;
 wire exe_ALUSel_f;
 wire [1:0] exe_Branch;
 wire exe_zero_flag;
+wire exe_csr_write;
 
 //MEM wire
 wire [31:0] mem_ALU_out;
@@ -282,6 +289,7 @@ IDEXE_reg IDEXE_pipe(
 .Memoryin_f(id_store_into),
 .im_stall(IM_stall),
 .dm_stall(DM_stall),
+.CSRsel(id_csr_write),
 
 .EXE_pc_out(exe_pc_out),
 .EXE_rd_reg1_data(exe_rd_reg1_data),
@@ -297,8 +305,9 @@ IDEXE_reg IDEXE_pipe(
 // .EXE_frd1_addr(exe_frd1_addr),
 // .EXE_frd2_addr(exe_frd2_addr),
 .EXE_immediate(exe_imm),
-.instr_cnt(w_instr_cnt),
-.cycle(w_cycle),
+.EXE_CSR_type(exe_csr_type),
+// .instr_cnt(w_instr_cnt),
+// .cycle(w_cycle),
 
 //signal
 .EXE_ALUOp(exe_ALUOp),
@@ -312,7 +321,8 @@ IDEXE_reg IDEXE_pipe(
 .EXE_f_RegWrite(exe_f_RegWrite),
 .EXE_ALUSel_f(exe_ALUSel_f),
 .EXE_Branch(exe_Branch),
-.EXE_Memoryin_f(exe_store_into)
+.EXE_Memoryin_f(exe_store_into),
+.EXE_CSRSel(exe_csr_write)
 // .EXE_is_float(exe_is_float)
 );
 
@@ -333,7 +343,8 @@ ControlUnit CtrlUnit(
 .Branch(id_Branch),
 .RegWrite_f(id_f_RegWrite),
 .ALUSel_f(id_ALUSel_f),
-.Memoryin_f(id_store_into)
+.Memoryin_f(id_store_into),
+.CSRsel(id_csr_write)
 );
 
 //ID control end
@@ -350,6 +361,7 @@ wire [31:0] alu2;
 wire [31:0] falu1;
 wire [31:0] falu2;
 wire [31:0] final_alu;
+wire [31:0] final_result;
 wire [31:0] exe_memory_in;
 
 wire [4:0] alu_ctrl;
@@ -461,6 +473,39 @@ Mux2to1 alu_or_aluf(
 .C(final_alu)
 );
 
+CSR csr(
+    input .clk(clk),
+    input .rst(rst),
+
+    input [2:0] .funct3(),
+    input [6:0] .funct7(),
+    input [1:0] .CSR_type(),
+    
+    input [4:0] .rd(),
+    input [31:0] .rs1_data(),
+    input [31:0] .EXE_immediate(),
+
+    input [11:0] .csr_addr(),
+    input .CSR_write(),
+    input .im_stall(),
+    input .dm_stall(),
+
+    input [31:0] .pc(),
+    
+    input .timeout(),
+    input .interrupt(),
+    output logic [31:0] .CSR_data(),
+    output logic [31:0] .CSR_retpc(),
+    output logic [31:0] .CSR_ISR_pc(),
+
+    output logic .CSR_stall(),
+    output logic .CSR_interrupt(),
+    output logic .CSR_reset(),
+    output logic .CSR_re()t
+);
+
+assign final_result = (EXE_CSRSel & (EXE_write_addr != 5'b0)) ?  : final_alu;
+
 //EXE control 
 
 ALUCtrl alu_contrl(
@@ -531,7 +576,7 @@ EXEMEM_reg EXEMEM_pipe(
 .clk(clk),
 .reset(rst),
 .ALU_out(alu_out),                      //for address
-.EXE_R_ALUout(final_alu),
+.EXE_R_ALUout(final_result),
 .EXE_write_addr(exe_write_addr),
 // .EXE_f_write_addr(exe_f_write_addr),
 .EXE_funct3(exe_funct3),
