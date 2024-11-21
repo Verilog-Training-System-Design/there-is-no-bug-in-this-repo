@@ -55,7 +55,6 @@ wire [4:0] wr_addr;
 wire [31:0] imm;
 wire [2:0] fun3;
 wire [6:0] fun7;
-// wire is_float;
 wire [31:0] rd_r1_data;
 wire [31:0] rd_r2_data;
 wire [31:0] frd_r1_data;
@@ -77,30 +76,27 @@ wire id_store_into;
 wire [1:0] id_Branch;
 wire IFID_write;
 wire id_csr_write;
+wire [11:0] id_csr_addr;
 
 //EXE wire
-wire interrupt;
 wire [31:0] exe_pc_out;
 wire [31:0] exe_rd_reg1_data;
 wire [31:0] exe_rd_reg2_data;
 wire [31:0] exe_frd1_data;
 wire [31:0] exe_frd2_data;
 wire [4:0] exe_write_addr;
-// wire [4:0] exe_f_write_addr;
 wire [2:0] exe_funct3;
 wire [6:0] exe_funct7;
 wire [31:0] alu_out;
 wire [31:0] falu_out;
 wire [31:0] exe_imm;
 wire [1:0] exe_csr_type;
+wire [11:0] exe_csr_addr,
 
 wire [4:0] exe_rd_r1_addr;
 wire [4:0] exe_rd_r2_addr;
-// wire [4:0] exe_frd1_addr;
-// wire [4:0] exe_frd2_addr;
 
 wire [1:0] exe_branchCtrl;
-// wire exe_is_float;
 wire exe_store_into;
 
 wire [31:0] pc_imm;
@@ -119,10 +115,17 @@ wire [1:0] exe_Branch;
 wire exe_zero_flag;
 wire exe_csr_write;
 
+wire [31:0] w_csr_data;
+wire [31:0] w_csr_retpc;
+wire [31:0] w_csr_ISR_pc;
+wire w_csr_stall;
+wire w_csr_interrupt;
+wire w_csr_reset;
+wire w_csr_ret;
+
 //MEM wire
 wire [31:0] mem_ALU_out;
 wire [4:0] mem_write_addr;
-// wire [4:0] mem_f_write_addr;
 wire [2:0] mem_funct3;
 wire [31:0] mem_rd_data;
 
@@ -132,15 +135,12 @@ wire [3:0] mem_MemWrite;
 wire mem_MemRead;
 wire mem_RegWrite;
 wire mem_f_RegWrite;
-// wire mem_is_float;
 //WB wire
 wire [4:0] wb_write_addr;
-// wire [4:0] wb_f_write_addr;
 wire [31:0] wb_write_data;
 
 wire wb_RegWrite;
 wire wb_f_RegWrite;
-// wire wb_is_float;
 
 //IF stage
 
@@ -148,9 +148,15 @@ Program_counter PC(
 .clk(clk),
 .reset(rst),
 .Write_en(PC_write_enable),
+.CSR_reset(w_csr_reset),
+.CSR_ret(w_csr_ret),
+.CSR_interrupt(w_csr_interrupt),
 .pc_in(PC_in),
+.CSR_retpc(w_csr_retpc),
+.CSR_ISR_pc(w_csr_ISR_pc),
 .im_stall(IM_stall),
 .dm_stall(DM_stall), 
+.CSR_stall(w_csr_stall),
 
 .pc_out(progcnt_out)
 );
@@ -180,6 +186,9 @@ IFID_reg IFID_pipe(
 .IFID_write(IFID_write),
 .im_stall(IM_stall),
 .dm_stall(DM_stall),
+.CSR_stall(w_csr_stall),
+.CSR_interrupt(w_csr_interrupt),
+.CSR_ret(w_csr_ret).
 
 .ID_pc_out(id_pc),
 .read_reg1(rd_r1),
@@ -188,8 +197,8 @@ IFID_reg IFID_pipe(
 .write_addr(wr_addr),
 .immediate(imm),
 .funct3(fun3),
-.funct7(fun7)
-// .is_float(is_float)
+.funct7(fun7),
+.csr_addr(id_csr_addr)
 );
 
 //IF control
@@ -199,10 +208,9 @@ HazardDetectUnit Hazard(
 .read_reg1_addr(rd_r1),
 .read_reg2_addr(rd_r2),
 .EXE_write_addr(exe_write_addr),
-// .EXE_f_write_addr(exe_f_write_addr),
 .Branch_Ctrl(exe_branchCtrl),
-// .ID_is_float(is_float),
-// .EXE_is_float(exe_is_float),
+.CSR_interrupt(w_csr_interrupt),
+.CSR_ret(w_csr_ret)
 
 .IFID_write(IFID_write),
 .PC_write_en(PC_write_enable),
@@ -262,15 +270,13 @@ IDEXE_reg IDEXE_pipe(
 .frd1_data(frd_r1_data),
 .frd2_data(frd_r2_data),
 .write_addr(wr_addr),
-// .f_write_addr(wr_addr),
 .funct3(fun3),
 .funct7(fun7),
 .ID_pc_in(id_pc),
 .rd_r1_addr(rd_r1),
 .rd_r2_addr(rd_r2),
-// .frd1_addr(rd_r1),
-// .frd2_addr(rd_r2),
 .imme(immedi),
+.csr_addr(id_csr_addr),
 //signal
 .Control_flush(ctrl_flush),
 .ALUOp(id_ALUOp),
@@ -285,11 +291,12 @@ IDEXE_reg IDEXE_pipe(
 .ALUSel_f(id_ALUSel_f),
 .Branch(id_Branch),
 .CSR_type(w_csr_type),
-// .is_float(is_float),
 .Memoryin_f(id_store_into),
 .im_stall(IM_stall),
 .dm_stall(DM_stall),
+.CSR_stall(w_csr_stall),
 .CSRsel(id_csr_write),
+.CSR_reset(w_csr_reset),
 
 .EXE_pc_out(exe_pc_out),
 .EXE_rd_reg1_data(exe_rd_reg1_data),
@@ -297,18 +304,13 @@ IDEXE_reg IDEXE_pipe(
 .EXE_frd1_data(exe_frd1_data),
 .EXE_frd2_data(exe_frd2_data),
 .EXE_write_addr(exe_write_addr),
-// .EXE_f_write_addr(exe_f_write_addr),
 .EXE_funct3(exe_funct3),
 .EXE_funct7(exe_funct7),
 .EXE_rd_r1_addr(exe_rd_r1_addr),
 .EXE_rd_r2_addr(exe_rd_r2_addr),
-// .EXE_frd1_addr(exe_frd1_addr),
-// .EXE_frd2_addr(exe_frd2_addr),
 .EXE_immediate(exe_imm),
 .EXE_CSR_type(exe_csr_type),
-// .instr_cnt(w_instr_cnt),
-// .cycle(w_cycle),
-
+.EXE_CSR_addr(exe_csr_addr),
 //signal
 .EXE_ALUOp(exe_ALUOp),
 .EXE_ALUSrc(exe_ALUSrc),
@@ -323,7 +325,6 @@ IDEXE_reg IDEXE_pipe(
 .EXE_Branch(exe_Branch),
 .EXE_Memoryin_f(exe_store_into),
 .EXE_CSRSel(exe_csr_write)
-// .EXE_is_float(exe_is_float)
 );
 
 //ID control
@@ -474,37 +475,35 @@ Mux2to1 alu_or_aluf(
 );
 
 CSR csr(
-    input .clk(clk),
-    input .rst(rst),
+.clk(clk),
+.rst(rst),
 
-    input [2:0] .funct3(),
-    input [6:0] .funct7(),
-    input [1:0] .CSR_type(),
+.funct3(exe_funct3),
+.funct7(exe_funct7),
+.CSR_type(exe_csr_type),
     
-    input [4:0] .rd(),
-    input [31:0] .rs1_data(),
-    input [31:0] .EXE_immediate(),
+.rs1_data(exe_rd_reg1_data),
+.EXE_immediate(exe_imm),
 
-    input [11:0] .csr_addr(),
-    input .CSR_write(),
-    input .im_stall(),
-    input .dm_stall(),
-
-    input [31:0] .pc(),
+.csr_addr(exe_csr_addr),
+.CSR_write(exe_csr_write),
+.im_stall(IM_stall),
+.dm_stall(DM_stall),
+.pc(exe_pc_out),
     
-    input .timeout(),
-    input .interrupt(),
-    output logic [31:0] .CSR_data(),
-    output logic [31:0] .CSR_retpc(),
-    output logic [31:0] .CSR_ISR_pc(),
+.timeout(WDT_timeout),
+.interrupt(DMA_interrupt),
+.CSR_data(w_csr_data),
+.CSR_retpc(w_csr_retpc),
+.CSR_ISR_pc(w_csr_ISR_pc),
 
-    output logic .CSR_stall(),
-    output logic .CSR_interrupt(),
-    output logic .CSR_reset(),
-    output logic .CSR_re()t
+.CSR_stall(w_csr_stall),
+.CSR_interrupt(w_csr_interrupt),
+.CSR_reset(w_csr_reset),
+.CSR_ret(w_csr_ret)
 );
 
-assign final_result = (EXE_CSRSel & (EXE_write_addr != 5'b0)) ?  : final_alu;
+assign final_result = (EXE_CSRSel & (EXE_write_addr != 5'b0)) ? w_csr_data : final_alu;
 
 //EXE control 
 
@@ -529,15 +528,8 @@ ForwardingUnit Forwarding(
 .forwarding_r1_sel(forward_r1_sel),
 .forwarding_r2_sel(forward_r2_sel),
 
-// .frd1_addr(exe_frd1_addr),
-// .frd2_addr(exe_frd2_addr),
-// .MEM_f_write_addr(mem_f_write_addr),
 .MEM_f_RegWrite(mem_f_RegWrite),
-// .WB_f_write_addr(wb_f_write_addr),
 .WB_f_RegWrite(wb_f_RegWrite),
-// .EXE_is_float(exe_is_float),
-// .MEM_is_float(mem_is_float),
-// .WB_is_float(wb_is_float),
 
 .forwarding_fr1_sel(forward_fr1_sel),
 .forwarding_fr2_sel(forward_fr2_sel)
@@ -578,7 +570,6 @@ EXEMEM_reg EXEMEM_pipe(
 .ALU_out(alu_out),                      //for address
 .EXE_R_ALUout(final_result),
 .EXE_write_addr(exe_write_addr),
-// .EXE_f_write_addr(exe_f_write_addr),
 .EXE_funct3(exe_funct3),
 .EXE_pc(pc_to_reg),
 .EXE_memory_in(exe_memory_in),
@@ -591,12 +582,12 @@ EXEMEM_reg EXEMEM_pipe(
 .EXE_f_RegWrite(exe_f_RegWrite),
 .im_stall(IM_stall),
 .dm_stall(DM_stall),
-// .EXE_is_float(exe_is_float),
+.CSR_stall(w_csr_stall),
+.CSR_reset(w_csr_reset),
 
 .MEM_ALU_out(mem_ALU_out),              //for address
 .MEM_R_ALUout(mem_R_aluout),
 .MEM_write_addr(mem_write_addr),
-// .MEM_f_write_addr(mem_f_write_addr),
 .MEM_funct3(mem_funct3),
 .MEM_pc(mem_pc),
 .MEM_memory_in(mem_memory_in),
@@ -608,7 +599,6 @@ EXEMEM_reg EXEMEM_pipe(
 .MEM_MemRead(mem_MemRead),
 .MEM_RegWrite(mem_RegWrite),
 .MEM_f_RegWrite(mem_f_RegWrite)
-// .MEM_is_float(mem_is_float)
 );
 
 //MEM stage end
@@ -634,24 +624,22 @@ MEMWB_reg MEMWB_pipe(
 .MEM_data_memory(DM_DO),
 .MEM_funct3(mem_funct3),
 .MEM_write_addr(mem_write_addr),
-// .MEM_f_write_addr(mem_f_write_addr),
 
 .MEM_RegWrite(mem_RegWrite),
 .MEM_f_RegWrite(mem_f_RegWrite),
 .MEM_MemtoReg(mem_MemtoReg),
 .im_stall(IM_stall),
 .dm_stall(DM_stall),
-// .MEM_is_float(mem_is_float),
+.CSR_stall(w_csr_stall),
+.CSR_reset(w_csr_reset),
 
 .WB_rd_data(wb_rd_data),
 .WB_data_memory(wb_data_memory),
 .WB_write_addr(wb_write_addr),
-// .WB_f_write_addr(wb_f_write_addr),
 
 .WB_RegWrite(wb_RegWrite),
 .WB_MemtoReg(wb_MemtoReg),
 .WB_f_RegWrite(wb_f_RegWrite)
-// .WB_is_float(wb_is_float)
 );
 
 //WB stage end

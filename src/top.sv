@@ -1,24 +1,25 @@
 `include "CPU_wrapper.sv"
 `include "SRAM_wrapper.sv"
 `include "./AXI/AXI.sv"
+`include "DRAM_wrapper.sv"
 
 module top (
-    input clk		 				,
-    input clk2		 				,
-    input rst		 				,
-    input rst2		 				,
-     ROM_out      				,
-     DRAM_valid   				,
-     DRAM_Q       				,
-     ROM_read     				,
-     ROM_enable   				,
-     ROM_address  				,
-     DRAM_CSn     				,
-     DRAM_WEn     				,
-     DRAM_RASn    				,
-     DRAM_CASn    				,
-     DRAM_A       				,
-     DRAM_D
+    input clk,
+    input clk2,
+    input rst,
+    input rst2,
+    input [31:0] ROM_out,
+    output logic ROM_read,
+    output logic ROM_enable,
+    output logic [11:0] ROM_address,
+    output logic DRAM_CSn,
+    output logic [3:0] DRAM_WEn,
+    output logic DRAM_RASn,
+    output logic DRAM_CASn,
+    output logic [10:0] DRAM_A,
+    output logic [31:0] DRAM_D,
+    input DRAM_valid,
+    input [31:0] DRAM_Q       				
 );
 
 //WRITE ADDRESS
@@ -481,60 +482,58 @@ AXI axi(
 	
 );
 
-// wire [31:0] instr;
-// wire [31:0] memory_data;
-
-// wire [31:0] pc;         //dont drive any object
-
-// wire dm_web;
-// wire [3:0] dm_bweb;
-// wire [31:0] dm_addr;    //dont drive any object
-// wire [31:0] dm_di;
-// wire [13:0] imaddr;
-// wire [13:0] dmaddr;
-
-
-// CPU cpu(
-// .clk(clk),
-// .rst(rst),
-// .IM_instr(instr),
-// .DM_DO(memory_data),
-
-// .progcnt_out(pc),
+ DRAM_wrapper dram(
+    input clk,
+    input rst,
     
-// .DM_WEB(dm_web),
-// .DM_BWEB(dm_bweb),
-// .DM_addr(dm_addr),
-// .DM_DI(dm_di)
-// );
+    //READ ADDRESS1
+	input [`AXI_IDS_BITS-1:0] 			ARID_S,
+	input [`AXI_ADDR_BITS-1:0] 			ARADDR_S,
+	input [`AXI_LEN_BITS-1:0] 			ARLEN_S,
+	input [`AXI_SIZE_BITS-1:0] 			ARSIZE_S,
+	input [1:0] 						ARBURST_S,
+	input 								ARVALID_S,
+	output logic 						ARREADY_S,
+	
+	//READ DATA1
+	output logic [`AXI_IDS_BITS-1:0] 	RID_S,
+	output logic [`AXI_DATA_BITS-1:0] 	RDATA_S,
+	output logic [1:0] 					RRESP_S,
+	output logic 						RLAST_S,
+	output logic 						RVALID_S,
+	input 								RREADY_S,
 
-// assign imaddr = pc[15:2];
-// assign dmaddr = dm_addr[15:2];
+	//WRITE ADDRESS
+	input [`AXI_IDS_BITS-1:0] 			AWID_S,
+	input [`AXI_ADDR_BITS-1:0] 			AWADDR_S,
+	input [`AXI_LEN_BITS-1:0] 			AWLEN_S,
+	input [`AXI_SIZE_BITS-1:0] 			AWSIZE_S,
+	input [1:0] 						AWBURST_S,
+	input 								AWVALID_S,
+	output logic 						AWREADY_S,
+	
+	//WRITE DATA
+	input [`AXI_DATA_BITS-1:0] 			WDATA_S,
+	input [`AXI_STRB_BITS-1:0] 			WSTRB_S,
+	input 								WLAST_S,
+	input 								WVALID_S,
+	output logic 						WREADY_S,
+	
+	//WRITE RESPONSE
+	output logic [`AXI_IDS_BITS-1:0] 	BID_S,
+	output logic [1:0] 					BRESP_S,
+	output logic 						BVALID_S,
+	input 								BREADY_S,
 
-// SRAM_wrapper IM1(
-// .CLK(~clk),
-// .RST(rst),
-// .CEB(1'b0),
-// .WEB(1'b1),
-// .BWEB(4'b1111),
-// // .A(pc[15:2]),
-// .A(imaddr),
-// .DI(32'b0),
+	output logic 						DRAM_CSn,
+    output logic 						DRAM_WEn,
+    output logic 						DRAM_RASn,
+    output logic 						DRAM_CASn,
+    output logic [10:0] 				DRAM_A,
+    output logic [31:0]					DRAM_D,
+	input 								DRAM_valid,
+    input [31:0]						DRAM_Q
+);
 
-// .DO(instr)
-// );
-
-// SRAM_wrapper DM1(
-// .CLK(~clk),
-// .RST(rst),
-// .CEB(1'b0),
-// .WEB(dm_web),
-// .BWEB(dm_bweb),
-// // .A(dm_addr[15:2]),
-// .A(dmaddr),
-// .DI(dm_di),
-
-// .DO(memory_data)
-// );
 
 endmodule
