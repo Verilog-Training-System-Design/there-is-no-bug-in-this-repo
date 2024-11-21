@@ -9,10 +9,10 @@
   - [ ] changing csr registers when return from interrupt
   - [x] changing csr registers when interrupt is taken
   - [x] CSR output data
-  - [ ] CPU action when interrupt happen
-  - [ ] CPU action when interrupt return
-  - [ ] trap in the cpu
-  - [ ] connect each line in cpu
+  - [x] 11/21 CPU action when interrupt happen
+  - [x] 11/21 CPU action when interrupt return
+  - [x] 11/21 trap in the cpu
+  - [x] 11/21 connect each line in cpu
 - [ ] DRAM_wrapper
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
@@ -27,13 +27,15 @@
 - [ ] top module
 - [ ] AXI modified
   - [x] Decoder address extension
-  - [ ] Arbiter lock extension
-  - [ ] read data channel lock extension
+  - [x] 11/21 Arbiter lock extension
+  - [x] 11/21 read data channel lock extension
   - [ ] write data channel lock extension
   - [ ] write response channel lock extension
 - [x] task finished
-- [ ] test merge branch
-- [ ] 123456789
+
+#### others
+
+- [x] remove useless comment
 
 ### sim
 
@@ -50,4 +52,4 @@
 
 ## Question unfixed
 
-11/20 : cpu csr stall condition not decided yet, 
+11/20 : cpu csr stall condition not decided yet,
