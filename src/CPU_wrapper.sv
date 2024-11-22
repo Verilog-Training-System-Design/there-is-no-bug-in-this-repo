@@ -119,16 +119,17 @@ assign BVALID_M0 = 1'b0;
 assign BRESP_M0 = 2'b0;
 assign BID_M0 = `AXI_ID_BITS'b0;
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin        //fulfill vip
-    if(~ARESETn)
-        late_reset <= ARESETn;
-    else 
-        late_reset <= ARESETn;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin        //fulfill vip
+//     if(~ARESETn)
+//         late_reset <= ARESETn;
+//     else 
+//         late_reset <= ARESETn;
+// end
 
 CPU cpu(
 .clk(ACLK),
-.rst(late_reset),
+// .rst(late_reset),
+.rst(ARESETn),
 
 //IF out
 .IM_instr(w_im_data_out),

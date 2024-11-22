@@ -228,7 +228,7 @@ always_comb begin
             RREADY_S2 = 1'b0;
             RREADY_S0 = 1'b0;
             RREADY_S1 = 1'b0;
-            RREADY_S3 = RVALID_S2 & RREADY;
+            RREADY_S3 = RVALID_S3 & RREADY;
             RREADY_S4 = 1'b0;
             RREADY_S5 = 1'b0;
         end
@@ -243,7 +243,7 @@ always_comb begin
             RREADY_S0 = 1'b0;
             RREADY_S1 = 1'b0;
             RREADY_S3 = 1'b0;
-            RREADY_S4 = RVALID_S2 & RREADY;
+            RREADY_S4 = RVALID_S4 & RREADY;
             RREADY_S5 = 1'b0;
         end
         6'b100000 : begin
@@ -258,7 +258,7 @@ always_comb begin
             RREADY_S1 = 1'b0;
             RREADY_S3 = 1'b0;
             RREADY_S4 = 1'b0;
-            RREADY_S5 = RVALID_S2 & RREADY;
+            RREADY_S5 = RVALID_S5 & RREADY;
         end
         default : begin
             master = 4'b0;

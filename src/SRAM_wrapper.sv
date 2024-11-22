@@ -42,14 +42,14 @@ module SRAM_wrapper (
 	output logic 						BVALID_S,
 	input 								BREADY_S
 );
-logic late_rst;
+// logic late_rst;
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin 
-    if(~ARESETn)
-        late_rst <= ARESETn;
-    else 
-        late_rst <= ARESETn;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin 
+//     if(~ARESETn)
+//         late_rst <= ARESETn;
+//     else 
+//         late_rst <= ARESETn;
+// end
 
 
 // logic CEB;
@@ -86,27 +86,26 @@ logic RVALID_reg;
 logic ceb;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
-// assign RDATA_S = (RVALID_S & RVALID_reg) ? DO_temp : DO;
 assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;
-// assign RDATA_S = 32'b1;
+assign RDATA_S = DO;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin
-    if(~ARESETn)
-        RDATA_reg <= `AXI_DATA_BITS'b0;
-    else 
-        RDATA_reg <= (RVALID_S & ~RVALID_reg) ? DO : RDATA_reg;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin
+//     if(~ARESETn)
+//         RDATA_reg <= `AXI_DATA_BITS'b0;
+//     else 
+//         RDATA_reg <= (RVALID_S & ~RVALID_reg) ? DO : RDATA_reg;
+// end
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin 
-    if(~ARESETn)
-        RVALID_reg <= 1'b0;
-    else
-        RVALID_reg <= RVALID_S;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin 
+//     if(~ARESETn)
+//         RVALID_reg <= 1'b0;
+//     else
+//         RVALID_reg <= RVALID_S;
+// end
 
 always_ff @( posedge ACLK or negedge ARESETn ) begin 
     if(~ARESETn)begin

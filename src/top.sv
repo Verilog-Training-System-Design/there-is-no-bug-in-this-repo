@@ -12,7 +12,7 @@ module top (
     output logic ROM_read,
     output logic ROM_enable,
     output logic [11:0] ROM_address,
-    output logic DRAM_CSn,
+
     output logic [3:0] DRAM_WEn,
     output logic DRAM_RASn,
     output logic DRAM_CASn,
