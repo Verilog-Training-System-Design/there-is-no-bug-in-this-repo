@@ -6,7 +6,6 @@ module CSR (
     input [6:0] funct7,
     input [1:0] CSR_type,
     
-    input [4:0] rd,
     input [31:0] rs1_data,
     input [31:0] EXE_immediate,
 
@@ -47,7 +46,8 @@ assign CSR_interrupt = interrupt & mstatus[MIE] & mie[MEIE] & mip[MEIP];        
 assign mip[MTIP] = (mie[MTIE]) ? timeout : 1'b0;
 assign mip[MEIP] = (mie[MEIE]) ? interrupt : 1'b0;
 
-always_ff @( posedge clk or negedge rst ) begin //counting cycles and instruction counts
+//counting cycles and instruction counts
+always_ff @( posedge clk or negedge rst ) begin 
     if(~rst)begin
         {mcycleh, mcycle} <= 64'd0;
         {minstreth, minstret} <= 64'd0;
@@ -64,7 +64,8 @@ always_ff @( posedge clk or negedge rst ) begin //counting cycles and instructio
     end
 end
 
-always_ff @( posedge clk or negedge rst ) begin //setting each register for csr
+//setting each register (mstatus, mie, mepc)
+always_ff @( posedge clk or negedge rst ) begin 
     if(~rst)begin
         {mstatus, mepc, mie, mip} <= 128'd0;
     end
@@ -258,6 +259,7 @@ always_ff @( posedge clk or negedge rst ) begin //setting each register for csr
     end
 end
 
+//setting CSR output data
 always_comb begin 
     case (csr_addr)
         12'h300 : CSR_data = mstatus;
@@ -273,13 +275,14 @@ always_comb begin
     endcase
 end
 
+//csr stall condition when pending for interrupt('wfi' instruction)
 always_ff @( posedge clk or negedge rst ) begin
     if(~rst)begin
         CSR_stall <= 1'b0;
     end
     else if(~dm_stall & ~im_stall)begin
         if((funct7 == 7'b0001000) & (funct3 == 3'b000) & CSR_write)begin        //wfi wait for interrupt (when DMA is moving data from DRAM to ROM) see /prog4/boot.c
-            CSR_stall <= mip[MEIP];
+            CSR_stall <= mie[MEIE];                         //there is a trap not deal with yet
         end
         else if(CSR_interrupt) begin                                            //move to isr to tackle with trap
             CSR_stall <= 1'b0;                     
@@ -288,3 +291,7 @@ always_ff @( posedge clk or negedge rst ) begin
 end
 
 endmodule
+
+//mie : there is a trap not dealing with yet and other trap can't occur
+//mip : there is a trap waiting to tackle
+//mstatus : inside cpu each status

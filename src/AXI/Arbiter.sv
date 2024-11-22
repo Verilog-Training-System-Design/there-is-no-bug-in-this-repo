@@ -24,6 +24,16 @@ module Arbiter(
 
 	output logic                        READY_M1,
 
+    //DMA
+    input [`AXI_ID_BITS-1:0]            ID_M2,
+	input [`AXI_ADDR_BITS-1:0]          ADDR_M2,
+	input [`AXI_LEN_BITS-1:0]           LEN_M2,
+	input [`AXI_SIZE_BITS-1:0]          SIZE_M2,
+	input [1:0]                         BURST_M2,
+	input                               VALID_M2,
+
+	output logic                        READY_M2,
+
     //S
     output logic [`AXI_IDS_BITS-1:0]    ID_S,
 	output logic [`AXI_ADDR_BITS-1:0]   ADDR_S,
@@ -36,67 +46,87 @@ module Arbiter(
 );
 
 //M1 has higher priority than M0
-logic lock_M0, lock_M1;
-logic [1:0] stage;
+logic lock_M0, lock_M1, lock_M2;
+logic [2:0] stage;
 
 always_ff @( posedge clk or negedge rst ) begin
     if(~rst)begin
         lock_M0 <= 1'b0;
         lock_M1 <= 1'b0;
+        lock_M2 <= 1'b0;
     end
     else begin
-        if(VALID_M0 & READY_S)begin             //M0 finish transfer
+        if(VALID_M0 & READY_S)             //M0 finish transfer
             lock_M0 <= 1'b0;             
-        end
-        else if(VALID_M0 & ~VALID_M1 & ~READY_S)begin   //M0 require
+        else if(VALID_M0 & ~VALID_M1 & ~VALID_M2 & ~READY_S)   //M0 require
             lock_M0 <= 1'b1;
-        end
         else 
             lock_M0 <= lock_M0;
 
-        if(VALID_M1 & READY_S)begin             //M1 finish transfer
+        if(VALID_M1 & READY_S)             //M1 finish transfer
             lock_M1 <= 1'b0;
-        end
-        else if(VALID_M1 & ~lock_M0 & ~READY_S)begin    //M1 require and M0 not occupy
+        else if(VALID_M1 & ~lock_M0 & ~VALID_M2 & ~READY_S)    //M1 require and M0 not occupy
             lock_M1 <= 1'b1;
-        end
         else 
             lock_M1 <= lock_M1;
+        
+        if(VALID_M2 & READY_S)
+            lock_M2 <= 1'b0;
+        else if(VALID_M2 & ~lock_M0 & ~lock_M1 & ~READY_S)
+            lock_M2 <= 1'b1;
+        else 
+            lock_M2 <= lock_M2;
     end
 end
 
-always_comb begin           //since M1 > M0 in priority
-    if((VALID_M1 & ~lock_M0) | lock_M1) begin
-        stage = 2'b10;
+always_comb begin           //since M2 > M1 > M0 in priority
+    if((VALID_M2 & ~lock_M0 & ~lock_M1) | lock_M2)begin
+        stage = 3'b100;
+    end
+    else if((VALID_M1 & ~lock_M0) | lock_M1) begin
+        stage = 3'b010;
     end
     else if(VALID_M0 | lock_M0) begin
-        stage = 2'b01;
+        stage = 3'b001;
     end
     else 
-        stage = 2'b00;
+        stage = 3'b000;
 end
 
 always_comb begin 
     case (stage)
-        2'b01 : begin       //M0
+        3'b001 : begin       //M0
             ID_S = {4'b0001, ID_M0};
             ADDR_S = ADDR_M0;
             LEN_S = LEN_M0;
             SIZE_S = SIZE_M0;
             BURST_S = BURST_M0;
             VALID_S = VALID_M0;
-            READY_M1 = 1'b0;
             READY_M0 = READY_S & VALID_M0;
+            READY_M1 = 1'b0;
+            READY_M2 = 1'b0;
         end 
-        2'b10 : begin       //M1
+        3'b010 : begin       //M1
             ID_S = {4'b0010, ID_M1};
             ADDR_S = ADDR_M1;
             LEN_S = LEN_M1;
             SIZE_S = SIZE_M1;
             BURST_S = BURST_M1;
             VALID_S = VALID_M1;
-            READY_M1 = READY_S & VALID_M1;
             READY_M0 = 1'b0;
+            READY_M1 = READY_S & VALID_M1;
+            READY_M2 = 1'b0;
+        end 
+        3'b100 : begin       //DMA
+            ID_S = {4'b0100, ID_M2};
+            ADDR_S = ADDR_M2;
+            LEN_S = LEN_M2;
+            SIZE_S = SIZE_M2;
+            BURST_S = BURST_M2;
+            VALID_S = VALID_M2;
+            READY_M0 = 1'b0;
+            READY_M1 = 1'b0;
+            READY_M2 = READY_S & VALID_M2;
         end 
         default : begin
             ID_S = `AXI_IDS_BITS'b0;
@@ -107,6 +137,7 @@ always_comb begin
             VALID_S = 1'b0;
             READY_M1 = 1'b0;
             READY_M0 = 1'b0;
+            READY_M2 = 1'b0;
         end 
     endcase
 end

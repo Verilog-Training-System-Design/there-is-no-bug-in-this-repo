@@ -6,15 +6,13 @@ module IDEXE_reg (
     input [31:0] frd1_data,
     input [31:0] frd2_data,
     input [4:0] write_addr,
-    // input [4:0] f_write_addr,
     input [2:0] funct3,
     input [6:0] funct7,
     input [31:0] ID_pc_in,
     input [4:0] rd_r1_addr,
     input [4:0] rd_r2_addr,
-    // input [4:0] frd1_addr,
-    // input [4:0] frd2_addr,
     input [31:0] imme,
+    input [11:0] csr_addr,
 
     input Control_flush,
     input [2:0] ALUOp,
@@ -29,11 +27,12 @@ module IDEXE_reg (
     input ALUSel_f,
     input [1:0] Branch,
     input [1:0] CSR_type,
-    // input is_float,
     input Memoryin_f,
     input CSRsel,
     input im_stall,
     input dm_stall,
+    input CSR_stall,
+    input CSR_reset,
 
     output logic [31:0] EXE_pc_out,
     output logic [31:0] EXE_rd_reg1_data,
@@ -41,17 +40,13 @@ module IDEXE_reg (
     output logic [31:0] EXE_frd1_data,
     output logic [31:0] EXE_frd2_data,
     output logic [4:0] EXE_write_addr,
-    // output logic [4:0] EXE_f_write_addr,
     output logic [2:0] EXE_funct3,
     output logic [6:0] EXE_funct7,
     output logic [4:0] EXE_rd_r1_addr,
     output logic [4:0] EXE_rd_r2_addr,
-    // output logic [4:0] EXE_frd1_addr,
-    // output logic [4:0] EXE_frd2_addr,
     output logic [31:0] EXE_immediate,
     output logic [1:0] EXE_CSR_type,
-    // output logic [63:0] instr_cnt,
-    // output logic [63:0] cycle,
+    output logic [11:0] EXE_CSR_addr,
 
     output logic [2:0] EXE_ALUOp,
     output logic EXE_ALUSrc,
@@ -66,24 +61,20 @@ module IDEXE_reg (
     output logic [1:0] EXE_Branch,
     output logic EXE_Memoryin_f,
     output logic EXE_CSRSel
-    // output logic EXE_is_float
 );
 
 always_ff @(posedge clk or negedge reset) begin
-    if(~reset)begin
+    if(~reset | CSR_reset)begin
         EXE_pc_out <= 32'h0;
         EXE_rd_reg1_data <= 32'h0;
         EXE_rd_reg2_data <= 32'h0;
         EXE_frd1_data <= 32'h0;
         EXE_frd2_data <= 32'h0;
         EXE_write_addr <= 5'd0;
-        // EXE_f_write_addr <= 5'd0;
         EXE_funct3 <= 3'd0;
         EXE_funct7 <= 7'd0;
         EXE_rd_r1_addr <= 5'd0;
         EXE_rd_r2_addr <= 5'd0;
-        // EXE_frd1_addr <= 5'd0;
-        // EXE_frd2_addr <= 5'd0;
         EXE_immediate <= 32'h0;
         EXE_ALUOp <= 3'd0;
         EXE_ALUSrc <= 1'b0;
@@ -98,22 +89,13 @@ always_ff @(posedge clk or negedge reset) begin
         EXE_Branch <= 2'd0;
         cycle <= 64'd0;
         instr_cnt <= 64'd0;
-        // EXE_is_float <= 1'b0;
         EXE_Memoryin_f <= 1'b0;
         EXE_CSRSel <= 1'b0;
         EXE_CSR_type <= 2'b0;
+        EXE_CSR_addr <= 11'b0;
     end
     else begin
-        // cycle <= cycle + 64'd1;
-        // if(cycle > 64'd3 & ~im_stall & ~dm_stall)begin
-        //     case(CSR_type)
-        //         2'd0 : instr_cnt <= instr_cnt - 64'd1;          //jump stall
-        //         2'd1 : instr_cnt <= instr_cnt;                  //load-use stall
-        //         default : instr_cnt <= instr_cnt + 64'd1;
-        //     endcase
-        // end
-
-        if(im_stall | dm_stall) begin
+        if(im_stall | dm_stall | CSR_stall) begin
             EXE_pc_out <= EXE_pc_out;
             EXE_rd_reg1_data <= EXE_rd_reg1_data;
             EXE_rd_reg2_data <= EXE_rd_reg2_data;
@@ -139,32 +121,15 @@ always_ff @(posedge clk or negedge reset) begin
             EXE_Memoryin_f <= EXE_Memoryin_f;
             EXE_CSRSel <= EXE_CSRSel;
             EXE_CSR_type <= EXE_CSR_type;
+            EXE_CSR_addr <= EXE_CSR_addr;
         end
         else if(Control_flush) begin
-            // EXE_pc_out <= 32'h0;
-            // EXE_rd_reg1_data <= 32'h0;
-            // EXE_rd_reg2_data <= 32'h0;
-            // EXE_frd1_data <= 32'h0;
-            // EXE_frd2_data <= 32'h0;
-            // EXE_write_addr <= 5'd0;
-            // EXE_funct3 <= 3'd0;
-            // EXE_funct7 <= 7'd0;
-            // EXE_rd_r1_addr <= 5'd0;
-            // EXE_rd_r2_addr <= 5'd0;
-            // EXE_immediate <= 32'h0;
-            // EXE_ALUOp <= 3'd0;
-            // EXE_ALUSrc <= 1'b0;
-            // EXE_PCtoRegSrc <= 1'b0;
-            // EXE_RDSrc <= 1'b0;
-            // EXE_MemtoReg <= 1'b0;
             EXE_MenWrite <= 1'b0;
             EXE_MemRead <= 1'b0;
             EXE_RegWrite <= 1'b0;
             EXE_f_RegWrite <= 1'b0;
-            // EXE_ALUSel_f <= 1'b1;
             EXE_Branch <= 2'd0;
             EXE_CSRSel <= 1'b0;
-            // EXE_Memoryin_f <= 1'b1;
         end
         else begin
             EXE_pc_out <= ID_pc_in;
@@ -192,6 +157,7 @@ always_ff @(posedge clk or negedge reset) begin
             EXE_Memoryin_f <= Memoryin_f;
             EXE_CSRSel <= CSRsel;
             EXE_CSR_type <= CSR_type;
+            EXE_CSR_addr <= csr_addr;
         end
     end
 end

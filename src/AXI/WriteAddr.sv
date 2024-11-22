@@ -13,7 +13,16 @@ module WriteAddr (
 	input AWVALID_M1,
 	output logic AWREADY_M1,
 	
-    //S0
+	//M2	DMA
+	input [`AXI_ID_BITS-1:0] AWID_M2,
+	input [`AXI_ADDR_BITS-1:0] AWADDR_M2,
+	input [`AXI_LEN_BITS-1:0] AWLEN_M2,
+	input [`AXI_SIZE_BITS-1:0] AWSIZE_M2,
+	input [1:0] AWBURST_M2,
+	input AWVALID_M2,
+	output logic AWREADY_M2,
+
+    //S0	ROM
 	output logic [`AXI_IDS_BITS-1:0] AWID_S0,
 	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S0,
 	output logic [`AXI_LEN_BITS-1:0] AWLEN_S0,
@@ -22,7 +31,7 @@ module WriteAddr (
 	output logic AWVALID_S0,
 	input AWREADY_S0,
 
-    //S1
+    //S1	IM
 	output logic [`AXI_IDS_BITS-1:0] AWID_S1,
 	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S1,
 	output logic [`AXI_LEN_BITS-1:0] AWLEN_S1,
@@ -31,14 +40,41 @@ module WriteAddr (
 	output logic AWVALID_S1,
 	input AWREADY_S1,
 
-    //S2
+    //S2	DM
 	output logic [`AXI_IDS_BITS-1:0] AWID_S2,
 	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S2,
 	output logic [`AXI_LEN_BITS-1:0] AWLEN_S2,
 	output logic [`AXI_SIZE_BITS-1:0] AWSIZE_S2,
 	output logic [1:0] AWBURST_S2,
 	output logic AWVALID_S2,
-	input AWREADY_S2
+	input AWREADY_S2,
+
+	//S3	DMA
+	output logic [`AXI_IDS_BITS-1:0] AWID_S3,
+	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S3,
+	output logic [`AXI_LEN_BITS-1:0] AWLEN_S3,
+	output logic [`AXI_SIZE_BITS-1:0] AWSIZE_S3,
+	output logic [1:0] AWBURST_S3,
+	output logic AWVALID_S3,
+	input AWREADY_S3,
+
+	//S4	WDT
+	output logic [`AXI_IDS_BITS-1:0] AWID_S4,
+	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S4,
+	output logic [`AXI_LEN_BITS-1:0] AWLEN_S4,
+	output logic [`AXI_SIZE_BITS-1:0] AWSIZE_S4,
+	output logic [1:0] AWBURST_S4,
+	output logic AWVALID_S4,
+	input AWREADY_S4,
+
+	//S5	DRAM
+	output logic [`AXI_IDS_BITS-1:0] AWID_S5,
+	output logic [`AXI_ADDR_BITS-1:0] AWADDR_S5,
+	output logic [`AXI_LEN_BITS-1:0] AWLEN_S5,
+	output logic [`AXI_SIZE_BITS-1:0] AWSIZE_S5,
+	output logic [1:0] AWBURST_S5,
+	output logic AWVALID_S5,
+	input AWREADY_S5
 );
 
 logic [`AXI_ID_BITS-1:0]     AWID_M0;
@@ -81,6 +117,24 @@ assign AWLEN_S2 = AWLEN;
 assign AWSIZE_S2 = AWSIZE;
 assign AWBURST_S2 = AWBURST;
 
+assign AWID_S3 = AWID;
+assign AWADDR_S3 = AWADDR;
+assign AWLEN_S3 = AWLEN;
+assign AWSIZE_S3 = AWSIZE;
+assign AWBURST_S3 = AWBURST;
+
+assign AWID_S4 = AWID;
+assign AWADDR_S4 = AWADDR;
+assign AWLEN_S4 = AWLEN;
+assign AWSIZE_S4 = AWSIZE;
+assign AWBURST_S4 = AWBURST;
+
+assign AWID_S5 = AWID;
+assign AWADDR_S5 = AWADDR;
+assign AWLEN_S5 = AWLEN;
+assign AWSIZE_S5 = AWSIZE;
+assign AWBURST_S5 = AWBURST;
+
 Arbiter WAArbiter(
     .clk                 (clk),
     .rst                 (rst),
@@ -105,6 +159,16 @@ Arbiter WAArbiter(
 
 	.READY_M1            (AWREADY_M1),
 
+	//M2
+    .ID_M2               (AWID_M2),
+	.ADDR_M2             (AWADDR_M2),
+	.LEN_M2              (AWLEN_M2),
+	.SIZE_M2             (AWSIZE_M2),
+	.BURST_M2            (AWBURST_M2),
+	.VALID_M2            (AWVALID_M2),
+
+	.READY_M2            (AWREADY_M2),
+
     //S
     .ID_S                (AWID),
 	.ADDR_S              (AWADDR),
@@ -123,9 +187,16 @@ Decoder WADecoder(
     .READY_S0(AWREADY_S0),
     .READY_S1(AWREADY_S1),
     .READY_S2(AWREADY_S2),
+	.READY_S3(AWREADY_S3),
+	.READY_S4(AWREADY_S4),
+	.READY_S5(AWREADY_S5),
+
     .VALID_S0(AWVALID_S0),           //axi ready to transfer address to slave
     .VALID_S1(AWVALID_S1),
-    .VALID_S2(AWVALID_S2)
+    .VALID_S2(AWVALID_S2),
+	.VALID_S3(AWVALID_S3),
+	.VALID_S4(AWVALID_S4),
+	.VALID_S5(AWVALID_S5),
 );
 
 endmodule

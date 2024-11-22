@@ -10,7 +10,13 @@ module WriteData (
 	input WVALID_M1,
 	output logic WREADY_M1,
 
-    //S0
+	input [`AXI_DATA_BITS-1:0] WDATA_M2,
+	input [`AXI_STRB_BITS-1:0] WSTRB_M2,
+	input WLAST_M2,
+	input WVALID_M2,
+	output logic WREADY_M2,
+
+    //S0	ROM
 	input AWVALID_S0,
     output logic [`AXI_DATA_BITS-1:0] WDATA_S0,
 	output logic [`AXI_STRB_BITS-1:0] WSTRB_S0,
@@ -18,7 +24,7 @@ module WriteData (
 	output logic WVALID_S0,
 	input WREADY_S0,
 
-    //S1
+    //S1	IM
 	input AWVALID_S1,
     output logic [`AXI_DATA_BITS-1:0] WDATA_S1,
 	output logic [`AXI_STRB_BITS-1:0] WSTRB_S1,
@@ -26,13 +32,37 @@ module WriteData (
 	output logic WVALID_S1,
 	input WREADY_S1,
 
-    //S2
+    //S2	DM
 	input AWVALID_S2,
     output logic [`AXI_DATA_BITS-1:0] WDATA_S2,
 	output logic [`AXI_STRB_BITS-1:0] WSTRB_S2,
 	output logic WLAST_S2,
 	output logic WVALID_S2,
-	input WREADY_S2
+	input WREADY_S2,
+
+	//S3	DMA
+	input AWVALID_S3,
+    output logic [`AXI_DATA_BITS-1:0] WDATA_S3,
+	output logic [`AXI_STRB_BITS-1:0] WSTRB_S3,
+	output logic WLAST_S3,
+	output logic WVALID_S3,
+	input WREADY_S3,
+
+	//S4	WDT
+	input AWVALID_S4,
+    output logic [`AXI_DATA_BITS-1:0] WDATA_S4,
+	output logic [`AXI_STRB_BITS-1:0] WSTRB_S4,
+	output logic WLAST_S4,
+	output logic WVALID_S4,
+	input WREADY_S4,
+
+	//S5	DRAM
+	input AWVALID_S5,
+    output logic [`AXI_DATA_BITS-1:0] WDATA_S5,
+	output logic [`AXI_STRB_BITS-1:0] WSTRB_S5,
+	output logic WLAST_S5,
+	output logic WVALID_S5,
+	input WREADY_S5
 );
 
 logic WVALID_S0_reg;

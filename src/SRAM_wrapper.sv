@@ -42,14 +42,14 @@ module SRAM_wrapper (
 	output logic 						BVALID_S,
 	input 								BREADY_S
 );
-logic late_rst;
+// logic late_rst;
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin 
-    if(~ARESETn)
-        late_rst <= ARESETn;
-    else 
-        late_rst <= ARESETn;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin 
+//     if(~ARESETn)
+//         late_rst <= ARESETn;
+//     else 
+//         late_rst <= ARESETn;
+// end
 
 
 // logic CEB;
@@ -86,27 +86,26 @@ logic RVALID_reg;
 logic ceb;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
-// assign RDATA_S = (RVALID_S & RVALID_reg) ? DO_temp : DO;
 assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;
-// assign RDATA_S = 32'b1;
+assign RDATA_S = DO;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin
-    if(~ARESETn)
-        RDATA_reg <= `AXI_DATA_BITS'b0;
-    else 
-        RDATA_reg <= (RVALID_S & ~RVALID_reg) ? DO : RDATA_reg;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin
+//     if(~ARESETn)
+//         RDATA_reg <= `AXI_DATA_BITS'b0;
+//     else 
+//         RDATA_reg <= (RVALID_S & ~RVALID_reg) ? DO : RDATA_reg;
+// end
 
-always_ff @( posedge ACLK or negedge ARESETn ) begin 
-    if(~ARESETn)
-        RVALID_reg <= 1'b0;
-    else
-        RVALID_reg <= RVALID_S;
-end
+// always_ff @( posedge ACLK or negedge ARESETn ) begin 
+//     if(~ARESETn)
+//         RVALID_reg <= 1'b0;
+//     else
+//         RVALID_reg <= RVALID_S;
+// end
 
 always_ff @( posedge ACLK or negedge ARESETn ) begin 
     if(~ARESETn)begin
@@ -125,77 +124,6 @@ always_ff @( posedge ACLK or negedge ARESETn ) begin
             awlen <= awlen;
     end
 end
-
-//get data len
-// always_comb begin
-//     if(ARVALID_S & ARREADY_S)
-//         len = ARLEN_S;
-//     else if(AWVALID_S & AWREADY_S)
-//         len = AWLEN_S;
-// end
-
-// always_ff @( posedge ACLK or negedge ARESETn ) begin 
-//     if(~ARESETn)
-//         DO_temp <= `AXI_DATA_BITS'b0;
-//     else 
-//         DO_temp <= (RVALID_S & RREADY_S) ? DO : DO_temp;
-// end
-
-// logic [13:0] araddr_r, awaddr_r;
-
-// always_ff @( posedge ACLK or negedge ARESETn ) begin 
-//     if(~ARESETn)begin
-//         araddr_r <= 14'b0;
-//         awaddr_r <= 14'b0;
-//     end
-//     else
-//         if(ARVALID_S & ARREADY_S)
-//             araddr_r <= ARADDR_S[15:2];
-//         else 
-//             araddr_r <= araddr_r;
-
-//         if(AWVALID_S & AWREADY_S)
-//             awaddr_r <= AWADDR_S[15:2];
-//         else 
-//             awaddr_r <= awaddr_r;
-// end
-
-// always_ff @( posedge ACLK or negedge ARESETn ) begin
-//     if(~ARESETn)begin
-//         A <= 14'b0;
-//         // address <= 14'b0;
-//         // address_4 <= 14'b0;
-//         counter <= `AXI_LEN_BITS'b0;
-//     end 
-//     else if(stage == idle)begin
-//         if(ARVALID_S)begin
-//             A <= ARADDR_S[15:2];
-//             // address_4 <= ARADDR_S[15:2] + 14'b1;
-//         end
-//         else if(AWVALID_S)begin
-//             A <= AWADDR_S[15:2];
-//         end
-//     end
-//     else if(stage == read_data)begin
-//         if(RVALID_S & RREADY_S) begin           //in read data state and not read the end, increase address to get next data
-//             // address <= address + 14'b1;
-//             A <= A + 14'b1;
-//             // address_4 <= address_4 + 14'b1;
-//             if(counter == arlen)begin
-//                 counter <= `AXI_LEN_BITS'b0;
-//             end
-//             else begin
-//                 counter <= counter + `AXI_LEN_BITS'b1;
-//             end
-//         end
-//     end
-//     else if(stage == write_data)begin
-//         if(WVALID_S & WREADY_S)begin
-//             A <= A + 14'b1;
-//             // address <= address + 14'b1;
-//         end
-//     end
-// end
 
 always_ff @( posedge ACLK or negedge ARESETn ) begin
     if(~ARESETn)begin
@@ -267,110 +195,6 @@ always_ff @( posedge ACLK or negedge ARESETn) begin
     else 
         stage <= next_stage;
 end
-
-// always_comb begin
-//     case (stage)
-//         idle : begin
-//             if(AWVALID_S)
-//                 next_stage <= write_address;
-//             else if(ARVALID_S)
-//                 next_stage <= read_address;
-//             else
-//                 next_stage <= idle;
-//         end
-//         read_address : begin
-//             if(ARVALID_S & ARREADY_S)
-//                 next_stage <= read_data;
-//             else 
-//                 next_stage <= read_address; 
-//         end
-//         read_data : begin
-//             if(RVALID_S & RREADY_S & RLAST_S)
-//                 next_stage <= idle;
-//             else 
-//                 next_stage <= read_data;
-//         end
-//         write_address : begin
-//             if(AWVALID_S & AWREADY_S)
-//                 next_stage <= write_data;
-//             else 
-//                 next_stage <= write_address; 
-//         end
-//         write_data : begin
-//             if(WVALID_S & WREADY_S & WLAST_S)
-//                 next_stage <= write_response;
-//             else 
-//                 next_stage <= write_data;
-//         end
-//         write_response : begin
-//             if(BVALID_S & BREADY_S)
-//                 next_stage <= idle;
-//             else 
-//                 next_stage <= write_response;
-//         end
-//     endcase    
-// end
-// always_comb begin
-//     case (stage)
-//         idle : begin
-//             ARREADY_S = 1'b0;
-//             RVALID_S = 1'b0;
-//             AWREADY_S = 1'b0;
-//             WREADY_S = 1'b0;
-//             BVALID_S = 1'b0;
-//             // A = A;
-//             RDATA_S = DO_temp;
-//         end
-//         read_address : begin
-//             ARREADY_S = 1'b1;
-//             RVALID_S = 1'b0;
-//             AWREADY_S = 1'b0;
-//             WREADY_S = 1'b0;
-//             BVALID_S = 1'b0;
-//             // A = (ARVALID_S & ARREADY_S) ? ARADDR_S[15:2] : A;
-//             RDATA_S = DO;
-//         end
-//         read_data : begin
-//             ARREADY_S = 1'b0;
-//             RVALID_S = 1'b1;
-//             AWREADY_S = 1'b0;
-//             WREADY_S = 1'b0;
-//             BVALID_S = 1'b0;
-//             // A = A;
-//             // A = (RVALID_S & RREADY_S & RLAST_S) ? address : (RVALID_S & RREADY_S) ? address_4 : address;
-//             RDATA_S = (RVALID_S & ~RVALID_reg) ? DO : RDATA_S;
-//         end
-//         write_address : begin
-//             ARREADY_S = 1'b0;
-//             RVALID_S = 1'b0;
-//             AWREADY_S = 1'b1;
-//             WREADY_S = 1'b0;
-//             BVALID_S = 1'b0;
-//             // A = (AWVALID_S & AWREADY_S) ? AWADDR_S[15:2] : A;
-//             RDATA_S = DO_temp;
-//         end
-//         write_data : begin
-//             ARREADY_S = 1'b0;
-//             RVALID_S = 1'b0;
-//             AWREADY_S = 1'b0;
-//             WREADY_S = 1'b1;
-//             BVALID_S = 1'b0;
-//             // A = address;
-//             // A = A;
-//             RDATA_S = DO_temp;
-//         end
-//         write_response : begin
-//             ARREADY_S = 1'b0;
-//             RVALID_S = 1'b0;
-//             AWREADY_S = 1'b0;
-//             WREADY_S = 1'b0;
-//             BVALID_S = 1'b1;
-//             // A = A;
-//             RDATA_S = DO_temp;
-//         end
-//     endcase
-// end
-
 
 always_comb begin
     case (stage)
@@ -489,13 +313,3 @@ end
 
 endmodule
 
-// module SRAM_wrapper (
-//   input CLK,
-//   input RST,
-//   input CEB,
-//   input WEB,
-//   input [31:0] BWEB,
-//   input [13:0] A,
-//   input [31:0] DI,
-//   output [31:0] DO
-// );
