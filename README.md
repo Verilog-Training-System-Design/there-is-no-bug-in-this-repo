@@ -14,6 +14,9 @@
   - [x] 11/21 trap in the cpu
   - [x] 11/21 connect each line in cpu
 - [ ] DRAM_wrapper
+  - [ ] FSM stage design
+  - [ ] what to do in each stage
+  - [ ] delay clock
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
   - [x] Input signal for WDT
@@ -30,7 +33,7 @@
   - [x] 11/21 Arbiter lock extension
   - [x] 11/21 read data channel lock extension
   - [ ] write data channel lock extension
-  - [ ] write response channel lock extension
+  - [x] 11/22 write response channel lock extension
 - [x] task finished
 
 #### others
@@ -40,7 +43,9 @@
 ### sim
 
 - [ ] prog0
+  - [x] 11/22 boot.c
 - [ ] prog1
+  - [ ] boot.c
   - [ ] main.c
 - [ ] prog2
   - [ ] main.c
@@ -50,6 +55,9 @@
 
 11/18 : Add task breakdown items.
 
-## Question unfixed
+## Problem encountered
 
-11/20 : cpu csr stall condition not decided yet,
+|stage|problem description|
+|-----|-------------------|
+|fixed| 11/20 : cpu csr stall condition not decided yet.|
+|un| 11/22 : DRAM_wrapper stage design.|
