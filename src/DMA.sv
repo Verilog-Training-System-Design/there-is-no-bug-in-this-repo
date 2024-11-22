@@ -9,9 +9,9 @@
   module DMA (
     input clk, rst,
     input         DMAEN,
-    input         DMASRC,
-    input         DMADST,
-    input         DMALEN,
+    input  [31:0] DMASRC,
+    input  [31:0] DMADST,
+    input  [31:0] DMALEN,
     output logic  DMA_interrupt
   );
     
