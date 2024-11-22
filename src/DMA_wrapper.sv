@@ -78,6 +78,8 @@
 
     );
 
+
+    //use Master.sv
     DMA_Master DMA_Master_inst(
       
     );
