@@ -16,10 +16,10 @@
   
 //---------------------- parameter -------------------------//
   logic     [1:0] S_cur, S_nxt;
-  parameter [1:0] INITIAL = 2'b00,
-                  ENABLE  = 2'b01,
-                  2'b10,
-                  WDT_OUT = 2'b11;
+  parameter [1:0] INITIAL     = 2'b00,
+                  ENABLE      = 2'b01,
+                  START_CNT_D = 2'b10,
+                  WDT_OUT     = 2'b11;
   //CDC
   logic    reg_clk1_WDLIVE;   
   logic    reg_clk2_WDLIVE_1, reg_clk2_WDLIVE_2;        
@@ -59,8 +59,14 @@
       INITIAL: begin
         if(WDEN)  S_nxt = ENABLE;
         else      S_nxt = INITIAL;
-      end  
-      default:    S_nxt = INITIAL;
+      end
+      ENABLE: begin
+        
+      end
+      START_CNT_D: begin
+        
+      end
+      default:    S_nxt = INITIAL; //WDT_CNT
     endcase
   end
 
