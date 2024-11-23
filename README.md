@@ -25,10 +25,15 @@
   - [x] 11/20 Clock problem - one bit
   - [ ] Clock domain - mult bit (11/23)
 - [ ] DMA_wrapper
+  - [ ] 3 submudule wire connect
 - [ ] DMA implementation
   - [x] Slave Part (need to double check)
-  - [ ] Master Part (11/23)
-  - [ ] DMA Data 
+  - [ ] Master Part (port integration)
+  - [ ] DMA Module
+    - [ ] Inner FSM
+    - [ ] register for data store
+    - [ ] data len to cal. data transfer
+
 - [ ] ROM implementation
 - [ ] top module
 - [ ] AXI modified

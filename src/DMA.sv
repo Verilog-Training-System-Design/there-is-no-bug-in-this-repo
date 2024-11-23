@@ -25,14 +25,17 @@
     parameter       M_IDLE    = 3'd0,
                     M_CHECK;
 
-    logic           remaind_data = ;
+    logic [`AXI_DATA_BITS -1:0] total_data;
+    logic           remaind_data;
+  //Data store
+    logic [15:0]                data_buffer [`AXI_DATA_BITS -1:0];
 
 //---------------------- Main code -------------------------//
   //--------------- CPU control signal reg -----------------//
     reg_dma_en
 
   //-------------------Slave FSM -------------------------//
-    always_ff @(posedege clk) begin
+    always_ff @(posedge clk) begin
       if (rst)  S_S_cur <=  IDLE;
       else      S_S_cur <=  S_S_nxt;
     end
@@ -45,8 +48,8 @@
 
 
 
-  //-------------------Master FSM -------------------------//
-    always_ff @(posedege clk) begin
+  //------------------- Master FSM -------------------------//
+    always_ff @(posedge clk) begin
       if (rst)  M_S_cur <=  IDLE;
       else      M_S_cur <=  M_S_nxt;
     end
@@ -58,6 +61,21 @@
         default: 
       endcase
     end
+
+
+  //------------------- Data -------------------------//
+    //total length
+    always_ff @(posedge clk) begin
+      if (rst) begin
+        total_data  <=  32'd0;        
+      end 
+      else if (!DMAEN) begin
+        total_data  <=  DMALEN;
+      end
+    end
+
+    //register data
+    
 
 
   endmodule

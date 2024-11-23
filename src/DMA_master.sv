@@ -1,15 +1,12 @@
 //--------------------------- Info ---------------------------//
     //Module Name :   DMA_master
-    //INFO        :   
+    //INFO        :   FSM signal (未改完)
 
 //----------------------- Environment -----------------------//
 
 //------------------------- Module -------------------------//
   module DMA_master (
-      input         clk, rst,
-    //DMA port 
-
-
+      input         clk, rst,       
     //AXI Waddr
       output  logic   [`AXI_ID_BITS -1:0]     M_AWID,    
       output  logic   [`AXI_ADDR_BITS -1:0]   M_AWAddr,  
@@ -43,7 +40,10 @@
       input           [1:0]                   M_RResp,   
       input                                   M_RLast,   
       input                                   M_RValid,  
-      output  logic                           M_RReady
+      output  logic                           M_RReady,
+    //DMA port 
+      input           [`AXI_DATA_BITS -1:0]   Data_in,
+      output  logic   [`AXI_DATA_BITS -1:0]   Data_out 
   );
 
   //----------------------- Parameter -----------------------//
@@ -55,6 +55,9 @@
                 WADDR     = 3'd3,
                 WDATA     = 3'd4,
                 WRESP     = 3'd5;
+    //
+    logic rst, read_reg, write_reg;
+    logic [`AXI_DATA_BITS-1:0] DATA_BUF;
 
   //----------------------- Main Code -----------------------//
     //------------------------- FSM -------------------------//
@@ -98,7 +101,90 @@
           default:  S_nxt  = INITIAL;
         endcase
       end
+    //-----------------------  -------------------------//
+      assign read_reg = (READ & rst);
+      assign write_reg = (WRITE & rst);
 
+      //make sure read data won't disappear 
+      always_ff @( posedge clk or negedge reset) begin 
+          if(~reset)
+              DATA_BUF <= `AXI_DATA_BITS'h0;
+          else if(RVALID & RREADY)
+              DATA_BUF <= RDATA;
+          else 
+              DATA_BUF <= DATA_BUF;
+      end
+    //-------------------- Read Channel ---------------------//
+      assign ARID      = `AXI_ID_BITS'b0;
+      assign ARADDR    =  ADDR_IN;
+      assign ARLEN     = `AXI_LEN_ONE;
+      assign ARSIZE    = `AXI_SIZE_WORD;
+      assign ARBURST   = `AXI_BURST_INC;
+    //-------------------- Write Channel ---------------------// 
+      //Addr   
+      assign AWID    = `AXI_ID_BITS'b0;
+      assign AWADDR  = ADDR_IN;
+      assign AWLEN   = `AXI_LEN_ONE;
+      assign AWSIZE  = `AXI_SIZE_WORD;
+      assign AWBURST = `AXI_BURST_INC;
+      //Data
+      assign WDATA = DATA_IN;
+      assign WSTRB = WRITE_TYPE;
+      assign WLAST = 1'b1;        //use CNT
+    //--------------------- handshake -----------------------//
+      always_comb begin       //stage behavior
+          case (S_cur)
+              INITIAL : begin
+                  ARVALID = read_reg;         //may exist problem
+                  RREADY  = 1'b0;
+                  AWVALID = write_reg;        //may exist problem
+                  WVALID  = 1'b0;
+                  BREADY  = 1'b0;
+              end
+              RADDR : begin
+                  ARVALID = 1'b1;
+                  RREADY = 1'b0;
+                  AWVALID = 1'b0;
+                  WVALID = 1'b0;
+                  BREADY = 1'b0;
+              end
+              RDATA : begin
+                  ARVALID = 1'b0;
+                  RREADY = 1'b1;
+                  AWVALID = 1'b0;
+                  WVALID = 1'b0;
+                  BREADY = 1'b0;
+              end
+              write_address : begin
+                  ARVALID = 1'b0;
+                  RREADY = 1'b0;
+                  AWVALID = 1'b1;
+                  WVALID = 1'b0;
+                  BREADY = 1'b0;
+              end
+              write_data : begin
+                  ARVALID = 1'b0;
+                  RREADY = 1'b0;
+                  AWVALID = 1'b0;
+                  WVALID = 1'b1;
+                  BREADY = 1'b0;
+              end
+              write_response : begin
+                  ARVALID = 1'b0;
+                  RREADY = 1'b0;
+                  AWVALID = 1'b0;
+                  WVALID = 1'b0;
+                  BREADY = 1'b1;
+              end
+              default :begin
+                  ARVALID = 1'b0;
+                  RREADY = 1'b0;
+                  AWVALID = 1'b0;
+                  WVALID = 1'b0;
+                  BREADY = 1'b0;
+              end
+          endcase
+      end
 
 
   endmodule
