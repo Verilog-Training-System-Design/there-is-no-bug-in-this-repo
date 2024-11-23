@@ -23,11 +23,11 @@
   - [ ] Slave wrapper two version integration
 - [ ] WDT implementation
   - [x] 11/20 Clock problem - one bit
-  - [ ] Clock domain - mult bit
+  - [ ] Clock domain - mult bit (11/23)
 - [ ] DMA_wrapper
 - [ ] DMA implementation
   - [x] Slave Part (need to double check)
-  - [ ] Master Part
+  - [ ] Master Part (11/23)
   - [ ] DMA Data 
 - [ ] ROM implementation
 - [ ] top module

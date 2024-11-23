@@ -45,6 +45,61 @@
       input                                   M_RValid,  
       output  logic                           M_RReady
   );
-    
+
+  //----------------------- Parameter -----------------------//
+    //FSM
+    logic   [2:0] S_cur, S_nxt;
+    parameter   INITIAL   = 3'd0,
+                RADDR     = 3'd1,
+                RDATA     = 3'd2,
+                WADDR     = 3'd3,
+                WDATA     = 3'd4,
+                WRESP     = 3'd5;
+
+  //----------------------- Main Code -----------------------//
+    //------------------------- FSM -------------------------//
+      always_ff @(posedge ACLK) begin
+          if(!ARESETn)
+              S_cur   = INITIAL;
+          else
+              S_cur   = S_nxt;
+      end
+
+      always_comb begin
+        case (S_cur)
+          INITIAL:  begin
+            if(Start_burst_read) begin
+              S_nxt   = RADDR;
+            end
+            else if  (Start_burst_write) begin
+              S_nxt   = WADDR;           
+            end
+            else begin
+              S_nxt   = INITIAL;
+            end
+          end
+          RADDR:  S_nxt  = (Raddr_done) ? RDATA   : RADDR; 
+          RDATA:  begin
+            if(reg_Rvalid_both)  
+              S_nxt  = (M_RLast_h1) ? INITIAL : RDATA; 
+            else
+              S_nxt  = (R_last) ? INITIAL : RDATA;
+          end
+          WADDR:  S_nxt  = (Waddr_done) ? WDATA   : WADDR; 
+          WDATA: 
+              S_nxt  = (W_last)     ? WRESP   : WDATA;                
+
+          WRESP:  begin
+            if(reg_R_W_both)  
+              S_nxt  = (M_RLast_h1) ? INITIAL : WRESP; 
+            else 
+              S_nxt  = (Wresp_done) ? INITIAL : WRESP;
+          end 
+          default:  S_nxt  = INITIAL;
+        endcase
+      end
+
+
+
   endmodule
 

@@ -48,7 +48,6 @@
     );
     
   //----------------------- Parameter -----------------------//   
-
     //DMA Signal
       logic         DMAEN;
       logic [31:0]  DMASRC;  
