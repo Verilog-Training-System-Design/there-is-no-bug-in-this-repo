@@ -46,8 +46,24 @@
         reg_clk2_WDLIVE_2 <=  reg_clk2_WDLIVE_1;        
       end
     end
-  //WTOCNT
+  //WTOCNT(mult bit syn problem, method 2, no load signal & feedback)
+    always_ff @(posedege clk) begin
+      if(rst)
+        reg_clk1_WDLIVE <=  1'b0;
+      else
+        reg_clk1_WDLIVE <=  WDLIVE;
+    end
 
+    always_ff @(posedege clk2) begin
+      if(rst2) begin
+        reg_clk2_WTOCNT_1 <=  1'b0;  
+        reg_clk2_WTOCNT_2 <=  1'b0;
+      end
+      else begin
+        reg_clk2_WTOCNT_1 <=  reg_clk1_WDLIVE;  
+        reg_clk2_WTOCNT_2 <=  reg_clk2_WDLIVE_1;        
+      end
+    end
 //------------------------- FSM -------------------------//
   always_ff @(posedege clk2) begin
     if (rst2)   S_cur <=  INITIAL;

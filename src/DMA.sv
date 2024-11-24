@@ -2,79 +2,288 @@
     //Module Name :　 DMA
     //INFO        :   slave FSM
     //                master FSM
+    //                mstrb--> 尚未改完
 //----------------------- Environment -----------------------//
-    `include "DMA_Master.sv"
-    `include "DMA_Slave.sv"    
+    // `include "DMA_Master.sv"
+    // `include "DMA_Slave.sv"    
 //------------------------- Module -------------------------//
   module DMA (
       input clk, rst,
     //from (CPU) DMA slave
-      input         DMAEN,
-      input  [31:0] DMASRC,
-      input  [31:0] DMADST,
-      input  [31:0] DMALEN,
-      output logic  DMA_interrupt
+      input           DMAEN,
+      input  [31:0]   DMASRC,
+      input  [31:0]   DMADST,
+      input  [31:0]   DMALEN,
+      output logic    DMA_interrupt,
+    //Master Port
+    //AXI Waddr
+      output  logic   [`AXI_ID_BITS -1:0]     M_AWID,    
+      output  logic   [`AXI_ADDR_BITS -1:0]   M_AWAddr,  
+      output  logic   [`AXI_LEN_BITS -1:0]    M_AWLen,   
+      output  logic   [`AXI_SIZE_BITS -1:0]   M_AWSize,  
+      output  logic   [1:0]                   M_AWBurst, 
+      output  logic                           M_AWValid, 
+      input                                   M_AWReady,
+    //AXI Wdata     
+      output  logic   [`AXI_DATA_BITS -1:0]   M_WData,   
+      output  logic   [`AXI_STRB_BITS -1:0]   M_WStrb,   
+      output  logic                           M_WLast,   
+      output  logic                           M_WValid,  
+      input                                   M_WReady,
+    //AXI Wresp
+      input         [`AXI_ID_BITS -1:0]       M_BID,
+      input         [1:0]                     M_BResp,
+      input                                   M_BValid,
+      output  logic                           M_BReady,                   
+    //AXI Raddr
+      output  logic   [`AXI_ID_BITS -1:0]     M_ARID,    
+      output  logic   [`AXI_ADDR_BITS -1:0]   M_ARAddr,  
+      output  logic   [`AXI_LEN_BITS -1:0]    M_ARLen,   
+      output  logic   [`AXI_SIZE_BITS -1:0]   M_ARSize,  
+      output  logic   [1:0]                   M_ARBurst, 
+      output  logic                           M_ARValid, 
+      input                                   M_ARReady,
+    //AXI Rdata   
+      input           [`AXI_ID_BITS   -1:0]   M_RID,         
+      input           [`AXI_DATA_BITS -1:0]   M_RData,   
+      input           [1:0]                   M_RResp,   
+      input                                   M_RLast,   
+      input                                   M_RValid,  
+      output  logic                           M_RReady
+
   );
 
 //---------------------- Parameter -------------------------//
-    logic     [:0]  S_S_cur, S_S_nxt;
-    parameter       S_IDLE    = 3'd0,
-                    ;
-
-    logic     [:0]  M_S_cur, M_S_nxt;
-    parameter       M_IDLE    = 3'd0,
-                    M_CHECK;
-
+  //FSM
+    logic   [3:0] S_cur, S_nxt;
+    parameter   INITIAL   = 4'd0,
+                PREPARE   = 4'd1,
+                RADDR     = 4'd2,
+                RDATA     = 4'd3,
+                WADDR     = 4'd4,
+                WDATA     = 4'd5,
+                WRESP     = 4'd6,
+                BUSY      = 4'd7,                
+                FINISH    = 4'd8;
+  //slave signal for DMA  
+    logic [`AXI_DATA_BITS -1:0] slave_src;   
+    logic [`AXI_DATA_BITS -1:0] slave_dst;    
     logic [`AXI_DATA_BITS -1:0] total_data;
-    logic           remaind_data;
+
+    logic                       remaind_data;
+
+  //Data register
+    logic   [`AXI_DATA_BITS -1:0]  reg_RData;
+  //CNT
+    logic   [`AXI_LEN_BITS  -1:0]  cnt;
+  //Start Signal
+    logic   Start_burst_write, Start_burst_read;      
+  //LAST Signal 
+    logic   W_last, R_last;     
+  //Done Signal 
+    logic   Raddr_done, Rdata_done, Waddr_done, Wdata_done, Wresp_done;
+
   //Data store
-    logic [15:0]                data_buffer [`AXI_DATA_BITS -1:0];
+    integer [3:0]               i;
+    //logic [3:0]                 data_pointer;    
+    logic [15:0]                data_buffer [`AXI_DATA_BITS -1: 0];
 
 //---------------------- Main code -------------------------//
   //--------------- CPU control signal reg -----------------//
     reg_dma_en
 
-  //-------------------Slave FSM -------------------------//
-    always_ff @(posedge clk) begin
-      if (rst)  S_S_cur <=  IDLE;
-      else      S_S_cur <=  S_S_nxt;
-    end
+  //----------------------  FSM ----------------------------//
+      always_ff @(posedge ACLK) begin
+          if(!ARESETn)
+              S_cur   = INITIAL;
+          else
+              S_cur   = S_nxt;
+      end
 
+      always_comb begin
+        case (S_cur)
+          INITIAL:  begin
+            S_nxt  = PREPARE; 
+            // if(Start_burst_read) begin
+            //   S_nxt   = RADDR;
+            // end
+            // else if  (Start_burst_write) begin
+            //   S_nxt   = WADDR;           
+            // end
+            // else begin
+            //   S_nxt   = INITIAL;
+            // end
+          end
+          PREPARE:  begin
+            if (DMAEN)      S_nxt = RADDR;
+            else            S_nxt = PREPARE;
+          end
+          RADDR:  begin
+            if(Raddr_done)  S_nxt  = WADDR;
+            else            S_nxt  = RDATA;            
+          end
+          RDATA:  begin
+            if(R_last)      S_nxt  = WADDR;
+            else            S_nxt  = RDATA;
+          end
+          WADDR:  begin
+            if(Waddr_done)  S_nxt  = WADDR;
+            else            S_nxt  = RDATA;            
+          end
+          WDATA:  begin
+            if(W_last)      S_nxt  = WADDR;
+            else            S_nxt  = RDATA;            
+          end
+          WRESP:  begin
+            if(reg_R_W_both)  
+              S_nxt  = (M_RLast_h1) ? INITIAL : WRESP; 
+            else 
+              S_nxt  = (Wresp_done) ? INITIAL : WRESP;
+          end
+          BUSY: begin
+            if(busy_check)  S_nxt  = RADDR; 
+            else            S_nxt  = FINISH;       
+          end 
+          default:  S_nxt  = INITIAL;   //FINISH
+        endcase
+      end
+  //--------------------- Start Burst ---------------------//
     always_comb begin
-      
+        case (S_cur)
+          RADDR:  begin
+            Start_burst_write   =  1'b0;
+            Start_burst_read    =  1'b1;                
+          end
+          WADDR:  begin
+            Start_burst_write   =  1'b1;
+            Start_burst_read    =  1'b0;                
+          end
+          default: begin
+            Start_burst_write   =  1'b0;
+            Start_burst_read    =  1'b0;                 
+          end
+        endcase
     end
-
-
-
-
-
-  //------------------- Master FSM -------------------------//
-    always_ff @(posedge clk) begin
-      if (rst)  M_S_cur <=  IDLE;
-      else      M_S_cur <=  M_S_nxt;
-    end
-
-    always_comb begin
-      case (M_S_cur)
-        M_IDLE: M_S_nxt = (reg_dma_en) ? : M_IDLE;
-
-        default: 
-      endcase
-    end
-
-
-  //------------------- Data -------------------------//
-    //total length
-    always_ff @(posedge clk) begin
-      if (rst) begin
-        total_data  <=  32'd0;        
+  //--------------------- Last Signal ---------------------//  
+    assign  W_last  = M_WLast & Wdata_done;
+    assign  R_last  = M_RLast & Rdata_done;
+  //--------------------- Done Signal ---------------------//
+    assign  Raddr_done  = M_ARValid & M_ARReady; 
+    assign  Rdata_done  = M_RValid  & M_RReady;
+    assign  Waddr_done  = M_AWValid & M_AWReady;
+    assign  Wdata_done  = M_WValid  & M_WReady;
+    assign  Wresp_done  = M_BValid  & M_BReady;
+  //------------------------- CNT -------------------------//
+    always_ff @(posedge ACLK) begin
+      if (!ARESETn) begin
+        cnt   <=  `AXI_LEN_BITS'd0;
       end 
-      else if (!DMAEN) begin
-        total_data  <=  DMALEN;
+      else begin
+        if(W_last)  begin
+          cnt   <=  `AXI_LEN_BITS'd0;            
+        end
+        else if (Wdata_done) begin
+          cnt   <=  cnt + `AXI_LEN_BITS'd1;            
+        end
+        else  begin
+          cnt   <=  cnt;
+        end
       end
     end
+  //---------------------- interrupt ----------------------//  
+    always_ff @(posedge clk) begin
+      if (rst)  
+        DMA_interrupt <=    1'b0;      
+      else if (S_cur == FINISH)
+        DMA_interrupt <=    1'b;               
+    end
+  //---------------------- W-channel ----------------------//
+    //Addr
+    assign  M_AWID      = `AXI_ID_BITS'd0;//4'b0010;
+    assign  M_AWLen     = `AXI_LEN_BITS;
+    assign  M_AWSize    = `AXI_SIZE_BITS'd0;
+    assign  M_AWBurst   = `AXI_BURST_INC; 
+    assign  M_AWAddr    = Memory_Addr;
+  
+    always_ff @(posedge ACLK) begin
+      if (!ARESETn)
+        M_AWValid   <=  1'b0;
+      else begin
+        case (S_cur)
+          INITIAL:  M_AWValid  <= (Start_burst_write) ? 1'b1 : 1'b0;
+          WADDR:    M_AWValid  <= (Waddr_done) ? 1'b0 : 1'b1;
+          default:  M_AWValid  <=  1'b0;
+        endcase          
+      end
+    end  
+    //Data
+    //assign  M_WStrb   =   ;use pointer
+    assign  M_WLast   =   ((S_cur == WDATA) && (cnt == M_AWLen))  ? 1'b1  : 1'b0; 
+    //assign  M_WData   =   Memory_Din;
+    assign  M_WValid  =   (S_cur == WDATA)  ? 1'b1 : 1'b0;
+    //Response
+    assign  M_BReady  =   (S_cur == WRESP || S_cur == WDATA)? 1'b1 : 1'b0;  
+  //---------------------- R-channel ----------------------//
+    //Addr
+    assign  M_ARID      = `AXI_ID_BITS'd0;
+    assign  M_ARLen     = `AXI_LEN_BITS;
+    assign  M_ARSize    = `AXI_SIZE_BITS'd0;
+    assign  M_ARBurst   = `AXI_BURST_INC; 
+    assign  M_ARAddr    = Memory_Addr; 
 
-    //register data
+    always_ff @(posedge ACLK) begin
+      if (!ARESETn)
+        M_ARValid   <=  1'b0;
+      else begin
+        case (S_cur)
+          INITIAL:  M_ARValid  <= (Start_burst_read) ? 1'b1 : 1'b0;
+          RADDR:    M_ARValid  <= (Raddr_done) ? 1'b0 : 1'b1;
+          default:  M_ARValid  <=  1'b0;
+        endcase          
+      end
+    end    
+  //------------------------ Data -------------------------//
+    //slave info for DMA
+      always_ff @(posedge clk) begin
+        if (rst) begin
+          slave_src   <=  32'd0;
+          slave_dst   <=  32'd0;
+          total_data  <=  32'd0;        
+        end 
+        else if (S_cur == PREPARE) begin
+          slave_src   <=  DMASRC;
+          slave_dst   <=  DMADST;
+          total_data  <=  DMALEN;
+        end
+      end
+    //store_load data (axi length = 16) (seq. timing have some problem) 
+      always_ff @(posedge clk or posedge rst) begin
+        if (rst) begin
+          for(i == 4'd0; i <= 4'd15; i = i + 1)
+            data_buffer[i] <= 32'd0; 
+        end 
+        else begin
+          if((S_cur == RDATA) && (Rdata_done)) begin
+            data_buffer[0]  <=  M_RData;
+            for(i == 4'd0; i <= 4'd14; i = i + 1)
+              data_buffer[i+1] <= data_buffer[i];
+          end       
+          else if ((S_cur == WDATA) && (Wdata_done)) begin
+            M_WData <=  data_buffer[15];
+            for(i == 4'd0; i <= 4'd14; i = i + 1)
+              data_buffer[i+1] <= data_buffer[i];
+          end    
+        end
+      end
+
+    // always_ff @(posedge clk) begin
+    //   if (rst) begin
+    //     data_pointer  <=  4'd0;        
+    //   end 
+    //   else if (S_cur == rda) begin
+    //     total_data  <=  DMALEN;
+    //   end
+    // end
     
 
 
