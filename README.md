@@ -14,9 +14,11 @@
   - [x] 11/21 trap in the cpu
   - [x] 11/21 connect each line in cpu
 - [ ] DRAM_wrapper
-  - [ ] FSM stage design
-  - [ ] what to do in each stage
-  - [ ] delay clock
+  - [x] 11/23 FSM stage design
+  - [x] 11/24 what to do in each stage
+  - [x] 11/24 delay clock
+  - [ ] input address assign
+  - [ ] when reading/writing continous data how address increase
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
   - [x] Input signal for WDT
@@ -36,6 +38,10 @@
 
 - [ ] ROM implementation
 - [ ] top module
+  - [ ] DRAM wire connect
+  - [ ] ROM wire connect
+  - [ ] DMA wire connect
+  - [ ] AXI wire connect
 - [ ] AXI modified
   - [x] Decoder address extension
   - [x] 11/21 Arbiter lock extension
@@ -68,4 +74,4 @@
 |stage|problem description|
 |-----|-------------------|
 |fixed| 11/20 : cpu csr stall condition not decided yet.|
-|un| 11/22 : DRAM_wrapper stage design.|
+|fixed| 11/22 : DRAM_wrapper stage design.|

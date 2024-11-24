@@ -54,33 +54,57 @@ module DRAM_wrapper (
 );
 
 logic [2:0] delay;		//count DRAM delay cycles
-logic [10:0] pre_row, cur_row;
-logic [9:0] col, col_4;
-
-logic [`AXI_IDS_BITS-1:0] ID_reg;
 logic [`AXI_ADDR_BITS-1:0] ADDR_reg;
-logic [`AXI_LEN_BITS-1:0] LEN_reg;
 logic [`AXI_SIZE_BITS-1:0] SIZE_reg;
 logic [1:0] BURST_reg;
+logic [`AXI_DATA_BITS-1:0] RDATA_reg;
 
-logic [1:0] stage, next_stage, pre_stage;
+logic [1:0] stage, next_stage;
 localparam [2:0] idle = 3'b000,
-				 precharge = 3'b001,
+				 precharge = 3'b001,		//write response in this stage
 				 activate = 3'b010,
             	 read_data = 3'b011,
-            	 write_data = 3'b100,
-            	 write_response = 3'b101;
+            	 write_data = 3'b100;
 
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
-assign RDATA_S = DRAM_Q;
+assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
+//get size and burst data
+always_ff @( posedege clk or negedge rst ) begin 
+	if(~rst)begin
+		SIZE_reg <= `AXI_SIZE_BITS'd0;
+		BURST_reg <= 2'd0;
+	end
+	else if(ARVALID_S & ARREADY_S)begin
+		SIZE_reg <= ARSIZE_S;
+		BURST_reg <= ARBURST_S;
+	end
+	else if(AWVALID_S & AWREADY_S)begin
+		SIZE_reg <= AWSIZE_S;
+		BURST_reg <= AWBURST_S;
+	end
+	else begin
+		SIZE_reg <= SIZE_reg;
+		BURST_reg <= BURST_reg;
+	end
+end
+
+//keep rdata stable
+always_ff @( posedege clk or negedge rst ) begin 
+	if(~rst)	
+		RDATA_reg <= 32'd0;
+	else 
+		RDATA_reg = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
+end
+
+//get len
 always_ff @( posedge clk or negedge rst ) begin 
     if(~rst)begin
         arlen <= `AXI_LEN_BITS'b0;
@@ -99,26 +123,22 @@ always_ff @( posedge clk or negedge rst ) begin
     end
 end
 
-//get address(not yet)
+//get address(not done)
 always_ff @( posedge clk or negedge rst ) begin
     if(~rst)begin
-        address <= 14'b0;
-        address_4 <= 14'b0;
+		ADDR_reg <= `AXI_ADDR_BITS'd0;
         counter <= `AXI_LEN_BITS'b0;
     end 
     else if(stage == idle)begin
         if(ARVALID_S & ARREADY_S)begin
-            address <= ARADDR_S[15:2];
-            address_4 <= ARADDR_S[15:2] + 14'b1;
+            ADDR_reg <= ARADDR_S;
         end
         else if(AWVALID_S & AWREADY_S)begin
-            address <= AWADDR_S[15:2];
+            ADDR_reg <= AWADDR_S;
         end
     end
     else if(stage == read_data)begin
         if(RVALID_S & RREADY_S) begin           //in read data state and not read the end, increase address to get next data
-            address <= address + 14'b1;
-            address_4 <= address_4 + 14'b1;
             if(counter == arlen)begin
                 counter <= `AXI_LEN_BITS'b0;
             end
@@ -129,15 +149,25 @@ always_ff @( posedge clk or negedge rst ) begin
     end
     else if(stage == write_data)begin
         if(WVALID_S & WREADY_S)begin
-            address <= address + 14'b1;
+            ADDR_reg <= ADDR_reg + 32'b1;
         end
     end
 end
 
-//precharge 
-
+//delay clock
+always_ff @( posedege clk or negedge rst ) begin 
+	if(~rst)
+		delay <= 3'd0;
+	else begin
+		if((stage == idle) | (delay == 3'd4))
+			delay <= 3'd0;
+		else 
+			delay <= delay + 3'd1;
+	end
+end
 
 //FSM for slave to switch channel
+//idle --> activate --> get row --> get col --> get data --> precharge
 always_ff @( posedge clk or negedge rst) begin 
     if(~rst)
         stage <= idle;
@@ -148,58 +178,121 @@ end
 always_comb begin
     case (stage)
         idle : begin
-            if(AWVALID_S & AWREADY_S)
-                next_stage = write_data;
-            else if(ARVALID_S & ARREADY_S)
-                next_stage = read_data;
+            if((AWVALID_S & AWREADY_S) | (ARVALID_S & ARREADY_S))begin
+				next_stage = activate;
+			end
             else
                 next_stage = idle;
         end
+		activate : begin
+			if(delay == 3'd4)begin
+				if(WVALID_S)
+					next_stage = write_data;
+				else
+					next_stage = read_data;
+			end
+			else 
+				next_stage = activate;
+		end
         read_data : begin
-            if(pre_row == cur_row)begin
-				pre_stage = read_data;
-                next_stage = set_col;
+            if(delay == 3'd4)begin
+				if(RVALID_S & RREADY_S & RLAST_S)
+					next_stage = precharge;
+				else
+					next_stage = read_data;
 			end
-            else begin 
-				pre_stage = read_data;
-                next_stage = pre;
-			end
+			else 
+				next_stage = read_data;
         end
         write_data : begin
-            if(WVALID_S & WREADY_S & WLAST_S)
-                next_stage = write_response;
+			if(delay = 3'd4)begin
+				if(WVALID_S & WREADY_S & WLAST_S)
+            	    next_stage = precharge;
+            	else
+            	    next_stage = write_data;
+			end
             else 
-                next_stage = write_data;
+				next_stage = write_data;
         end
-        write_response : begin
-            if(BVALID_S & BREADY_S)
-                next_stage = idle;
-            else 
-                next_stage = write_response;
-        end
-		act : begin
-			
+		precharge : begin
+			if(delay == 3'd4)
+				next_stage = idle;
+			else
+				next_stage = precharge;
 		end
     endcase    
 end
 
+//DRAM signal
+//A may need other register to know address
+always_comb begin 
+	case (stage)
+		idle : begin
+			DRAM_CASn = 1'd1;
+			DRAM_RASn = (AWVALID_S & ARVALID_S) ? 1'd0 : ((AWVALID_S & AWREADY_S) ? 1'd0 : 1'd1);
+			DRAM_WEn = 4'hf;
+			DRAM_D = 32'd0;
+			DRAM_A = (AWVALID_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
+		end
+		activate : begin
+			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_RASn = 1'd1;
+			DRAM_WEn = 4'hf;
+			DRAM_D = 32'd0;
+			DRAM_A = 
+		end
+		read_data : begin
+			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_RASn = 1'd1;
+			DRAM_WEn = 4'hf;
+			DRAM_D = 32'd0;
+			DRAM_A = 
+		end
+		write_data : begin
+			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_RASn = 1'd1;
+			DRAM_WEn = (delay == 3'd4) ? WSTRB_S : 4'hf;
+			DRAM_D = WDATA_S;
+			DRAM_A = 
+		end 
+		precharge : begin
+			DRAM_CASn = 1'd1;
+			DRAM_RASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_WEn = 4'h0;
+			DRAM_D = 32'd0;
+			DRAM_A = 
+		end
+	endcase
+end
+
+//AXI signal
 always_comb begin
     case (stage)
         idle : begin
-            ARREADY_S = ~AWVALID_S;         //I change here then prog1 become right
+            ARREADY_S = ~AWVALID_S;         //if want to write, write first
             RVALID_S = 1'b0;
             AWREADY_S = 1'b1;
             WREADY_S = 1'b0;
             BVALID_S = 1'b0;
-            A = (AWVALID_S) ? AWADDR_S[15:2] : ARADDR_S[15:2];
+			DRAM_CSn = 1'b0;
+            // A = (AWVALID_S) ? AWADDR_S[15:2] : ARADDR_S[15:2];
         end
+		activate : begin
+			ARREADY_S = 1'b0;
+            RVALID_S = 1'b0;
+            AWREADY_S = 1'b0;
+            WREADY_S = 1'b0;
+            BVALID_S = 1'b0;
+			DRAM_CSn = 1'b0;
+		end
         read_data : begin
             ARREADY_S = 1'b0;
             RVALID_S = 1'b1;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
             BVALID_S = 1'b0;
-            A = (RVALID_S & RREADY_S & RLAST_S) ? address : (RVALID_S & RREADY_S) ? address_4 : address;
+			DRAM_CSn = 1'b0;
+            // A = (RVALID_S & RREADY_S & RLAST_S) ? address : (RVALID_S & RREADY_S) ? address_4 : address;
         end
         write_data : begin
             ARREADY_S = 1'b0;
@@ -207,16 +300,17 @@ always_comb begin
             AWREADY_S = 1'b0;
             WREADY_S = 1'b1;
             BVALID_S = 1'b0;
-            A = address;
+			DRAM_CSn = 1'b0;
+            // A = address;
         end
-        write_response : begin
-            ARREADY_S = 1'b0;
+        precharge : begin
+			ARREADY_S = 1'b0;
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
             BVALID_S = 1'b1;
-            A = 14'b0;
-        end
+			DRAM_CSn = 1'b0;
+		end
     endcase
 end
 
