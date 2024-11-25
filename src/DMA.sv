@@ -50,28 +50,25 @@
       input                                   M_RLast,   
       input                                   M_RValid,  
       output  logic                           M_RReady
-
   );
 
 //---------------------- Parameter -------------------------//
   //FSM
     logic   [3:0] S_cur, S_nxt;
-    parameter   INITIAL   = 4'd0,
-                PREPARE   = 4'd1,
-                RADDR     = 4'd2,
-                RDATA     = 4'd3,
-                WADDR     = 4'd4,
-                WDATA     = 4'd5,
-                WRESP     = 4'd6,
-                BUSY      = 4'd7,                
-                FINISH    = 4'd8;
+    parameter   INITIAL   = 3'd0,
+                PREPARE   = 3'd1,
+                RADDR     = 3'd2,
+                RDATA     = 3'd3,
+                WADDR     = 3'd4,
+                WDATA     = 3'd5,
+                WRESP     = 3'd6,             
+                FINISH    = 3'd7;
   //slave signal for DMA  
     logic [`AXI_DATA_BITS -1:0] slave_src;   
     logic [`AXI_DATA_BITS -1:0] slave_dst;    
     logic [`AXI_DATA_BITS -1:0] total_data;
-
-    logic                       remaind_data;
-
+    logic [`AXI_DATA_BITS -1:0] remainder_data;
+    logic [`AXI_DATA_BITS -1:0] single_trans_data; 
   //Data register
     logic   [`AXI_DATA_BITS -1:0]  reg_RData;
   //CNT
@@ -82,15 +79,14 @@
     logic   W_last, R_last;     
   //Done Signal 
     logic   Raddr_done, Rdata_done, Waddr_done, Wdata_done, Wresp_done;
-
+    logic   busy_check;
   //Data store
     integer [3:0]               i;
-    //logic [3:0]                 data_pointer;    
     logic [15:0]                data_buffer [`AXI_DATA_BITS -1: 0];
 
 //---------------------- Main code -------------------------//
-  //--------------- CPU control signal reg -----------------//
-    reg_dma_en
+  // //--------------- CPU control signal reg -----------------//
+  //   reg_dma_en
 
   //----------------------  FSM ----------------------------//
       always_ff @(posedge ACLK) begin
@@ -135,14 +131,10 @@
             else            S_nxt  = RDATA;            
           end
           WRESP:  begin
-            if(reg_R_W_both)  
-              S_nxt  = (M_RLast_h1) ? INITIAL : WRESP; 
-            else 
-              S_nxt  = (Wresp_done) ? INITIAL : WRESP;
-          end
-          BUSY: begin
-            if(busy_check)  S_nxt  = RADDR; 
-            else            S_nxt  = FINISH;       
+            if(W_last)
+              S_nxt = (busy_check) ? RADDR : FINISH;
+            else
+              S_nxt = FINISH;   
           end 
           default:  S_nxt  = INITIAL;   //FINISH
         endcase
@@ -173,6 +165,26 @@
     assign  Waddr_done  = M_AWValid & M_AWReady;
     assign  Wdata_done  = M_WValid  & M_WReady;
     assign  Wresp_done  = M_BValid  & M_BReady;
+  //------------------- DMA transfer Signal -------------------//
+    always_ff @(posedge clk or posedge rst) begin
+      if(rst) 
+        remainder_data  <=  32'd0;
+      else if(S_cur == PREPARE)
+        remainder_data  <=  total_data;
+      else if(W_last)
+        remainder_data  <=  remainder_data -  single_trans_data;//單次傳輸
+    end
+
+    always_ff @(posedge clk or posedge rst) begin
+      if(rst) 
+        single_trans_data  <=  5'd0;
+      else if(S_cur == PREPARE)
+        single_trans_data  <=  (total_data < 32'd16)   ? total_data[4:0] : 5'd16;
+      else if(S_cur == WRESP)
+        single_trans_data  <=  (remainder_data < 32'd16) ? remainder_data[4:0] : 5'd16;   
+    end
+
+    assign  busy_check  = (|remainder_data) ? 1'b1 : 1'b0;
   //------------------------- CNT -------------------------//
     always_ff @(posedge ACLK) begin
       if (!ARESETn) begin
@@ -217,7 +229,12 @@
       end
     end  
     //Data
-    //assign  M_WStrb   =   ;use pointer
+    always_comb begin
+      if(cnt >= single_trans_data)
+        M_WStrb = `AXI_STRB_BITS'hf;
+      else
+        M_WStrb = `AXI_STRB_BITS'h0;      
+    end
     assign  M_WLast   =   ((S_cur == WDATA) && (cnt == M_AWLen))  ? 1'b1  : 1'b0; 
     //assign  M_WData   =   Memory_Din;
     assign  M_WValid  =   (S_cur == WDATA)  ? 1'b1 : 1'b0;
@@ -284,7 +301,4 @@
     //     total_data  <=  DMALEN;
     //   end
     // end
-    
-
-
   endmodule

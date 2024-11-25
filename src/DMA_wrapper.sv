@@ -10,39 +10,39 @@
         input   clk, rst,
       //Slave port
       //READ ADDRESS1
-        input [`AXI_IDS_BITS-1:0] 			ARID_S,
-        input [`AXI_ADDR_BITS-1:0] 			ARADDR_S,
-        input [`AXI_LEN_BITS-1:0] 			ARLEN_S,
-        input [`AXI_SIZE_BITS-1:0] 			ARSIZE_S,
-        input [1:0] 						ARBURST_S,
-        input 								ARVALID_S,
-        output logic 						ARREADY_S,   
+        input [`AXI_IDS_BITS-1:0] 			  ARID_S,
+        input [`AXI_ADDR_BITS-1:0] 			  ARADDR_S,
+        input [`AXI_LEN_BITS-1:0] 			  ARLEN_S,
+        input [`AXI_SIZE_BITS-1:0] 			  ARSIZE_S,
+        input [1:0] 						          ARBURST_S,
+        input 								            ARVALID_S,
+        output logic 						          ARREADY_S,   
       //READ DATA1
         output logic [`AXI_IDS_BITS-1:0] 	RID_S,
-        output logic [`AXI_DATA_BITS-1:0] 	RDATA_S,
-        output logic [1:0] 					RRESP_S,
-        output logic 						RLAST_S,
-        output logic 						RVALID_S,
-        input 								RREADY_S,
+        output logic [`AXI_DATA_BITS-1:0] RDATA_S,
+        output logic [1:0] 					      RRESP_S,
+        output logic 						          RLAST_S,
+        output logic 						          RVALID_S,
+        input 								            RREADY_S,
       //WRITE ADDRESS
-        input [`AXI_IDS_BITS-1:0] 			AWID_S,
-        input [`AXI_ADDR_BITS-1:0] 			AWADDR_S,
-        input [`AXI_LEN_BITS-1:0] 			AWLEN_S,
-        input [`AXI_SIZE_BITS-1:0] 			AWSIZE_S,
-        input [1:0] 						AWBURST_S,
-        input 								AWVALID_S,
-        output logic 						AWREADY_S,     
+        input [`AXI_IDS_BITS-1:0] 			  AWID_S,
+        input [`AXI_ADDR_BITS-1:0] 			  AWADDR_S,
+        input [`AXI_LEN_BITS-1:0] 			  AWLEN_S,
+        input [`AXI_SIZE_BITS-1:0] 			  AWSIZE_S,
+        input [1:0] 						          AWBURST_S,
+        input 								            AWVALID_S,
+        output logic 						          AWREADY_S,     
       //WRITE DATA
-        input [`AXI_DATA_BITS-1:0] 			WDATA_S,
-        input [`AXI_STRB_BITS-1:0] 			WSTRB_S,
-        input 								WLAST_S,
-        input 								WVALID_S,
-        output logic 						WREADY_S, 
+        input [`AXI_DATA_BITS-1:0] 			  WDATA_S,
+        input [`AXI_STRB_BITS-1:0] 			  WSTRB_S,
+        input 								            WLAST_S,
+        input 							            	WVALID_S,
+        output logic 				          		WREADY_S, 
       //WRITE RESPONSE
         output logic [`AXI_IDS_BITS-1:0] 	BID_S,
-        output logic [1:0] 					BRESP_S,
-        output logic 						BVALID_S,
-        input 								BREADY_S,
+        output logic [1:0] 					      BRESP_S,
+        output logic 						          BVALID_S,
+        input 								            BREADY_S,
       //Master port    
       //WRITE ADDRESS
         output logic [`AXI_ID_BITS-1:0]         AWID_M2        ,
@@ -89,72 +89,52 @@
       logic [31:0]  w_DMADST;  
       logic [31:0]  w_DMALEN;      
 
-  //----------------------- DMA -------------------------//
-    //Signal Decoding
-    always_ff @(posedge clk) begin
-        if (rst) begin
-            DMAEN   <=  1'b0;
-            DMASRC  <=  32'd0;
-            DMADST  <=  32'd0;
-            DMALEN  <=  32'd0;
-        end 
-        else if (WVALID_S) begin
-            case (reg_AWAddr[15:0])
-            16'h0100:   DMAEN   <=  WDATA_S[0];
-            16'h0200:   DMASRC  <=  WDATA_S;
-            16'h0300:   DMADST  <=  WDATA_S; 
-            16'h0400:   DMALEN  <=  WDATA_S;
-            endcase           
-        end
-    end
-
+  //---------------------- DMA_slave ------------------------//
     DMA_Slave DMA_Slave_inst(
         .clk(), .rst(),
       //
-        .S_AWID     (),  
-        .S_AWAddr   (),
-        .S_AWLen    (), 
-        .S_AWSize   (),
-        .S_AWBurst  (),
-        .S_AWValid  (),
-        .S_AWReady  (),
+        .S_AWID     (AWID_S),  
+        .S_AWAddr   (AWADDR_S),
+        .S_AWLen    (AWLEN_S), 
+        .S_AWSize   (AWSIZE_S),
+        .S_AWBurst  (AWBURST_S),
+        .S_AWValid  (AWVALID_S),
+        .S_AWReady  (AWREADY_S),
       //
-        .S_WData    (), 
-        .S_WStrb    (), 
-        .S_WLast    (), 
-        .S_WValid   (),
-        .S_WReady   (),
+        .S_WData    (WDATA_S), 
+        .S_WStrb    (WSTRB_S), 
+        .S_WLast    (WLAST_S), 
+        .S_WValid   (WVALID_S),
+        .S_WReady   (WREADY_S),
       //
-        .S_BID      (),
-        .S_BResp    (),
-        .S_BValid   (),
-        .S_BReady   (),
+        .S_BID      (BID_S),
+        .S_BResp    (BRESP_S),
+        .S_BValid   (BVALID_S),
+        .S_BReady   (BREADY_S),
       //
-        .S_ARID     (),  
-        .S_ARAddr   (),
-        .S_ARLen    (), 
-        .S_ARSize   (),
-        .S_ARBurst  (),
-        .S_ARValid  (),
-        .S_ARReady  (),
+        .S_ARID     (ARID_S),  
+        .S_ARAddr   (ARADDR_S),
+        .S_ARLen    (ARLEN_S), 
+        .S_ARSize   (ARSIZE_S),
+        .S_ARBurst  (ARBURST_S),
+        .S_ARValid  (ARVALID_S),
+        .S_ARReady  (ARREADY_S),
       //AXI Rdata          
-        .S_RID      (),   
-        .S_RData    (), 
-        .S_RResp    (), 
-        .S_RLast    (), 
-        .S_RValid   (),
-        .S_RReady   (),
+        .S_RID      (RID_S),   
+        .S_RData    (RDATA_S), 
+        .S_RResp    (RRESP_S), 
+        .S_RLast    (RLAST_S), 
+        .S_RValid   (RVALID_S),
+        .S_RReady   (RREADY_S),
       //to DMA
         .DMAEN      (w_DMAEN ),
         .DMASRC     (w_DMASRC),
         .DMADST     (w_DMADST),
         .DMALEN     (w_DMALEN)
     );
-
-
-    //use Master.sv
-    DMA_Master DMA_Master_inst(
-        .clk(), .rst(),
+  //------------------------- DMA ---------------------------//  
+    DMA DMA_inst(
+        .clk(), .rst(), 
       //  
         .M_AWID     (AWID_M2   ),  
         .M_AWAddr   (AWADDR_M2 ),
@@ -189,13 +169,7 @@
         .M_RLast    (RLAST_M2  ), 
         .M_RValid   (RVALID_M2 ),
         .M_RReady   (RREADY_M2 ),
-
-        .Data_in    (),
-        .Data_out   ()
-    );
-
-    DMA DMA_inst(
-        .clk(), .rst(),        
+       
         .DMAEN      (w_DMAEN ),
         .DMASRC     (w_DMASRC),
         .DMADST     (w_DMADST),
