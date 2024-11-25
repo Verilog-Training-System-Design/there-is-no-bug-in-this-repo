@@ -1079,43 +1079,43 @@ AXI axi(
     .WTO(w_WDT_timeout),
     //need to revise to interface
     //READ ADDRESS1
-    .ARID_S(w_ARID_S4),
-    .ARADDR_S(w_ARADDR_S4),
-    .ARLEN_S(w_ARLEN_S4),
-    .ARSIZE_S(w_ARSIZE_S4),
-    .ARBURST_S(w_ARBURST_S4),
-    .ARVALID_S(w_ARVALID_S4),
-    .ARREADY_S(w_ARREADY_S4),
-    
+    .S_ARID  	(w_ARID_S4),
+    .S_ARAddr		(w_ARADDR_S4),
+    .S_ARLen 		(w_ARLEN_S4),
+    .S_ARSize		(w_ARSIZE_S4),
+    .S_ARBurst		(w_ARBURST_S4),
+    .S_ARValid		(w_ARVALID_S4),
+    .S_ARReady		(w_ARREADY_S4),
+
     //READ DATA1
-    .RID_S(w_RID_S4),
-    .RDATA_S(w_RDATA_S4),
-    .RRESP_S(w_RRESP_S4),
-    .RLAST_S(w_RLAST_S4),
-    .RVALID_S(w_RVALID_S4),
-    .RREADY_S(w_RREADY_S4),
+    .S_RID   	(w_RID_S4),
+    .S_RData 		(w_RDATA_S4),
+    .S_RResp		(w_RRESP_S4),
+    .S_RLast		(w_RLAST_S4),
+    .S_RValid		(w_RVALID_S4),
+    .S_RReady		(w_RREADY_S4),
 
     //WRITE ADDRESS
-    .AWID_S(w_AWID_S4),
-    .AWADDR_S(w_AWADDR_S4),
-    .AWLEN_S(w_AWLEN_S4),
-    .AWSIZE_S(w_AWSIZE_S4),
-    .AWBURST_S(w_AWBURST_S4),
-    .AWVALID_S(w_AWVALID_S4),
-    .AWREADY_S(w_AWREADY_S4),
+    .S_AWID   	(w_AWID_S4),
+    .S_AWAddr 		(w_AWADDR_S4),
+    .S_AWLen  		(w_AWLEN_S4),
+    .S_AWSize 		(w_AWSIZE_S4),
+    .S_AWBurst		(w_AWBURST_S4),
+    .S_AWValid		(w_AWVALID_S4),
+    .S_AWReady		(w_AWREADY_S4),
     
     //WRITE DATA
-    .WDATA_S(w_WDATA_S4),
-    .WSTRB_S(w_WSTRB_S4),
-    .WLAST_S(w_WLAST_S4),
-    .WVALID_S(w_WVALID_S4),
-    .WREADY_S(w_WREADY_S4),
+    .S_WData 		(w_WDATA_S4),
+    .S_WStrb 		(w_WSTRB_S4),
+    .S_WLast 		(w_WLAST_S4),
+    .S_WValid		(w_WVALID_S4),
+    .S_WReady		(w_WREADY_S4),
     
     //WRITE RESPONSE
-    .BID_S(w_BID_S4),
-    .BRESP_S(w_BRESP_S4),
-    .BVALID_S(w_BVALID_S4),
-    .BREADY_S(w_BREADY_S4)    
+    .S_BID	(w_BID_S4),
+    .S_BResp		(w_BRESP_S4),
+    .S_BValid		(w_BVALID_S4),
+    .S_BReady		(w_BREADY_S4)    
   );
 
 endmodule

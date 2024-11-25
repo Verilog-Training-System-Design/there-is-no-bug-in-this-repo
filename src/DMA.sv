@@ -89,8 +89,8 @@
   //   reg_dma_en
 
   //----------------------  FSM ----------------------------//
-      always_ff @(posedge ACLK) begin
-          if(!ARESETn)
+      always_ff @(posedge clk) begin
+          if(!rst)
               S_cur   = INITIAL;
           else
               S_cur   = S_nxt;
@@ -166,16 +166,16 @@
     assign  Wdata_done  = M_WValid  & M_WReady;
     assign  Wresp_done  = M_BValid  & M_BReady;
   //------------------- DMA transfer Signal -------------------//
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(posedge clk or negedge rst) begin
       if(rst) 
         remainder_data  <=  32'd0;
       else if(S_cur == PREPARE)
         remainder_data  <=  total_data;
       else if(W_last)
-        remainder_data  <=  remainder_data -  single_trans_data;//單次傳輸
+        remainder_data  <=  remainder_data -  single_trans_data;
     end
 
-    always_ff @(posedge clk or posedge rst) begin
+    always_ff @(posedge clk or negedge rst) begin
       if(rst) 
         single_trans_data  <=  5'd0;
       else if(S_cur == PREPARE)
@@ -186,8 +186,8 @@
 
     assign  busy_check  = (|remainder_data) ? 1'b1 : 1'b0;
   //------------------------- CNT -------------------------//
-    always_ff @(posedge ACLK) begin
-      if (!ARESETn) begin
+    always_ff @(posedge clk) begin
+      if (!rst) begin
         cnt   <=  `AXI_LEN_BITS'd0;
       end 
       else begin
@@ -215,10 +215,10 @@
     assign  M_AWLen     = `AXI_LEN_BITS;
     assign  M_AWSize    = `AXI_SIZE_BITS'd0;
     assign  M_AWBurst   = `AXI_BURST_INC; 
-    assign  M_AWAddr    = Memory_Addr;
+    assign  M_AWAddr    = slave_dst;
   
-    always_ff @(posedge ACLK) begin
-      if (!ARESETn)
+    always_ff @(posedge clk) begin
+      if (!rst)
         M_AWValid   <=  1'b0;
       else begin
         case (S_cur)
@@ -246,10 +246,10 @@
     assign  M_ARLen     = `AXI_LEN_BITS;
     assign  M_ARSize    = `AXI_SIZE_BITS'd0;
     assign  M_ARBurst   = `AXI_BURST_INC; 
-    assign  M_ARAddr    = Memory_Addr; 
+    assign  M_ARAddr    = slave_src; 
 
-    always_ff @(posedge ACLK) begin
-      if (!ARESETn)
+    always_ff @(posedge clk) begin
+      if (!rst)
         M_ARValid   <=  1'b0;
       else begin
         case (S_cur)
@@ -274,20 +274,20 @@
         end
       end
     //store_load data (axi length = 16) (seq. timing have some problem) 
-      always_ff @(posedge clk or posedge rst) begin
+      always_ff @(posedge clk or negedge rst) begin
         if (rst) begin
-          for(i == 4'd0; i <= 4'd15; i = i + 1)
+          for(i = 4'd0; i <= 4'd15; i = i + 1)
             data_buffer[i] <= 32'd0; 
         end 
         else begin
           if((S_cur == RDATA) && (Rdata_done)) begin
             data_buffer[0]  <=  M_RData;
-            for(i == 4'd0; i <= 4'd14; i = i + 1)
+            for(i = 4'd0; i <= 4'd14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end       
           else if ((S_cur == WDATA) && (Wdata_done)) begin
             M_WData <=  data_buffer[15];
-            for(i == 4'd0; i <= 4'd14; i = i + 1)
+            for(i = 4'd0; i <= 4'd14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end    
         end

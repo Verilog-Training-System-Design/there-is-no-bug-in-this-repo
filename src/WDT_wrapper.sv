@@ -3,7 +3,7 @@
     //INFO        :   clk (system clock)
     //                clk2(WDT clock) 
 //----------------------- Environment -----------------------//
-
+    `include "../include/CPU_define.svh"
 //------------------------- Module -------------------------//
   module WDT_wrapper (
     //WDT Module
@@ -12,48 +12,48 @@
     output    logic   WTO,
     //need to revise to interface
     //READ ADDRESS1
-    input [`AXI_IDS_BITS-1:0] 			ARID_S,
-    input [`AXI_ADDR_BITS-1:0] 			ARADDR_S,
-    input [`AXI_LEN_BITS-1:0] 			ARLEN_S,
-    input [`AXI_SIZE_BITS-1:0] 			ARSIZE_S,
-    input [1:0] 						ARBURST_S,
-    input 								ARVALID_S,
-    output logic 						ARREADY_S,
-    
-    //READ DATA1
-    output logic [`AXI_IDS_BITS-1:0] 	RID_S,
-    output logic [`AXI_DATA_BITS-1:0] 	RDATA_S,
-    output logic [1:0] 					RRESP_S,
-    output logic 						RLAST_S,
-    output logic 						RVALID_S,
-    input 								RREADY_S,
+    input [`AXI_IDS_BITS-1:0] 			  S_ARID,   
+    input [`AXI_ADDR_BITS-1:0] 			  S_ARAddr, 
+    input [`AXI_LEN_BITS-1:0] 			  S_ARLen,  
+    input [`AXI_SIZE_BITS-1:0] 			  S_ARSize, 
+    input [1:0] 						          S_ARBurst,
+    input 								            S_ARValid,
+    output logic 						          S_ARReady,
+
+    //READ DATA1  
+    output logic [`AXI_IDS_BITS-1:0]  S_RID,    
+    output logic [`AXI_DATA_BITS-1:0] S_RData,  
+    output logic [1:0] 					      S_RResp,  
+    output logic 						          S_RLast,  
+    output logic 						          S_RValid, 
+    input 								            S_RReady,
 
     //WRITE ADDRESS
-    input [`AXI_IDS_BITS-1:0] 			AWID_S,
-    input [`AXI_ADDR_BITS-1:0] 			AWADDR_S,
-    input [`AXI_LEN_BITS-1:0] 			AWLEN_S,
-    input [`AXI_SIZE_BITS-1:0] 			AWSIZE_S,
-    input [1:0] 						AWBURST_S,
-    input 								AWVALID_S,
-    output logic 						AWREADY_S,
+    input [`AXI_IDS_BITS-1:0] 			  S_AWID,   
+    input [`AXI_ADDR_BITS-1:0] 			  S_AWAddr, 
+    input [`AXI_LEN_BITS-1:0] 			  S_AWLen,  
+    input [`AXI_SIZE_BITS-1:0] 			  S_AWSize, 
+    input [1:0] 						          S_AWBurst,
+    input 								            S_AWValid,
+    output logic 						          S_AWReady,
     
     //WRITE DATA
-    input [`AXI_DATA_BITS-1:0] 			WDATA_S,
-    input [`AXI_STRB_BITS-1:0] 			WSTRB_S,
-    input 								WLAST_S,
-    input 								WVALID_S,
-    output logic 						WREADY_S,
+    input [`AXI_DATA_BITS-1:0] 			  S_WData,  
+    input [`AXI_STRB_BITS-1:0] 			  S_WStrb,  
+    input 								            S_WLast,  
+    input 								            S_WValid, 
+    output logic 						          S_WReady,
     
     //WRITE RESPONSE
-    output logic [`AXI_IDS_BITS-1:0] 	BID_S,
-    output logic [1:0] 					BRESP_S,
-    output logic 						BVALID_S,
-    input 								BREADY_S    
+    output logic [`AXI_IDS_BITS-1:0]  S_BID,
+    output logic [1:0] 					      S_BResp,
+    output logic 						          S_BValid,
+    input 								            S_BReady
   );
 
   //----------------------- Parameter -----------------------//
     //FSM
-      logic     [1:0] S_nxt;
+      logic     [1:0] S_cur, S_nxt;
       parameter [1:0]   SADDR     = 2'd0,
                         RDATA     = 2'd1,
                         WDATA     = 2'd2,
@@ -75,8 +75,8 @@
 
   //----------------------- Main Code -----------------------//
     //------------------------- FSM -------------------------//
-      always_ff @(posedge ACLK ) begin
-          if(!ARESETn)   S_cur <=  SADDR;
+      always_ff @(posedge clk or negedge rst ) begin
+          if(!rst)   S_cur <=  SADDR;
           else          S_cur <=  S_nxt;
       end
 
@@ -111,8 +111,8 @@
       assign  Wdata_done  = S_WValid  & S_WReady;
       assign  Wresp_done  = S_BValid  & S_BReady;
     //------------------------- CNT -------------------------//
-        always_ff @(posedge ACLK) begin
-          if (!ARESETn) begin
+        always_ff @(posedge clk or negedge rst) begin
+          if (!rst) begin
             cnt   <=  `AXI_LEN_BITS'd0;
           end 
           else begin
@@ -130,24 +130,24 @@
 
     //----------------- W-channel (priority) -----------------//
       //Addr
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn)   reg_AWID     <=  `MEM_ADDR_LEN'd0;
+        always_ff @(posedge clk or negedge rst) begin
+          if(!rst)   reg_AWID     <=  `MEM_ADDR_LEN'd0;
           else           reg_AWID     <=  (Waddr_done)  ? S_AWID : reg_AWID;
         end   
 
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
+        always_ff @(posedge clk or negedge rst) begin
+          if(!rst)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
           else           reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:2] : reg_AWAddr;
         end   
         
-        always_ff @(posedge ACLK ) begin
-          if(!ARESETn)   reg_AWLen   <=  `AXI_LEN_BITS'd0;
+        always_ff @(posedge clk or negedge rst ) begin
+          if(!rst)   reg_AWLen   <=  `AXI_LEN_BITS'd0;
           else           reg_AWLen   <=  (Waddr_done)  ? S_AWLen : reg_AWLen;
         end
         //awsize
         //awburst
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn) begin
+        always_ff @(posedge clk or negedge rst) begin
+          if(!rst) begin
             S_AWReady    <=   1'b0;
           end          
           else  begin
@@ -169,8 +169,8 @@
         assign  S_BValid  = (S_cur == WRESP)  ? 1'b1  : 1'b0;  
     //---------------------- R-channel ----------------------// 
       //Addr
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn) begin
+        always_ff @(posedge clk or negedge rst) begin
+          if(!rst) begin
             reg_ARID      <=  `AXI_IDS_BITS'd0;
             reg_ARAddr    <=  `MEM_ADDR_LEN'd0;
             reg_ARLen     <=  `AXI_LEN_BITS'd0;
@@ -183,8 +183,8 @@
         end
         //Rsize
         //Rburst
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn) begin
+        always_ff @(posedge clk or negedge rst) begin
+          if(!rst) begin
             S_ARReady    <=   1'b0;
           end          
           else  begin
@@ -198,23 +198,23 @@
       //data
         assign  S_RID     = reg_ARID;
         //Data problem (need to solve)
-        assign  S_RData   = DO;
+        assign  S_RData   = 32'd0;
 
         assign  S_RResp   = `AXI_RESP_OKAY;
         assign  S_RLast   = (cnt == reg_ARLen)  ? 1'b1  : 1'b0;    
         assign  S_RValid  = (S_cur == RDATA)    ? 1'b1  : 1'b0;   
     //------------------------- WDT -------------------------//   
-        always_ff @(posedge clk) begin
-            if (rst) begin
+        always_ff @(posedge clk or negedge rst) begin
+            if (!rst) begin
                 WDEN    <=  1'b0;
                 WDLIVE  <=  1'b0;
                 WTOCNT  <=  32'd0;
             end 
-            else if (WVALID_S) begin
+            else if (S_WValid) begin
                 case (reg_AWAddr[15:0])
-                16'h0100:   WDEN    <=  WDATA_S[0];
-                16'h0200:   WDLIVE  <=  WDATA_S[0];
-                16'h0300:   WTOCNT  <=  WDATA_S;
+                16'h0100:   WDEN    <=  S_WData[0];
+                16'h0200:   WDLIVE  <=  S_WData[0];
+                16'h0300:   WTOCNT  <=  S_WData;
                 endcase           
             end
         end

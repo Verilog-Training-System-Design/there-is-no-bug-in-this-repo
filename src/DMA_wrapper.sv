@@ -2,6 +2,7 @@
     //Module Name :　DMA Wrapper
     //INFO        :  
 //----------------------- Environment -----------------------//
+    `include "../include/CPU_define.svh"
     `include "DMA_slave.sv"
     // `include "DMA_master.sv"
     `include "DMA.sv"
