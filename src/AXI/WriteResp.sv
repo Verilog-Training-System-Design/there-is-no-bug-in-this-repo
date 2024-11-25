@@ -232,20 +232,22 @@ end
 always_comb begin
     case (master)
         4'b0010 : begin
-            BID = BID_M1;
-            BRESP = BRESP_M1;
+            BID_M1 = BID;
+            BRESP_M1 = BRESP;
             BREADY = BREADY_M1;
             BVALID_M1 = BVALID;
         end
         4'b0100 : begin
-            BID = BID_M2;
-            BRESP = BRESP_M2;
+            BID_M2 = BID;
+            BRESP_M2 = BRESP;
             BREADY = BREADY_M2;
             BVALID_M2 = BVALID;
         end
         default : begin
-            BID = 4'b0;
-            BRESP = 2'b0;
+            BID_M1 = 4'b0;
+            BID_M2 = 4'b0;
+            BRESP_M1 = 2'b0;
+            BRESP_M2 = 2'b0;
             BREADY = 1'b1;
             BVALID_M1 = 1'b0;
             BVALID_M2 = 1'b0;

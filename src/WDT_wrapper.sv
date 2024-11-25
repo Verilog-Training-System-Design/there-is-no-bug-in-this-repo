@@ -4,6 +4,7 @@
     //                clk2(WDT clock) 
 //----------------------- Environment -----------------------//
     `include "../include/CPU_define.svh"
+    `include "WDT.sv"
 //------------------------- Module -------------------------//
   module WDT_wrapper (
     //WDT Module

@@ -1,0 +1,35 @@
+//
+// File created by:  irun
+// Do not modify this file
+//
+-XLMODE
+./INCA_libs/irun.lnx8664.15.20.nc
+-RUNMODE
+/home/WangYanTing/there-is-no-bug-in-this-repo/./sim/top_tb.sv
+-INCDIR
+/home/WangYanTing/there-is-no-bug-in-this-repo/./src
+-INCDIR
+/home/WangYanTing/there-is-no-bug-in-this-repo/./src/AXI
+-INCDIR
+/home/WangYanTing/there-is-no-bug-in-this-repo/./include
+-INCDIR
+/home/WangYanTing/there-is-no-bug-in-this-repo/./sim
+-DEFINE
+prog0
+-DEFINE
+FSDB
+-DEFINE
+CYCLE=5.0
+-DEFINE
+CYCLE2=50.0
+-DEFINE
+MAX=30000000
+-CDSLIB
+./INCA_libs/irun.lnx8664.15.20.nc/cdsrun.lib
+-HDLVAR
+./INCA_libs/irun.lnx8664.15.20.nc/hdlrun.var
+-MESSAGES
+-UPDATE
+-XLLIBSTORE
+./INCA_libs/irun.lnx8664.15.20.nc/xllibs
+-ALLOWUNBOUND

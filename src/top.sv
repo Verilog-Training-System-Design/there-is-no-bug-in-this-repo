@@ -4,6 +4,7 @@
 `include "DRAM_wrapper.sv"
 `include "DMA_wrapper.sv"
 `include "WDT_wrapper.sv"
+`include "ROM_wrapper.sv"
 
 module top (
     input clk,
@@ -18,6 +19,7 @@ module top (
     output logic [3:0] DRAM_WEn,
     output logic DRAM_RASn,
     output logic DRAM_CASn,
+	output logic DRAM_CSn,
     output logic [10:0] DRAM_A,
     output logic [31:0] DRAM_D,
     input DRAM_valid,
@@ -405,61 +407,61 @@ CPU_wrapper CPU(
     // output logic                            BREADY_M0      ,
 
     //READ ADDRESS0
-	.ARID_M0(w_ARID_M1),
-	.ARADDR_M0(w_ARADDR_M1),
-	.ARLEN_M0(w_ARLEN_M1),
-	.ARSIZE_M0(w_ARSIZE_M1),
-	.ARBURST_M0(w_ARBURST_M1),
-	.ARVALID_M0(w_ARVALID_M1),
-	.ARREADY_M0(w_ARREADY_M1),
+	.ARID_M0(w_ARID_M0),
+	.ARADDR_M0(w_ARADDR_M0),
+	.ARLEN_M0(w_ARLEN_M0),
+	.ARSIZE_M0(w_ARSIZE_M0),
+	.ARBURST_M0(w_ARBURST_M0),
+	.ARVALID_M0(w_ARVALID_M0),
+	.ARREADY_M0(w_ARREADY_M0),
 
     //READ DATA0
-	.RID_M0(w_RID_M1),
-	.RDATA_M0(w_RDATA_M1),
-	.RRESP_M0(w_RRESP_M1),
-	.RLAST_M0(w_RLAST_M1),
-	.RVALID_M0(w_RVALID_M1),
-	.RREADY_M0(w_RREADY_M1),
+	.RID_M0(w_RID_M0),
+	.RDATA_M0(w_RDATA_M0),
+	.RRESP_M0(w_RRESP_M0),
+	.RLAST_M0(w_RLAST_M0),
+	.RVALID_M0(w_RVALID_M0),
+	.RREADY_M0(w_RREADY_M0),
 
 
     //WRITE ADDRESS
-	.AWID_M1(w_AWID_M2),
-	.AWADDR_M1(w_AWADDR_M2),
-	.AWLEN_M1(w_AWLEN_M2),
-	.AWSIZE_M1(w_AWSIZE_M2),
-	.AWBURST_M1(w_AWBURST_M2),
-	.AWVALID_M1(w_AWVALID_M2),
-	.AWREADY_M1(w_AWREADY_M2),
+	.AWID_M1(w_AWID_M1),
+	.AWADDR_M1(w_AWADDR_M1),
+	.AWLEN_M1(w_AWLEN_M1),
+	.AWSIZE_M1(w_AWSIZE_M1),
+	.AWBURST_M1(w_AWBURST_M1),
+	.AWVALID_M1(w_AWVALID_M1),
+	.AWREADY_M1(w_AWREADY_M1),
 
     //WRITE DATA
-	.WDATA_M1(w_WDATA_M2),
-	.WSTRB_M1(w_WSTRB_M2),
-	.WLAST_M1(w_WLAST_M2),
-	.WVALID_M1(w_WVALID_M2),
-	.WREADY_M1(w_WREADY_M2),
+	.WDATA_M1(w_WDATA_M1),
+	.WSTRB_M1(w_WSTRB_M1),
+	.WLAST_M1(w_WLAST_M1),
+	.WVALID_M1(w_WVALID_M1),
+	.WREADY_M1(w_WREADY_M1),
 
     //WRITE RESPONSE
-	.BID_M1(w_BID_M2),
-	.BRESP_M1(w_BRESP_M2),
-	.BVALID_M1(w_BVALID_M2),
-	.BREADY_M1(w_BREADY_M2),
+	.BID_M1(w_BID_M1),
+	.BRESP_M1(w_BRESP_M1),
+	.BVALID_M1(w_BVALID_M1),
+	.BREADY_M1(w_BREADY_M1),
 
     //READ ADDRESS1
-	.ARID_M1(w_ARID_M2),
-	.ARADDR_M1(w_ARADDR_M2),
-	.ARLEN_M1(w_ARLEN_M2),
-	.ARSIZE_M1(w_ARSIZE_M2),
-	.ARBURST_M1(w_ARBURST_M2),
-	.ARVALID_M1(w_ARVALID_M2),
-	.ARREADY_M1(w_ARREADY_M2),
+	.ARID_M1(w_ARID_M1),
+	.ARADDR_M1(w_ARADDR_M1),
+	.ARLEN_M1(w_ARLEN_M1),
+	.ARSIZE_M1(w_ARSIZE_M1),
+	.ARBURST_M1(w_ARBURST_M1),
+	.ARVALID_M1(w_ARVALID_M1),
+	.ARREADY_M1(w_ARREADY_M1),
 
     //READ DATA1
-	.RID_M1(w_RID_M2),
-	.RDATA_M1(w_RDATA_M2),
-	.RRESP_M1(w_RRESP_M2),
-	.RLAST_M1(w_RLAST_M2),
-	.RVALID_M1(w_RVALID_M2),
-	.RREADY_M1(w_RREADY_M2),
+	.RID_M1(w_RID_M1),
+	.RDATA_M1(w_RDATA_M1),
+	.RRESP_M1(w_RRESP_M1),
+	.RLAST_M1(w_RLAST_M1),
+	.RVALID_M1(w_RVALID_M1),
+	.RREADY_M1(w_RREADY_M1),
 	.DMA_interrupt(w_DMA_interrupt),
 	.WDT_timeout(w_WDT_timeout)
 );

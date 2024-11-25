@@ -1,0 +1,155 @@
+ncsim(64) 15.20-s084
+Linux 5.15.0-113-generic #123~20.04.1-Ubuntu SMP Wed Jun 12 17:33:13 UTC 2024 x86_64
+CPU cores: 16
+Limit information:
+======================================
+cputime			unlimited
+filesize		unlimited
+datasize		unlimited
+stacksize		8192 kbytes
+coredumpsize	0 kbytes
+memoryuse		unlimited
+vmemoryuse		unlimited
+descriptors		1048576
+memorylocked	65536 kbytes
+maxproc			184570
+======================================
+(Special)Runtime environment variables:
+
+Runtime environment variables:
+PRIMETIME=/usr/cad/synopsys/primetime/cur
+SHELL=/bin/zsh
+LSCOLORS=Gxfxcxdxbxegedabagacad
+LESS=-R
+SYNOPSYS=/home/nfs_cad/synopsys/icc/cur
+MTI_VCO_MODE=64
+MAKE_TERMOUT=/dev/pts/3
+LC_ADDRESS=lzh_TW
+LC_NAME=lzh_TW
+SYN_MAN_DIR=/home/nfs_cad/synopsys/synthesis/cur/doc/syn/man
+LC_MONETARY=lzh_TW
+maxpend=1
+MGC_LOCATION_MAP=NO_MAP
+PWD=/home/WangYanTing/there-is-no-bug-in-this-repo/build
+LOGNAME=WangYanTing
+XDG_SESSION_TYPE=tty
+MANPATH=:/home/nfs_cad/synopsys/synthesis/cur/doc/syn/man
+MAKEOVERRIDES=${-*-command-variables-*-}
+MGC_TMPDIR=/tmp
+OA_HOME=/usr/cad/cadence/INNOVUS/cur/oa
+MOTD_SHOWN=pam
+ENCOUNTER=/usr/cad/cadence/INNOVUS/cur/tools/fe
+HOME=/home/WangYanTing
+SHLIB_PATH=/home/nfs_cad/synopsys/verdi/cur/share/PLI/IUS/linux64:
+LANG=en_US.UTF-8
+LC_PAPER=lzh_TW
+LS_COLORS=rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:
+SYNTHESIS=/home/nfs_cad/synopsys/synthesis/cur
+SSH_CONNECTION=192.168.102.22 59787 140.116.245.124 22
+MFLAGS=
+FSDB=1
+LESSCLOSE=/usr/bin/lesspipe %s %s
+MAKEFLAGS= -- FSDB=1
+XDG_SESSION_CLASS=user
+TERM=xterm
+LC_IDENTIFICATION=lzh_TW
+ZSH=/home/WangYanTing/.oh-my-zsh
+LESSOPEN=| /usr/bin/lesspipe %s
+USER=WangYanTing
+MAKE_TERMERR=/dev/pts/3
+DISPLAY=localhost:11.0
+SHLVL=2
+PAGER=less
+MAKELEVEL=1
+LC_TELEPHONE=lzh_TW
+LC_MEASUREMENT=lzh_TW
+XDG_SESSION_ID=10027
+LM_LICENSE_FILE=1717@lstc:1717@lstn:1717@lshc:26585@lshc:26585@lstc:26585@lstn:5280@lstn:5280@lshc:5280@lstc
+LD_LIBRARY_PATH=/usr/cad/cadence/INNOVUS/cur/tools/lib:/home/nfs_cad/synopsys/verdi/cur/share/PLI/IUS/linux64:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/lib:/usr/cad/cadence/INCISIV/cur/tools/lib/64bit:/usr/cad/cadence/INCISIV/cur/tools/lib:
+XDG_RUNTIME_DIR=/run/user/1000104
+SSH_CLIENT=192.168.102.22 59787 22
+LC_TIME=lzh_TW
+XDG_DATA_DIRS=/usr/local/share:/usr/share:/var/lib/snapd/desktop
+MGC_HOME=/home/nfs_cad/mentor/calibre/cur
+PATH=/usr/cad/cadence/INCISIV/cur/tools/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/bin/64bit:/usr/cad/cadence/INCISIV/cur/tools/bin/64bit:/opt/RISCV/bin:/home/nfs_cad/mentor/calibre/cur/bin:/home/nfs_cad/synopsys/laker/cur/bin:/usr/cad/cadence/JASPER/cur/bin:/usr/cad/cadence/INNOVUS/cur/tools/celtic/bin:/usr/cad/cadence/INNOVUS/cur/tools/plato/bin:/usr/cad/cadence/INNOVUS/cur/tools/dfII:/usr/cad/cadence/INNOVUS/cur/tools/bin:/usr/cad/cadence/INNOVUS/cur/tools/tlfUtil/bin:/home/nfs_cad/synopsys/icc/cur/amd64/syn/bin:/home/nfs_cad/synopsys/synthesis/cur/amd64/syn/bin:/home/nfs_cad/synopsys/cosmos_scope/cur/ai_bin:/usr/cad/synopsys/primetime/cur/linux64/syn/bin:/home/nfs_cad/synopsys/verdi/cur/bin:/home/nfs_cad/synopsys/verdi/cur/nLint/bin:/usr/cad/cadence/INCISIV/cur/tools/dfII/bin:/usr/cad/cadence/INCISIV/cur/tools/vtools/vfault/bin:/usr/cad/cadence/INCISIV/cur/tools/bin:/home/nfs_cad/mentor/modelsim/10.2/modeltech/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000104/bus
+SSH_TTY=/dev/pts/3
+vip_dir=/home/WangYanTing/there-is-no-bug-in-this-repo/vip
+LC_NUMERIC=lzh_TW
+OLDPWD=/home/WangYanTing/there-is-no-bug-in-this-repo
+_=/usr/cad/cadence/INCISIV/cur/tools/bin/irun
+_IRUNROOT_=/usr/cad/cadence/INCISIV/cur/tools
+CDS_ARCH=lnx86
+NCRUNMODE=irun:./INCA_libs/irun.lnx8664.15.20.nc
+IRUNBATCH=FALSE
+IMPERAS_PORT_FILE=.vsp_ovp_gdb_port
+TCL_LIBRARY=/usr/cad/cadence/INCISIV/cur/tools/inca/files/tcl/library
+Runtime command line arguments:
+argv[0]=irun
+argv[1]=/home/WangYanTing/there-is-no-bug-in-this-repo/./sim/top_tb.sv
+argv[2]=+incdir+/home/WangYanTing/there-is-no-bug-in-this-repo/./src+/home/WangYanTing/there-is-no-bug-in-this-repo/./src/AXI+/home/WangYanTing/there-is-no-bug-in-this-repo/./include+/home/WangYanTing/there-is-no-bug-in-this-repo/./sim
+argv[3]=+define+prog0+FSDB
+argv[4]=+define+CYCLE=5.0
+argv[5]=+define+CYCLE2=50.0
+argv[6]=+define+MAX=30000000
+argv[7]=+access+r
+argv[8]=+nc64bit
+argv[9]=+prog_path=/home/WangYanTing/there-is-no-bug-in-this-repo/./sim/prog0
+argv[10]=+rdcycle=1
+argv[11]=+notimingcheck
+99 profile - 100
+          CPU/Mem usage: 0.080 sys,  0.060 user,  112.55M sys,  0.00M vm
+100 VC callback profile - scalar:0 vector:0
+101 Mon Nov 25 22:41:24 2024
+102 pliAppInit
+103 FSDB_GATE is disabled.
+104 Enable Parallel Dumping.
+105 pliAppMiscSet: New Sim Round
+106 pliEntryInit
+107 LIBSSCORE=found /home/nfs_cad/synopsys/verdi/cur/share/PLI/IUS/linux64/libsscore_ius152.so through $LD_LIBRARY_PATH setting.
+108 argv[0]: top.fsdb
+109 FSDB Dumper for IUS, Release Verdi_Q-2020.03, Linux x86_64/64bit, 02/09/2020
+110 (C) 1996 - 2020 by Synopsys, Inc.
+111 sps_call_fsdbDumpfile at 0 : /home/WangYanTing/there-is-no-bug-in-this-repo/sim/top_tb.sv(167)
+112 argv[0]: top.fsdb
+113 *Verdi* : Create FSDB file 'top.fsdb'
+114 sps_call_fsdbDumpvars at 0 : /home/WangYanTing/there-is-no-bug-in-this-repo/sim/top_tb.sv(168)
+115 *Verdi* : Begin traversing the scopes, layer (0).
+116 Cell instance `top_tb.TOP.IM1.i_SRAM'.
+117 *Verdi* : End of traversing.
+118 fsdbDumpvars traverse var: profile - 
+          CPU/Mem usage: 0.090 sys,  0.120 user,  203.03M sys,  0.00M vm
+                   incr: 0.010 sys,  0.050 user,  7.29M sys,  0.00M vm
+                   accu: 0.010 sys,  0.050 user,  7.29M sys,  0.00M vm
+              accu incr: 0.010 sys,  0.050 user,  7.29M sys,  0.00M vm
+
+          Count usage: 2637 var,  2155 idcode,  2155 callback
+                 incr: 2637 var,  2155 idcode,  2155 callback
+                 accu: 2637 var,  2155 idcode,  2155 callback
+            accu incr: 2637 var,  2155 idcode,  2155 callback
+119 VC callback profile - scalar:0 vector:0
+120 Mon Nov 25 22:41:25 2024
+121 fsdbDumpvars: profile - 
+          CPU/Mem usage: 0.090 sys,  0.120 user,  204.08M sys,  0.00M vm
+                   incr: 0.000 sys,  0.000 user,  1.05M sys,  0.00M vm
+                   accu: 0.010 sys,  0.050 user,  8.34M sys,  0.00M vm
+              accu incr: 0.000 sys,  0.000 user,  1.05M sys,  0.00M vm
+
+          Count usage: 2637 var,  2155 idcode,  2155 callback
+                 incr: 0 var,  0 idcode,  0 callback
+                 accu: 2637 var,  2155 idcode,  2155 callback
+            accu incr: 0 var,  0 idcode,  0 callback
+122 VC callback profile - scalar:1180 vector:975
+123 Mon Nov 25 22:41:25 2024
+124 End of simulation at 7727857501
+125 VC callback profile - scalar:97992048 vector:165970798
+126 Mon Nov 25 22:42:56 2024
+127 Begin FSDB profile info:
+128 FSDB Writer : bc1(97992048) bcn(165970798) mtf/stf(0/34)
+FSDB Writer elapsed time : flush(20.908400) io wait(0.000000) theadpool wait(0.000000)
+FSDB Writer cpu time : MT Compression : 0
+129 End FSDB profile info
+130 Parallel profile    -  Flush:3 Expand:0 ProduceWait:0 ConsumerWait:1149 BlockUsed:1852
+131                        ProduceTime:88.969421580 ConsumerTime:53.870857556 Buffer:64MB
+132 SimExit
+133 Sim process exit

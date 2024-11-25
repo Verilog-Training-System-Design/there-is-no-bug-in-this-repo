@@ -86,7 +86,7 @@ logic RVALID_reg;
 logic ceb;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
-assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;
+// assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;
 assign RDATA_S = DO;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen)); 

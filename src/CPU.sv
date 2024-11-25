@@ -16,7 +16,7 @@
 `include "MEMWB_reg.sv"
 `include "Regfile_f.sv"
 `include "ALU_f.sv"
-
+`include "CSR.sv"
 
 module CPU (
     input clk,
@@ -483,7 +483,7 @@ CSR csr(
 .CSR_type(exe_csr_type),
     
 .rs1_data(exe_rd_reg1_data),
-.EXE_immediate(exe_imm),
+.imm(exe_imm),
 
 .csr_addr(exe_csr_addr),
 .CSR_write(exe_csr_write),

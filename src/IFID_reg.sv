@@ -9,6 +9,8 @@ module IFID_reg (
     input dm_stall,
     input CSR_stall,
     input CSR_reset,
+    input CSR_interrupt,
+    input CSR_ret,
 
     output logic [31:0] ID_pc_out,
     output  [4:0] read_reg1,

@@ -50,7 +50,7 @@
 
   //----------------------- Parameter -----------------------//
     //FSM
-      logic     [1:0] S_nxt;
+      logic     [1:0] S_cur, S_nxt;
       parameter [1:0]   SADDR     = 2'd0,
                         RDATA     = 2'd1,
                         WDATA     = 2'd2,
@@ -199,14 +199,14 @@
         assign  S_RLast   = (cnt == reg_ARLen)  ? 1'b1  : 1'b0;    
         assign  S_RValid  = (S_cur == RDATA)    ? 1'b1  : 1'b0;          
     //-------------------- for ROM --------------------------//   
-        always_comb begin
-          case (S_cur)
-            SADDR:    WEB   = 1'b1;
-            RDATA:    WEB   = 1'b1;
-            WDATA:    WEB   = 1'b0;
-            default:  WEB   = 1'b1;
-          endcase
-        end
+        // always_comb begin
+        //   case (S_cur)
+        //     SADDR:    WEB   = 1'b1;
+        //     RDATA:    WEB   = 1'b1;
+        //     WDATA:    WEB   = 1'b0;
+        //     default:  WEB   = 1'b1;
+        //   endcase
+        // end
         //ROM --> OE
         always_comb begin
             case (S_cur)
@@ -218,15 +218,15 @@
         //ROM --> CS
         assign  ROM_enable  =   (S_cur == SADDR) ? (S_ARValid | S_AWValid) : 1'b0;
         //ROM --> A
-        assign  Rom_address =    
+        // assign  Rom_address =    
 
         always_comb begin
           case (S_cur)
-            SADDR:  A = (Waddr_done)  ? S_AWAddr[15:2]  :  S_ARAddr[15:2];
+            SADDR:  Rom_address = (Waddr_done)  ? S_AWAddr[15:2]  :  S_ARAddr[15:2];
             //offset for burst incr. type
-            RDATA:  A = reg_ARAddr + incr; 
-            WDATA:  A = reg_AWAddr;
-            default: A = 14'd0;
+            RDATA:  Rom_address = reg_ARAddr + incr; 
+            WDATA:  Rom_address = reg_AWAddr;
+            default: Rom_address = 14'd0;
           endcase
         end
     

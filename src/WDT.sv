@@ -35,12 +35,14 @@
 //----------- CDC Problem for clk1 input signal ------------//
   //WDLIVE/Enable- clock1 flop
     always_ff @(posedge clk) begin
-      if(rst)
+      if(rst)begin
         reg_clk1_WDLIVE <=  1'b0;
         reg_clk1_WDEN   <=  1'b0;
-      else
+      end
+      else begin
         reg_clk1_WDLIVE <=  WDLIVE;
-        reg_clk1_WDEN   <=  WDEN;        
+        reg_clk1_WDEN   <=  WDEN;  
+      end      
     end
   //WDLIVE/Enable- clock2 flop (WDLIVE 是否需要每次都變化都同步)
     always_ff @(posedge clk2) begin
@@ -109,7 +111,7 @@
       if (rst2)
         WDT_CNT <=  32'd0;
       else begin
-        case (s_cur)
+        case (S_cur)
           INITIAL: WDT_CNT <=  reg_clk2_WTOCNT_2;
           CNTDOWN: WDT_CNT <=  WTOCNT - 32'd1;
           RSTCNT:  WDT_CNT <=  32'd0;
@@ -123,7 +125,7 @@
       if (rst2) begin
         WTO   <=  1'b0;  
       end 
-      else if (S_cur == WDT_OUT)
+      else if (S_cur == TIMEOUT)
         WTO   <=  1'b1;
       else
         WTO   <=  1'b0;

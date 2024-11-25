@@ -91,7 +91,7 @@
       logic [31:0]  w_DMALEN;      
 
   //---------------------- DMA_slave ------------------------//
-    DMA_Slave DMA_Slave_inst(
+    DMA_slave DMA_Slave_inst(
         .clk(clk), .rst(rst),
       //
         .S_AWID     (AWID_S),  

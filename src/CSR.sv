@@ -7,14 +7,14 @@ module CSR (
     input [1:0] CSR_type,
     
     input [31:0] rs1_data,
-    input [31:0] EXE_immediate,
+    input [31:0] imm,
 
     input [11:0] csr_addr,
     input CSR_write,
     input im_stall,
     input dm_stall,
 
-    input [31:0] pc;
+    input [31:0] pc,
     
     input timeout,                  //WDT timeout       timer interrupt
     input interrupt,                //DMA interrupt     external interrupt
@@ -41,7 +41,7 @@ logic [31:0] mstatus, mepc, mip, mie;
 assign CSR_reset = timeout;         //WDT reset
 assign CSR_retpc = mepc;
 assign CSR_ISR_pc = 32'h00010000;
-assign CSR_ret = ((funct3 == 3'd0) & (funct7 == 7'h0011000) & (CSR_write)) ? 1'b1 : 1'b0;
+assign CSR_ret = ((funct3 == 3'd0) & (funct7 == 7'b0011000) & (CSR_write)) ? 1'b1 : 1'b0;
 assign CSR_interrupt = interrupt & mstatus[MIE] & mie[MEIE] & mip[MEIP];        //there is trap, mstatus there is a trap in the cpu, mie there is a trap other trap can't cause trap, mip there is a trap waiting
 assign mip[MTIP] = (mie[MTIE]) ? timeout : 1'b0;
 assign mip[MEIP] = (mie[MEIE]) ? interrupt : 1'b0;
@@ -67,10 +67,10 @@ end
 //setting each register (mstatus, mie, mepc)
 always_ff @( posedge clk or negedge rst ) begin 
     if(~rst)begin
-        {mstatus, mepc, mie, mip} <= 128'd0;
+        {mstatus, mepc, mie} <= 96'd0;
     end
     else if((funct3 == 3'd0) & CSR_write)begin
-        if(funct7 == 7'h0011000)begin           //mret      interrupt return
+        if(funct7 == 7'b0011000)begin           //mret      interrupt return
             mstatus[MIE] <= mstatus[MPIE];
             mstatus[MPIE] <= 1'b1;
             mstatus[MPP+:2] <= 2'b11;
@@ -92,7 +92,7 @@ always_ff @( posedge clk or negedge rst ) begin
     end
     else begin              //CSR instructions
         if(~im_stall & ~dm_stall & CSR_write)begin
-            case (csr_addr)mstatus <= mstatus; 
+            case (csr_addr)
                 12'h300 : begin                         //mstatus
                     case (funct3)
                         3'b001 : begin          //CSRRW
