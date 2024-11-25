@@ -143,13 +143,14 @@ always_ff @( posedge clk or negedge rst ) begin
                 counter <= `AXI_LEN_BITS'b0;
             end
             else begin
+				ADDR_reg <= ADDR_reg + 32'd4;
                 counter <= counter + `AXI_LEN_BITS'b1;
             end
         end
     end
     else if(stage == write_data)begin
         if(WVALID_S & WREADY_S)begin
-            ADDR_reg <= ADDR_reg + 32'b1;
+            ADDR_reg <= ADDR_reg + 32'd4;
         end
     end
 end
@@ -239,28 +240,28 @@ always_comb begin
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
-			DRAM_A = 
+			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end
 		read_data : begin
 			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
-			DRAM_A = 
+			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end
 		write_data : begin
 			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = (delay == 3'd4) ? WSTRB_S : 4'hf;
 			DRAM_D = WDATA_S;
-			DRAM_A = 
+			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end 
 		precharge : begin
 			DRAM_CASn = 1'd1;
 			DRAM_RASn = (delay == 3'd4) ? 1'd0 : 1'd1;
 			DRAM_WEn = 4'h0;
 			DRAM_D = 32'd0;
-			DRAM_A = 
+			DRAM_A = 11'd0;
 		end
 	endcase
 end

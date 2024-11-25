@@ -82,9 +82,10 @@ module CPU_wrapper (
     input [1:0]                             RRESP_M1       ,
     input                                   RLAST_M1       ,
     input                                   RVALID_M1      ,
-    output logic                            RREADY_M1
+    output logic                            RREADY_M1      ,
 
-    input                                   DMA_interrupt
+    input                                   DMA_interrupt  ,
+    input                                   WDT_timeout
 );
 
 //WRITE ADDRESS
@@ -144,7 +145,9 @@ CPU cpu(
 .DM_write(w_write),
 //stall
 .IM_stall(w_im_stall),
-.DM_stall(w_dm_stall)
+.DM_stall(w_dm_stall),
+.DMA_interrupt(DMA_interrupt),
+.WDT_timeout(WDT_timeout)
 );
 
 // assign w_write = (w_write_type == 4'hf) ? 1'b0 : 1'b1;

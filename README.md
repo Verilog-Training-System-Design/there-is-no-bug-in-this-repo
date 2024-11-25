@@ -4,21 +4,21 @@
 
 ### src
 
-- [ ] CSR related
+- [x] CSR related
   - [x] changing csr registers when calling CSR instruction
-  - [ ] changing csr registers when return from interrupt
+  - [x] 11/25 changing csr registers when return from interrupt
   - [x] changing csr registers when interrupt is taken
   - [x] CSR output data
   - [x] 11/21 CPU action when interrupt happen
   - [x] 11/21 CPU action when interrupt return
   - [x] 11/21 trap in the cpu
   - [x] 11/21 connect each line in cpu
-- [ ] DRAM_wrapper
+- [x] DRAM_wrapper
   - [x] 11/23 FSM stage design
   - [x] 11/24 what to do in each stage
   - [x] 11/24 delay clock
-  - [ ] input address assign
-  - [ ] when reading/writing continous data how address increase
+  - [x] 11/25 input address assign
+  - [x] 11/25 when reading/writing continous data how address increase
 - [ ] ROM_wrapper
 - [ ] WDT_wrapper
   - [x] Input signal for WDT
@@ -38,10 +38,11 @@
 
 - [ ] ROM implementation
 - [ ] top module
-  - [ ] DRAM wire connect
+  - [x] 11/25 DRAM wire connect
   - [ ] ROM wire connect
-  - [ ] DMA wire connect
+  - [x] 11/25 DMA wire connect
   - [ ] AXI wire connect
+    - [ ] ROM write channels wire connect
 - [ ] AXI modified
   - [x] Decoder address extension
   - [x] 11/21 Arbiter lock extension

@@ -3,7 +3,7 @@
     //INFO        :  
 //----------------------- Environment -----------------------//
     `include "DMA_slave.sv"
-    `include "DMA_master.sv"
+    // `include "DMA_master.sv"
     `include "DMA.sv"
 //------------------------- Module -------------------------//
     module DMA_wrapper (
@@ -91,7 +91,7 @@
 
   //---------------------- DMA_slave ------------------------//
     DMA_Slave DMA_Slave_inst(
-        .clk(), .rst(),
+        .clk(clk), .rst(rst),
       //
         .S_AWID     (AWID_S),  
         .S_AWAddr   (AWADDR_S),
@@ -134,7 +134,7 @@
     );
   //------------------------- DMA ---------------------------//  
     DMA DMA_inst(
-        .clk(), .rst(), 
+        .clk(clk), .rst(rst), 
       //  
         .M_AWID     (AWID_M2   ),  
         .M_AWAddr   (AWADDR_M2 ),

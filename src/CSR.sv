@@ -282,7 +282,7 @@ always_ff @( posedge clk or negedge rst ) begin
     end
     else if(~dm_stall & ~im_stall)begin
         if((funct7 == 7'b0001000) & (funct3 == 3'b000) & CSR_write)begin        //wfi wait for interrupt (when DMA is moving data from DRAM to ROM) see /prog4/boot.c
-            CSR_stall <= mie[MEIE];                         //there is a trap not deal with yet
+            CSR_stall <= mip[MEIP];                         //there is a trap not deal with yet
         end
         else if(CSR_interrupt) begin                                            //move to isr to tackle with trap
             CSR_stall <= 1'b0;                     

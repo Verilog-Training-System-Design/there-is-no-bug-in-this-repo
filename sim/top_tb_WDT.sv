@@ -34,7 +34,7 @@ import UPF::*;
 `define TEST_START 'h40000
 `define BOOT_END 'h40002	//DRAM
 `define BOOT_END_CODE -32'd1 //flag
-`define FOR_LOOP_ADDR 'h156 //SRAM 1054C
+`define FOR_LOOP_ADDR 'h93 //SRAM 1054C
 `define FOR_LOOP_DEAD_LOOP 'h6f
 `define FOR_LOOP_COUNT_INIT 'ha00793
 module top_tb;

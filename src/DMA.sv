@@ -207,7 +207,7 @@
       if (rst)  
         DMA_interrupt <=    1'b0;      
       else if (S_cur == FINISH)
-        DMA_interrupt <=    1'b;               
+        DMA_interrupt <=    1'b1;               
     end
   //---------------------- W-channel ----------------------//
     //Addr

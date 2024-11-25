@@ -57,10 +57,11 @@
 # 	fi; \
 # 	make -C $(sim_dir)/prog0/; \
 # 	cd $(bld_dir); \
-# 	vcs -R -sverilog $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -debug_region +cell +memcbk \
+# 		vcs -R -sverilog $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -debug_region +cell +memcbk \
 # 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 #     +define+prog0$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog0 \
 # 	+rdcycle=1 \
@@ -77,6 +78,7 @@
 # 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 #     +define+prog1$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog1 \
 # 	+notimingcheck
@@ -92,6 +94,7 @@
 # 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+prog2$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog2 \
 # 	+notimingcheck
@@ -107,6 +110,7 @@
 # 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+prog3$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog3 \
 # 	+notimingcheck
@@ -121,9 +125,25 @@
 # 	vcs -R -sverilog $(root_dir)/$(sim_dir)/top_tb_WDT.sv -debug_access+all -full64 -debug_region +cell +memcbk \
 # 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+prog4$(FSDB_DEF) \
-# 	+define+$(CYCLE) \
+# 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog4 \
+# 	+notimingcheck
+# rtl5: | $(bld_dir)
+# 	@if [ $$(echo $(CYCLE) '>' 10.0 | bc -l) -eq 1 ]; then \
+# 		echo "Cycle time shouldn't exceed 20"; \
+# 		exit 1; \
+# 	fi; \
+# 	make -C $(sim_dir)/prog5/; \
+# 	cd $(bld_dir); \
+# 	vcs -R -sverilog $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64  \
+# 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
+# 	+define+prog5$(FSDB_DEF) \
+# 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
+# 	+define+MAX=$(MAX) \
+# 	+prog_path=$(root_dir)/$(sim_dir)/prog5 \
 # 	+notimingcheck
 
 
@@ -141,6 +161,7 @@
 # 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+SYN+prog0$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog0 \
 #     +rdcycle=1
@@ -156,6 +177,7 @@
 # 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+SYN+prog1$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog1
 
@@ -170,6 +192,7 @@
 # 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+SYN+prog2$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog2
 
@@ -184,6 +207,7 @@
 # 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+SYN+prog3$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog3
 	
@@ -198,8 +222,23 @@
 # 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 # 	+define+SYN+prog4$(FSDB_DEF) \
 # 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
 # 	+define+MAX=$(MAX) \
 # 	+prog_path=$(root_dir)/$(sim_dir)/prog4
+# syn5: | $(bld_dir)
+# 	@if [ $$(echo $(CYCLE) '>' 20.0 | bc -l) -eq 1 ]; then \
+# 		echo "Cycle time shouldn't exceed 20"; \
+# 		exit 1; \
+# 	fi; \
+# 	make -C $(sim_dir)/prog5/; \
+# 	cd $(bld_dir); \
+# 	vcs -R -sverilog +neg_tchk -negdelay -v /usr/cad/CBDK/Executable_Package/Collaterals/IP/stdcell/N16ADFP_StdCell/VERILOG/N16ADFP_StdCell.v $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -diag=sdf:verbose \
+# 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
+# 	+define+SYN+prog5$(FSDB_DEF) \
+# 	+define+CYCLE=$(CYCLE) \
+# 	+define+CYCLE2=$(CYCLE2) \
+# 	+define+MAX=$(MAX) \
+# 	+prog_path=$(root_dir)/$(sim_dir)/prog5
 
 # # Utilities
 # nWave: | $(bld_dir)
@@ -372,6 +411,7 @@ rtl0: | $(bld_dir)
 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
     +define+prog0$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+access+r \
 	+nc64bit \
@@ -386,10 +426,11 @@ rtl1: | $(bld_dir)
 	fi; \
 	make -C $(sim_dir)/prog1/; \
 	cd $(bld_dir); \
-	irun $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -debug_region +cell +memcbk \
+	irun $(root_dir)/$(sim_dir)/top_tb.sv \
 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
     +define+prog1$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+access+r \
 	+nc64bit \
@@ -403,10 +444,11 @@ rtl2: | $(bld_dir)
 	fi; \
 	make -C $(sim_dir)/prog2/; \
 	cd $(bld_dir); \
-	irun $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -debug_region +cell +memcbk  \
+	irun $(root_dir)/$(sim_dir)/top_tb.sv  \
 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+prog2$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+access+r \
 	+nc64bit \
@@ -420,10 +462,11 @@ rtl3: | $(bld_dir)
 	fi; \
 	make -C $(sim_dir)/prog3/; \
 	cd $(bld_dir); \
-	irun $(root_dir)/$(sim_dir)/top_tb_WDT.sv -debug_access+all -full64 -debug_region +cell +memcbk \
+	irun $(root_dir)/$(sim_dir)/top_tb_WDT.sv \
 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+prog3$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+access+r \
 	+nc64bit \
@@ -437,14 +480,32 @@ rtl4: | $(bld_dir)
 	fi; \
 	make -C $(sim_dir)/prog4/; \
 	cd $(bld_dir); \
-	irun $(root_dir)/$(sim_dir)/top_tb_WDT.sv -debug_access+all -full64 -debug_region +cell +memcbk \
+	irun $(root_dir)/$(sim_dir)/top_tb_WDT.sv \
 	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+prog4$(FSDB_DEF) \
-	+define+$(CYCLE) \
+	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+$(MAX) \
 	+access+r \
 	+nc64bit \
 	+prog_path=$(root_dir)/$(sim_dir)/prog4 \
+	+notimingcheck
+rtl5: | $(bld_dir)
+	@if [ $$(echo $(CYCLE) '>' 10.0 | bc -l) -eq 1 ]; then \
+		echo "Cycle time shouldn't exceed 20"; \
+		exit 1; \
+	fi; \
+	make -C $(sim_dir)/prog5/; \
+	cd $(bld_dir); \
+	irun $(root_dir)/$(sim_dir)/top_tb.sv \
+	+incdir+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
+	+define+prog5$(FSDB_DEF) \
+	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
+	+define+MAX=$(MAX) \
+	+access+r \
+	+nc64bit \
+	+prog_path=$(root_dir)/$(sim_dir)/prog5 \
 	+notimingcheck
 
 
@@ -462,6 +523,7 @@ syn0: | $(bld_dir)
 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+SYN+prog0$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+prog_path=$(root_dir)/$(sim_dir)/prog0 \
     +rdcycle=1
@@ -477,6 +539,7 @@ syn1: | $(bld_dir)
 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+SYN+prog1$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+prog_path=$(root_dir)/$(sim_dir)/prog1
 
@@ -491,6 +554,7 @@ syn2: | $(bld_dir)
 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+SYN+prog2$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+prog_path=$(root_dir)/$(sim_dir)/prog2
 
@@ -505,6 +569,7 @@ syn3: | $(bld_dir)
 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+SYN+prog3$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+prog_path=$(root_dir)/$(sim_dir)/prog3
 	
@@ -519,8 +584,23 @@ syn4: | $(bld_dir)
 	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
 	+define+SYN+prog4$(FSDB_DEF) \
 	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
 	+define+MAX=$(MAX) \
 	+prog_path=$(root_dir)/$(sim_dir)/prog4
+syn5: | $(bld_dir)
+	@if [ $$(echo $(CYCLE) '>' 20.0 | bc -l) -eq 1 ]; then \
+		echo "Cycle time shouldn't exceed 20"; \
+		exit 1; \
+	fi; \
+	make -C $(sim_dir)/prog5/; \
+	cd $(bld_dir); \
+	vcs -R -sverilog +neg_tchk -negdelay -v /usr/cad/CBDK/Executable_Package/Collaterals/IP/stdcell/N16ADFP_StdCell/VERILOG/N16ADFP_StdCell.v $(root_dir)/$(sim_dir)/top_tb.sv -debug_access+all -full64 -diag=sdf:verbose \
+	+incdir+$(root_dir)/$(syn_dir)+$(root_dir)/$(src_dir)+$(root_dir)/$(src_dir)/AXI+$(root_dir)/$(inc_dir)+$(root_dir)/$(sim_dir) \
+	+define+SYN+prog5$(FSDB_DEF) \
+	+define+CYCLE=$(CYCLE) \
+	+define+CYCLE2=$(CYCLE2) \
+	+define+MAX=$(MAX) \
+	+prog_path=$(root_dir)/$(sim_dir)/prog5
 
 # Utilities
 nWave: | $(bld_dir)
