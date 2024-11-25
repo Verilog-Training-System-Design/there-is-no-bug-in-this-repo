@@ -77,7 +77,7 @@ assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
 //get size and burst data
-always_ff @( posedege clk or negedge rst ) begin 
+always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)begin
 		SIZE_reg <= `AXI_SIZE_BITS'd0;
 		BURST_reg <= 2'd0;
@@ -97,7 +97,7 @@ always_ff @( posedege clk or negedge rst ) begin
 end
 
 //keep rdata stable
-always_ff @( posedege clk or negedge rst ) begin 
+always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)	
 		RDATA_reg <= 32'd0;
 	else 
@@ -156,7 +156,7 @@ always_ff @( posedge clk or negedge rst ) begin
 end
 
 //delay clock
-always_ff @( posedege clk or negedge rst ) begin 
+always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)
 		delay <= 3'd0;
 	else begin
@@ -206,7 +206,7 @@ always_comb begin
 				next_stage = read_data;
         end
         write_data : begin
-			if(delay = 3'd4)begin
+			if(delay == 3'd4)begin
 				if(WVALID_S & WREADY_S & WLAST_S)
             	    next_stage = precharge;
             	else

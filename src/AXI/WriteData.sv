@@ -117,6 +117,9 @@ always_ff @( posedge clk or negedge rst ) begin
 		WVALID_S0_reg <= 1'b0;
 		WVALID_S1_reg <= 1'b0;
 		WVALID_S2_reg <= 1'b0;
+		WVALID_S3_reg <= 1'b0;
+		WVALID_S4_reg <= 1'b0;
+		WVALID_S5_reg <= 1'b0;
 	end
 	else begin
 		// if(AWVALID_S0 & ~WREADY)		//since master.sv design after writeaddress is writedata
@@ -240,30 +243,19 @@ end
 
 always_comb begin 
 	case(master)
-		4'd001 : begin
-			WDATA = WDATA_M0;
-			WSTRB = WSTRB_M0;
-			WLAST = WLAST_M0;
-			WVALID = WVALID_M0;
-			WREADY_M0 = WREADY & WVALID_M0;
-			WREADY_M1 = 1'd0;
-			WREADY_M2 = 1'd0;
-		end
-		4'd010 : begin
+		4'b0010 : begin
 			WDATA = WDATA_M1;
 			WSTRB = WSTRB_M1;
 			WLAST = WLAST_M1;
 			WVALID = WVALID_M1;
-			WREADY_M0 = 1'd0;
 			WREADY_M1 = WREADY & WVALID_M1;
 			WREADY_M2 = 1'd0;
 		end
-		4'd100 : begin
+		4'b0100 : begin
 			WDATA = WDATA_M2;
 			WSTRB = WSTRB_M2;
 			WLAST = WLAST_M2;
 			WVALID = WVALID_M2;
-			WREADY_M0 = 1'd0;
 			WREADY_M1 = 1'd0;
 			WREADY_M2 = WREADY & WVALID_M2;
 		end
@@ -272,7 +264,6 @@ always_comb begin
 			WSTRB = 4'hf;
 			WLAST = 1'd0;;
 			WVALID = 1'd0;
-			WREADY_M0 = 1'd0;
 			WREADY_M1 = 1'd0;
 			WREADY_M2 = 1'd0;
 		end

@@ -83,7 +83,7 @@ module ReadAddr (
 	output logic [`AXI_SIZE_BITS-1:0]   ARSIZE_S5,
 	output logic [1:0]                  ARBURST_S5,
 	output logic                        ARVALID_S5,
-	input                               ARREADY_S5,
+	input                               ARREADY_S5
 );
 
 logic [`AXI_IDS_BITS-1:0]    ARID;
@@ -208,19 +208,19 @@ Decoder RADecoder(
     .READY_S0(ARREADY_S0),
     .READY_S1(ARREADY_S1),
     .READY_S2(ARREADY_S2),
-	.READY_S2(ARREADY_S3),
-	.READY_S2(ARREADY_S4),
-	.READY_S2(ARREADY_S5),
+	.READY_S3(ARREADY_S3),
+	.READY_S4(ARREADY_S4),
+	.READY_S5(ARREADY_S5),
 	//for hw2 vip
     // .VALID_S0(arvalid_s0t),
     // .VALID_S1(arvalid_s1t),
     // .VALID_S2(arvalid_s2t)
 	.VALID_S0(ARVALID_S0),
     .VALID_S1(ARVALID_S1),
-	.VALID_S1(ARVALID_S2),
-	.VALID_S1(ARVALID_S3),
-	.VALID_S1(ARVALID_S4),
-    .VALID_S2(ARVALID_S5)
+	.VALID_S2(ARVALID_S2),
+	.VALID_S3(ARVALID_S3),
+	.VALID_S4(ARVALID_S4),
+    .VALID_S5(ARVALID_S5)
 );
 
 endmodule

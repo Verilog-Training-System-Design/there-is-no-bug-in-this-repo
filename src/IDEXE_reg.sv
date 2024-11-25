@@ -87,8 +87,6 @@ always_ff @(posedge clk or negedge reset) begin
         EXE_f_RegWrite <= 1'b0;
         EXE_ALUSel_f <= 1'b0;
         EXE_Branch <= 2'd0;
-        cycle <= 64'd0;
-        instr_cnt <= 64'd0;
         EXE_Memoryin_f <= 1'b0;
         EXE_CSRSel <= 1'b0;
         EXE_CSR_type <= 2'b0;

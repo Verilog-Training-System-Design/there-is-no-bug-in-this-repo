@@ -276,14 +276,13 @@ logic [`AXI_DATA_BITS-1:0] w_WDATA_S3;
 logic [`AXI_STRB_BITS-1:0] w_WSTRB_S3;
 logic w_WLAST_S3;
 logic w_WVALID_S3;
-logic w_WREADY_S3
+logic w_WREADY_S3;
 
 //WRITE RESPONSE3
 logic [`AXI_IDS_BITS-1:0] w_BID_S3;
 logic [1:0] w_BRESP_S3;
 logic w_BVALID_S3;
 logic w_BREADY_S3;
-
 
 //WDT slave
 //READ ADDRESS4
@@ -461,7 +460,7 @@ CPU_wrapper CPU(
 	.RLAST_M1(w_RLAST_M2),
 	.RVALID_M1(w_RVALID_M2),
 	.RREADY_M1(w_RREADY_M2),
-	.DMA_interrupt(w_DMA_interrupt)
+	.DMA_interrupt(w_DMA_interrupt),
 	.WDT_timeout(w_WDT_timeout)
 );
 
@@ -897,7 +896,7 @@ AXI axi(
 
  DRAM_wrapper dram(
     .clk(clk),
-    .rst(rst),
+    .rst(~rst),
     
     //READ ADDRESS1
 	.ARID_S(w_ARID_S5),
@@ -950,7 +949,7 @@ AXI axi(
 
  DMA_wrapper  dma(
         .clk(clk),
-		.rst(rst),
+		.rst(~rst),
       //Slave port
       //READ ADDRESS1
         .ARID_S(w_ARID_S3),
@@ -1028,7 +1027,7 @@ AXI axi(
 
  ROM_wrapper rom(
         .ACLK(clk), 
-		.ARESETn(rst),
+		.ARESETn(~rst),
       //AXI Waddr
         .S_AWID(w_AWID_S0),    
         .S_AWAddr(w_AWADDR_S0),  
@@ -1073,9 +1072,9 @@ AXI axi(
  WDT_wrapper wdt(
     //WDT Module
     .clk(clk), 
-	.rst(rst),
+	.rst(~rst),
     .clk2(clk2), 
-	.rst2(rst2),
+	.rst2(~rst2),
     .WTO(w_WDT_timeout),
     //need to revise to interface
     //READ ADDRESS1

@@ -91,7 +91,7 @@ wire [31:0] alu_out;
 wire [31:0] falu_out;
 wire [31:0] exe_imm;
 wire [1:0] exe_csr_type;
-wire [11:0] exe_csr_addr,
+wire [11:0] exe_csr_addr;
 
 wire [4:0] exe_rd_r1_addr;
 wire [4:0] exe_rd_r2_addr;
@@ -188,7 +188,7 @@ IFID_reg IFID_pipe(
 .dm_stall(DM_stall),
 .CSR_stall(w_csr_stall),
 .CSR_interrupt(w_csr_interrupt),
-.CSR_ret(w_csr_ret).
+.CSR_ret(w_csr_ret),
 
 .ID_pc_out(id_pc),
 .read_reg1(rd_r1),
@@ -210,7 +210,7 @@ HazardDetectUnit Hazard(
 .EXE_write_addr(exe_write_addr),
 .Branch_Ctrl(exe_branchCtrl),
 .CSR_interrupt(w_csr_interrupt),
-.CSR_ret(w_csr_ret)
+.CSR_ret(w_csr_ret),
 
 .IFID_write(IFID_write),
 .PC_write_en(PC_write_enable),
@@ -503,7 +503,7 @@ CSR csr(
 .CSR_ret(w_csr_ret)
 );
 
-assign final_result = (EXE_CSRSel & (EXE_write_addr != 5'b0)) ? w_csr_data : final_alu;
+assign final_result = (exe_csr_write & (exe_write_addr != 5'b0)) ? w_csr_data : final_alu;
 
 //EXE control 
 
