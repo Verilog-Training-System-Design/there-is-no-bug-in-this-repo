@@ -164,7 +164,7 @@ always_comb begin
             CSRsel = 1'b0;
         end
         7'b1110011:begin    //CSR
-            ALUOp = 3'd4;
+            ALUOp = 3'd6;
             ALUSrc = 1'b0;
             PCtoRegSrc = 1'b0;
             Immtype = 4'd8;

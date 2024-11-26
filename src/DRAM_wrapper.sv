@@ -58,8 +58,9 @@ logic [`AXI_ADDR_BITS-1:0] ADDR_reg;
 logic [`AXI_SIZE_BITS-1:0] SIZE_reg;
 logic [1:0] BURST_reg;
 logic [`AXI_DATA_BITS-1:0] RDATA_reg;
+logic [10:0] row;
 
-logic [1:0] stage, next_stage;
+logic [2:0] stage, next_stage;
 localparam [2:0] idle = 3'b000,
 				 precharge = 3'b001,		//write response in this stage
 				 activate = 3'b010,
@@ -123,7 +124,7 @@ always_ff @( posedge clk or negedge rst ) begin
     end
 end
 
-//get address(not done)
+//get address
 always_ff @( posedge clk or negedge rst ) begin
     if(~rst)begin
 		ADDR_reg <= `AXI_ADDR_BITS'd0;
@@ -224,6 +225,16 @@ always_comb begin
     endcase    
 end
 
+always_ff @( posedge clk or negedge rst ) begin : blockName
+	if(~rst)
+		row <= 11'd0;
+	else if(stage == idle)begin
+		row <= (AWVALID_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
+	end
+	else 
+		row <= row;
+end
+
 //DRAM signal
 //A may need other register to know address
 always_comb begin 
@@ -261,7 +272,7 @@ always_comb begin
 			DRAM_RASn = (delay == 3'd4) ? 1'd0 : 1'd1;
 			DRAM_WEn = 4'h0;
 			DRAM_D = 32'd0;
-			DRAM_A = 11'd0;
+			DRAM_A = row;
 		end
 	endcase
 end
@@ -288,7 +299,7 @@ always_comb begin
 		end
         read_data : begin
             ARREADY_S = 1'b0;
-            RVALID_S = 1'b1;
+            RVALID_S = (delay == 3'd4) ? 1'b1 : 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
             BVALID_S = 1'b0;
@@ -299,7 +310,7 @@ always_comb begin
             ARREADY_S = 1'b0;
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
-            WREADY_S = 1'b1;
+            WREADY_S = (delay == 3'd4) ? 1'b1 : 1'b0;
             BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = address;

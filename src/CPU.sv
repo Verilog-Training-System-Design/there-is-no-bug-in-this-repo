@@ -223,8 +223,8 @@ HazardDetectUnit Hazard(
 
 //IF stage end
 
-wire [63:0] w_instr_cnt;
-wire [63:0] w_cycle;
+// wire [63:0] w_instr_cnt;
+// wire [63:0] w_cycle;
 
 //ID stage 
 
@@ -459,8 +459,8 @@ ALU alu(
 .in1(alu1),
 .in2(alu2),
 .control(alu_ctrl),
-.instr_cnt(w_instr_cnt),
-.cycle(w_cycle),
+// .instr_cnt(w_instr_cnt),
+// .cycle(w_cycle),
 
 .out(alu_out),
 .zero(exe_zero_flag)

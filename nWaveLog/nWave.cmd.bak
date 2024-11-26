@@ -1,0 +1,6 @@
+wvSetPosition -win $_nWave1 {("G1" 0)}
+wvOpenFile -win $_nWave1 \
+           {/home/WangYanTing/there-is-no-bug-in-this-repo/build/top.fsdb}
+wvSetCursor -win $_nWave1 2592471.044326
+wvGetSignalOpen -win $_nWave1
+wvGetSignalSetScope -win $_nWave1 "/top_tb"

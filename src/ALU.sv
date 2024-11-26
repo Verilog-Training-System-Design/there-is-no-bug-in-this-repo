@@ -2,8 +2,8 @@ module ALU (
     input [31:0] in1,
     input [31:0] in2,
     input [4:0] control,
-    input [63:0] instr_cnt,
-    input [63:0] cycle,
+    // input [63:0] instr_cnt,
+    // input [63:0] cycle,
 
     output logic [31:0] out,
     output logic zero
@@ -102,22 +102,22 @@ always_comb begin
             mul = $unsigned(in1)*$unsigned(in2);            //unequal length
             out = mul[63:32];
         end
-        5'd21 : begin
-            zero = 1'd0;
-            out = instr_cnt[63:32];
-        end
-        5'd22 : begin
-            zero = 1'd0;
-            out = instr_cnt[31:0];
-        end
-        5'd23 : begin
-            zero = 1'd0;
-            out = cycle[63:32];
-        end
-        default : begin
-            zero = 1'd0;
-            out = cycle[31:0];
-        end
+        // 5'd21 : begin
+        //     zero = 1'd0;
+        //     out = instr_cnt[63:32];
+        // end
+        // 5'd22 : begin
+        //     zero = 1'd0;
+        //     out = instr_cnt[31:0];
+        // end
+        // 5'd23 : begin
+        //     zero = 1'd0;
+        //     out = cycle[63:32];
+        // end
+        // default : begin
+        //     zero = 1'd0;
+        //     out = cycle[31:0];
+        // end
     endcase
 end
     

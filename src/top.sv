@@ -25,351 +25,351 @@ module top (
     input DRAM_valid,
     input [31:0] DRAM_Q       				
 );
+//parameter
+	//WRITE ADDRESS
+	logic [`AXI_ID_BITS-1:0] w_AWID_M1;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_M1;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_M1;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_M1;
+	logic [1:0] w_AWBURST_M1;
+	logic w_AWVALID_M1;
+	logic w_AWREADY_M1;
 
-//WRITE ADDRESS
-logic [`AXI_ID_BITS-1:0] w_AWID_M1;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_M1;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_M1;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_M1;
-logic [1:0] w_AWBURST_M1;
-logic w_AWVALID_M1;
-logic w_AWREADY_M1;
+	//WRITE DATA
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_M1;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_M1;
+	logic w_WLAST_M1;
+	logic w_WVALID_M1;
+	logic w_WREADY_M1;
 
-//WRITE DATA
-logic [`AXI_DATA_BITS-1:0] w_WDATA_M1;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_M1;
-logic w_WLAST_M1;
-logic w_WVALID_M1;
-logic w_WREADY_M1;
+	//WRITE RESPONSE
+	logic [`AXI_ID_BITS-1:0] w_BID_M1;
+	logic [1:0] w_BRESP_M1;
+	logic w_BVALID_M1;
+	logic w_BREADY_M1;
 
-//WRITE RESPONSE
-logic [`AXI_ID_BITS-1:0] w_BID_M1;
-logic [1:0] w_BRESP_M1;
-logic w_BVALID_M1;
-logic w_BREADY_M1;
+	//READ ADDRESS0
+	logic [`AXI_ID_BITS-1:0] w_ARID_M0;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M0;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_M0;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M0;
+	logic [1:0] w_ARBURST_M0;
+	logic w_ARVALID_M0;
+	logic w_ARREADY_M0;
 
-//READ ADDRESS0
-logic [`AXI_ID_BITS-1:0] w_ARID_M0;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M0;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_M0;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M0;
-logic [1:0] w_ARBURST_M0;
-logic w_ARVALID_M0;
-logic w_ARREADY_M0;
+	//READ DATA0
+	logic [`AXI_ID_BITS-1:0] w_RID_M0;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_M0;
+	logic [1:0] w_RRESP_M0;
+	logic w_RLAST_M0;
+	logic w_RVALID_M0;
+	logic w_RREADY_M0;
 
-//READ DATA0
-logic [`AXI_ID_BITS-1:0] w_RID_M0;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_M0;
-logic [1:0] w_RRESP_M0;
-logic w_RLAST_M0;
-logic w_RVALID_M0;
-logic w_RREADY_M0;
+	//READ ADDRESS1
+	logic [`AXI_ID_BITS-1:0] w_ARID_M1;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M1;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_M1;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M1;
+	logic [1:0] w_ARBURST_M1;
+	logic w_ARVALID_M1;
+	logic w_ARREADY_M1;
 
-//READ ADDRESS1
-logic [`AXI_ID_BITS-1:0] w_ARID_M1;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M1;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_M1;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M1;
-logic [1:0] w_ARBURST_M1;
-logic w_ARVALID_M1;
-logic w_ARREADY_M1;
+	//READ DATA1
+	logic [`AXI_ID_BITS-1:0] w_RID_M1;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_M1;
+	logic [1:0] w_RRESP_M1;
+	logic w_RLAST_M1;
+	logic w_RVALID_M1;
+	logic w_RREADY_M1;
 
-//READ DATA1
-logic [`AXI_ID_BITS-1:0] w_RID_M1;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_M1;
-logic [1:0] w_RRESP_M1;
-logic w_RLAST_M1;
-logic w_RVALID_M1;
-logic w_RREADY_M1;
+		//DMA master
+	//WRITE ADDRESS
+	logic [`AXI_ID_BITS-1:0] w_AWID_M2;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_M2;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_M2;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_M2;
+	logic [1:0] w_AWBURST_M2;
+	logic w_AWVALID_M2;
+	logic w_AWREADY_M2;
 
-	//DMA master
-//WRITE ADDRESS
-logic [`AXI_ID_BITS-1:0] w_AWID_M2;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_M2;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_M2;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_M2;
-logic [1:0] w_AWBURST_M2;
-logic w_AWVALID_M2;
-logic w_AWREADY_M2;
+	//WRITE DATA
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_M2;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_M2;
+	logic w_WLAST_M2;
+	logic w_WVALID_M2;
+	logic w_WREADY_M2;
 
-//WRITE DATA
-logic [`AXI_DATA_BITS-1:0] w_WDATA_M2;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_M2;
-logic w_WLAST_M2;
-logic w_WVALID_M2;
-logic w_WREADY_M2;
+	//WRITE RESPONSE
+	logic [`AXI_ID_BITS-1:0] w_BID_M2;
+	logic [1:0] w_BRESP_M2;
+	logic w_BVALID_M2;
+	logic w_BREADY_M2;
 
-//WRITE RESPONSE
-logic [`AXI_ID_BITS-1:0] w_BID_M2;
-logic [1:0] w_BRESP_M2;
-logic w_BVALID_M2;
-logic w_BREADY_M2;
+	//READ ADDRESS1
+	logic [`AXI_ID_BITS-1:0] w_ARID_M2;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M2;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_M2;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M2;
+	logic [1:0] w_ARBURST_M2;
+	logic w_ARVALID_M2;
+	logic w_ARREADY_M2;
 
-//READ ADDRESS1
-logic [`AXI_ID_BITS-1:0] w_ARID_M2;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_M2;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_M2;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_M2;
-logic [1:0] w_ARBURST_M2;
-logic w_ARVALID_M2;
-logic w_ARREADY_M2;
+	//READ DATA1
+	logic [`AXI_ID_BITS-1:0] w_RID_M2;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_M2;
+	logic [1:0] w_RRESP_M2;
+	logic w_RLAST_M2;
+	logic w_RVALID_M2;
+	logic w_RREADY_M2;
 
-//READ DATA1
-logic [`AXI_ID_BITS-1:0] w_RID_M2;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_M2;
-logic [1:0] w_RRESP_M2;
-logic w_RLAST_M2;
-logic w_RVALID_M2;
-logic w_RREADY_M2;
+	//MASTER INTERFACE FOR SLAVES
+	//ROM slave
+	//READ ADDRESS0
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S0;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S0;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S0;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S0;
+	logic [1:0] w_ARBURST_S0;
+	logic w_ARVALID_S0;
+	logic w_ARREADY_S0;
 
-//MASTER INTERFACE FOR SLAVES
-//ROM slave
-//READ ADDRESS0
-logic [`AXI_IDS_BITS-1:0] w_ARID_S0;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S0;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S0;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S0;
-logic [1:0] w_ARBURST_S0;
-logic w_ARVALID_S0;
-logic w_ARREADY_S0;
+	//READ DATA0
+	logic [`AXI_IDS_BITS-1:0] w_RID_S0;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S0;
+	logic [1:0] w_RRESP_S0;
+	logic w_RLAST_S0;
+	logic w_RVALID_S0;
+	logic w_RREADY_S0;
 
-//READ DATA0
-logic [`AXI_IDS_BITS-1:0] w_RID_S0;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S0;
-logic [1:0] w_RRESP_S0;
-logic w_RLAST_S0;
-logic w_RVALID_S0;
-logic w_RREADY_S0;
+	//WRITE ADDRESS0
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S0;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S0;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S0;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S0;
+	logic [1:0] w_AWBURST_S0;
+	logic w_AWVALID_S0;
+	logic w_AWREADY_S0;
 
-//WRITE ADDRESS0
-logic [`AXI_IDS_BITS-1:0] w_AWID_S0;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S0;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S0;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S0;
-logic [1:0] w_AWBURST_S0;
-logic w_AWVALID_S0;
-logic w_AWREADY_S0;
+	//WRITE DATA0
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S0;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S0;
+	logic w_WLAST_S0;
+	logic w_WVALID_S0;
+	logic w_WREADY_S0;
 
-//WRITE DATA0
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S0;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S0;
-logic w_WLAST_S0;
-logic w_WVALID_S0;
-logic w_WREADY_S0;
-
-//WRITE RESPONSE0
-logic [`AXI_IDS_BITS-1:0] w_BID_S0;
-logic [1:0] w_BRESP_S0;
-logic w_BVALID_S0;
-logic w_BREADY_S0;
-
-
-//IM slave
-//READ ADDRESS1
-logic [`AXI_IDS_BITS-1:0] w_ARID_S1;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S1;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S1;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S1;
-logic [1:0] w_ARBURST_S1;
-logic w_ARVALID_S1;
-logic w_ARREADY_S1;
-
-//READ DATA1
-logic [`AXI_IDS_BITS-1:0] w_RID_S1;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S1;
-logic [1:0] w_RRESP_S1;
-logic w_RLAST_S1;
-logic w_RVALID_S1;
-logic w_RREADY_S1;
-
-//WRITE ADDRESS1
-logic [`AXI_IDS_BITS-1:0] w_AWID_S1;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S1;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S1;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S1;
-logic [1:0] w_AWBURST_S1;
-logic w_AWVALID_S1;
-logic w_AWREADY_S1;
-
-//WRITE DATA1
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S1;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S1;
-logic w_WLAST_S1;
-logic w_WVALID_S1;
-logic w_WREADY_S1;
-
-//WRITE RESPONSE1
-logic [`AXI_IDS_BITS-1:0] w_BID_S1;
-logic [1:0] w_BRESP_S1;
-logic w_BVALID_S1;
-logic w_BREADY_S1;
+	//WRITE RESPONSE0
+	logic [`AXI_IDS_BITS-1:0] w_BID_S0;
+	logic [1:0] w_BRESP_S0;
+	logic w_BVALID_S0;
+	logic w_BREADY_S0;
 
 
-//DM slave
-//READ ADDRESS2
-logic [`AXI_IDS_BITS-1:0] w_ARID_S2;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S2;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S2;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S2;
-logic [1:0] w_ARBURST_S2;
-logic w_ARVALID_S2;
-logic w_ARREADY_S2;
+	//IM slave
+	//READ ADDRESS1
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S1;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S1;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S1;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S1;
+	logic [1:0] w_ARBURST_S1;
+	logic w_ARVALID_S1;
+	logic w_ARREADY_S1;
 
-//READ DATA2
-logic [`AXI_IDS_BITS-1:0] w_RID_S2;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S2;
-logic [1:0] w_RRESP_S2;
-logic w_RLAST_S2;
-logic w_RVALID_S2;
-logic w_RREADY_S2;
+	//READ DATA1
+	logic [`AXI_IDS_BITS-1:0] w_RID_S1;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S1;
+	logic [1:0] w_RRESP_S1;
+	logic w_RLAST_S1;
+	logic w_RVALID_S1;
+	logic w_RREADY_S1;
 
-//WRITE ADDRESS2
-logic [`AXI_IDS_BITS-1:0] w_AWID_S2;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S2;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S2;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S2;
-logic [1:0] w_AWBURST_S2;
-logic w_AWVALID_S2;
-logic w_AWREADY_S2;
+	//WRITE ADDRESS1
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S1;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S1;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S1;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S1;
+	logic [1:0] w_AWBURST_S1;
+	logic w_AWVALID_S1;
+	logic w_AWREADY_S1;
 
-//WRITE DATA2
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S2;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S2;
-logic w_WLAST_S2;
-logic w_WVALID_S2;
-logic w_WREADY_S2;
+	//WRITE DATA1
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S1;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S1;
+	logic w_WLAST_S1;
+	logic w_WVALID_S1;
+	logic w_WREADY_S1;
 
-//WRITE RESPONSE2
-logic [`AXI_IDS_BITS-1:0] w_BID_S2;
-logic [1:0] w_BRESP_S2;
-logic w_BVALID_S2;
-logic w_BREADY_S2;
-
-
-//DMA slave
-//READ ADDRESS3
-logic [`AXI_IDS_BITS-1:0] w_ARID_S3;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S3;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S3;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S3;
-logic [1:0] w_ARBURST_S3;
-logic w_ARVALID_S3;
-logic w_ARREADY_S3;
-
-//READ DATA3
-logic [`AXI_IDS_BITS-1:0] w_RID_S3;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S3;
-logic [1:0] w_RRESP_S3;
-logic w_RLAST_S3;
-logic w_RVALID_S3;
-logic w_RREADY_S3;
-
-//WRITE ADDRESS3
-logic [`AXI_IDS_BITS-1:0] w_AWID_S3;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S3;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S3;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S3;
-logic [1:0] w_AWBURST_S3;
-logic w_AWVALID_S3;
-logic w_AWREADY_S3;
-
-//WRITE DATA3
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S3;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S3;
-logic w_WLAST_S3;
-logic w_WVALID_S3;
-logic w_WREADY_S3;
-
-//WRITE RESPONSE3
-logic [`AXI_IDS_BITS-1:0] w_BID_S3;
-logic [1:0] w_BRESP_S3;
-logic w_BVALID_S3;
-logic w_BREADY_S3;
-
-//WDT slave
-//READ ADDRESS4
-logic [`AXI_IDS_BITS-1:0] w_ARID_S4;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S4;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S4;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S4;
-logic [1:0] w_ARBURST_S4;
-logic w_ARVALID_S4;
-logic w_ARREADY_S4;
-
-//READ DATA4
-logic [`AXI_IDS_BITS-1:0] w_RID_S4;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S4;
-logic [1:0] w_RRESP_S4;
-logic w_RLAST_S4;
-logic w_RVALID_S4;
-logic w_RREADY_S4;
-
-//WRITE ADDRESS4
-logic [`AXI_IDS_BITS-1:0] w_AWID_S4;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S4;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S4;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S4;
-logic [1:0] w_AWBURST_S4;
-logic w_AWVALID_S4;
-logic w_AWREADY_S4;
-
-//WRITE DATA4
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S4;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S4;
-logic w_WLAST_S4;
-logic w_WVALID_S4;
-logic w_WREADY_S4;
-
-//WRITE RESPONSE4
-logic [`AXI_IDS_BITS-1:0] w_BID_S4;
-logic [1:0] w_BRESP_S4;
-logic w_BVALID_S4;
-logic w_BREADY_S4;
+	//WRITE RESPONSE1
+	logic [`AXI_IDS_BITS-1:0] w_BID_S1;
+	logic [1:0] w_BRESP_S1;
+	logic w_BVALID_S1;
+	logic w_BREADY_S1;
 
 
-//DRAM slave
-//READ ADDRESS5
-logic [`AXI_IDS_BITS-1:0] w_ARID_S5;
-logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S5;
-logic [`AXI_LEN_BITS-1:0] w_ARLEN_S5;
-logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S5;
-logic [1:0] w_ARBURST_S5;
-logic w_ARVALID_S5;
-logic w_ARREADY_S5;
+	//DM slave
+	//READ ADDRESS2
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S2;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S2;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S2;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S2;
+	logic [1:0] w_ARBURST_S2;
+	logic w_ARVALID_S2;
+	logic w_ARREADY_S2;
 
-//READ DATA5
-logic [`AXI_IDS_BITS-1:0] w_RID_S5;
-logic [`AXI_DATA_BITS-1:0] w_RDATA_S5;
-logic [1:0] w_RRESP_S5;
-logic w_RLAST_S5;
-logic w_RVALID_S5;
-logic w_RREADY_S5;
+	//READ DATA2
+	logic [`AXI_IDS_BITS-1:0] w_RID_S2;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S2;
+	logic [1:0] w_RRESP_S2;
+	logic w_RLAST_S2;
+	logic w_RVALID_S2;
+	logic w_RREADY_S2;
 
-//WRITE ADDRESS5
-logic [`AXI_IDS_BITS-1:0] w_AWID_S5;
-logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S5;
-logic [`AXI_LEN_BITS-1:0] w_AWLEN_S5;
-logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S5;
-logic [1:0] w_AWBURST_S5;
-logic w_AWVALID_S5;
-logic w_AWREADY_S5;
+	//WRITE ADDRESS2
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S2;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S2;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S2;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S2;
+	logic [1:0] w_AWBURST_S2;
+	logic w_AWVALID_S2;
+	logic w_AWREADY_S2;
 
-//WRITE DATA5
-logic [`AXI_DATA_BITS-1:0] w_WDATA_S5;
-logic [`AXI_STRB_BITS-1:0] w_WSTRB_S5;
-logic w_WLAST_S5;
-logic w_WVALID_S5;
-logic w_WREADY_S5;
+	//WRITE DATA2
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S2;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S2;
+	logic w_WLAST_S2;
+	logic w_WVALID_S2;
+	logic w_WREADY_S2;
 
-//WRITE RESPONSE5
-logic [`AXI_IDS_BITS-1:0] w_BID_S5;
-logic [1:0] w_BRESP_S5;
-logic w_BVALID_S5;
-logic w_BREADY_S5;
+	//WRITE RESPONSE2
+	logic [`AXI_IDS_BITS-1:0] w_BID_S2;
+	logic [1:0] w_BRESP_S2;
+	logic w_BVALID_S2;
+	logic w_BREADY_S2;
 
-//others 
-wire w_DMA_interrupt;
-wire w_WDT_timeout;
+
+	//DMA slave
+	//READ ADDRESS3
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S3;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S3;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S3;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S3;
+	logic [1:0] w_ARBURST_S3;
+	logic w_ARVALID_S3;
+	logic w_ARREADY_S3;
+
+	//READ DATA3
+	logic [`AXI_IDS_BITS-1:0] w_RID_S3;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S3;
+	logic [1:0] w_RRESP_S3;
+	logic w_RLAST_S3;
+	logic w_RVALID_S3;
+	logic w_RREADY_S3;
+
+	//WRITE ADDRESS3
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S3;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S3;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S3;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S3;
+	logic [1:0] w_AWBURST_S3;
+	logic w_AWVALID_S3;
+	logic w_AWREADY_S3;
+
+	//WRITE DATA3
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S3;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S3;
+	logic w_WLAST_S3;
+	logic w_WVALID_S3;
+	logic w_WREADY_S3;
+
+	//WRITE RESPONSE3
+	logic [`AXI_IDS_BITS-1:0] w_BID_S3;
+	logic [1:0] w_BRESP_S3;
+	logic w_BVALID_S3;
+	logic w_BREADY_S3;
+
+	//WDT slave
+	//READ ADDRESS4
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S4;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S4;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S4;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S4;
+	logic [1:0] w_ARBURST_S4;
+	logic w_ARVALID_S4;
+	logic w_ARREADY_S4;
+
+	//READ DATA4
+	logic [`AXI_IDS_BITS-1:0] w_RID_S4;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S4;
+	logic [1:0] w_RRESP_S4;
+	logic w_RLAST_S4;
+	logic w_RVALID_S4;
+	logic w_RREADY_S4;
+
+	//WRITE ADDRESS4
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S4;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S4;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S4;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S4;
+	logic [1:0] w_AWBURST_S4;
+	logic w_AWVALID_S4;
+	logic w_AWREADY_S4;
+
+	//WRITE DATA4
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S4;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S4;
+	logic w_WLAST_S4;
+	logic w_WVALID_S4;
+	logic w_WREADY_S4;
+
+	//WRITE RESPONSE4
+	logic [`AXI_IDS_BITS-1:0] w_BID_S4;
+	logic [1:0] w_BRESP_S4;
+	logic w_BVALID_S4;
+	logic w_BREADY_S4;
+
+
+	//DRAM slave
+	//READ ADDRESS5
+	logic [`AXI_IDS_BITS-1:0] w_ARID_S5;
+	logic [`AXI_ADDR_BITS-1:0] w_ARADDR_S5;
+	logic [`AXI_LEN_BITS-1:0] w_ARLEN_S5;
+	logic [`AXI_SIZE_BITS-1:0] w_ARSIZE_S5;
+	logic [1:0] w_ARBURST_S5;
+	logic w_ARVALID_S5;
+	logic w_ARREADY_S5;
+
+	//READ DATA5
+	logic [`AXI_IDS_BITS-1:0] w_RID_S5;
+	logic [`AXI_DATA_BITS-1:0] w_RDATA_S5;
+	logic [1:0] w_RRESP_S5;
+	logic w_RLAST_S5;
+	logic w_RVALID_S5;
+	logic w_RREADY_S5;
+
+	//WRITE ADDRESS5
+	logic [`AXI_IDS_BITS-1:0] w_AWID_S5;
+	logic [`AXI_ADDR_BITS-1:0] w_AWADDR_S5;
+	logic [`AXI_LEN_BITS-1:0] w_AWLEN_S5;
+	logic [`AXI_SIZE_BITS-1:0] w_AWSIZE_S5;
+	logic [1:0] w_AWBURST_S5;
+	logic w_AWVALID_S5;
+	logic w_AWREADY_S5;
+
+	//WRITE DATA5
+	logic [`AXI_DATA_BITS-1:0] w_WDATA_S5;
+	logic [`AXI_STRB_BITS-1:0] w_WSTRB_S5;
+	logic w_WLAST_S5;
+	logic w_WVALID_S5;
+	logic w_WREADY_S5;
+
+	//WRITE RESPONSE5
+	logic [`AXI_IDS_BITS-1:0] w_BID_S5;
+	logic [1:0] w_BRESP_S5;
+	logic w_BVALID_S5;
+	logic w_BREADY_S5;
+
+	//others 
+	wire w_DMA_interrupt;
+	wire w_WDT_timeout;
 
 // logic late_reset;
 

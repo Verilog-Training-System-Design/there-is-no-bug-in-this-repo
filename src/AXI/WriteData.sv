@@ -79,6 +79,7 @@ logic WVALID_S4_reg;
 logic WVALID_S5_reg;
 logic [5:0] slave;
 logic [3:0] master;
+logic [`AXI_IDS_BITS-1:0] ID_reg;
 
 logic [`AXI_DATA_BITS-1:0] WDATA;
 logic [`AXI_STRB_BITS-1:0] WSTRB;
@@ -120,6 +121,7 @@ always_ff @( posedge clk or negedge rst ) begin
 		WVALID_S3_reg <= 1'b0;
 		WVALID_S4_reg <= 1'b0;
 		WVALID_S5_reg <= 1'b0;
+		ID_reg <= `AXI_IDS_BITS'b0;
 	end
 	else begin
 		// if(AWVALID_S0 & ~WREADY)		//since master.sv design after writeaddress is writedata
@@ -129,36 +131,46 @@ always_ff @( posedge clk or negedge rst ) begin
 		// else 
 		// 	WVALID_S0_reg <= WVALID_S0_reg;
 		
-		if(AWVALID_S1 & ~WREADY)
+		if(AWVALID_S1 & ~WREADY)begin
 			WVALID_S1_reg <= AWVALID_S1;
+			ID_reg <= AWID_S1;
+		end
 		else if(WVALID & WREADY & WLAST)
 			WVALID_S1_reg <= 1'b0;
 		else 
 			WVALID_S1_reg <= WVALID_S1_reg;
 
-		if(AWVALID_S2 & ~WREADY)
+		if(AWVALID_S2 & ~WREADY)begin
 			WVALID_S2_reg <= AWVALID_S2;
+			ID_reg <= AWID_S2;
+		end
 		else if(WVALID & WREADY & WLAST)
 			WVALID_S2_reg <= 1'b0;
 		else 
 			WVALID_S2_reg <= WVALID_S2_reg;
 
-		if(AWVALID_S3 & ~WREADY)
+		if(AWVALID_S3 & ~WREADY)begin
 			WVALID_S3_reg <= AWVALID_S3;
+			ID_reg <= AWID_S3;
+		end
 		else if(WVALID & WREADY & WLAST)
 			WVALID_S3_reg <= 1'b0;
 		else 
 			WVALID_S3_reg <= WVALID_S3_reg;
 
-		if(AWVALID_S4 & ~WREADY)
+		if(AWVALID_S4 & ~WREADY)begin
 			WVALID_S4_reg <= AWVALID_S4;
+			ID_reg <= AWID_S4;
+		end
 		else if(WVALID & WREADY & WLAST)
 			WVALID_S4_reg <= 1'b0;
 		else 
 			WVALID_S4_reg <= WVALID_S4_reg;
 
-		if(AWVALID_S5 & ~WREADY)
+		if(AWVALID_S5 & ~WREADY)begin
 			WVALID_S5_reg <= AWVALID_S5;
+			ID_reg <= AWID_S5;
+		end
 		else if(WVALID & WREADY & WLAST)
 			WVALID_S5_reg <= 1'b0;
 		else 
@@ -169,7 +181,7 @@ end
 always_comb begin
 	case (slave)
 		6'b000001 : begin
-			master = {AWID_S0[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = WVALID;
 			WVALID_S1 = 1'b0;
 			WVALID_S2 = 1'b0;
@@ -179,7 +191,7 @@ always_comb begin
 			WREADY = WREADY_S0;
 		end
 		6'b000010 : begin
-			master = {AWID_S1[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = 1'b0;
 			WVALID_S1 = WVALID;
 			WVALID_S2 = 1'b0;
@@ -189,7 +201,7 @@ always_comb begin
 			WREADY = WREADY_S1;
 		end
 		6'b000100 : begin
-			master = {AWID_S2[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = 1'b0;
 			WVALID_S1 = 1'b0;
 			WVALID_S2 = WVALID;
@@ -199,7 +211,7 @@ always_comb begin
 			WREADY = WREADY_S2;
 		end 
 		6'b001000 : begin
-			master = {AWID_S3[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = 1'b0;
 			WVALID_S1 = 1'b0;
 			WVALID_S2 = 1'b0;
@@ -209,7 +221,7 @@ always_comb begin
 			WREADY = WREADY_S3;
 		end
 		6'b010000 : begin
-			master = {AWID_S4[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = 1'b0;
 			WVALID_S1 = 1'b0;
 			WVALID_S2 = 1'b0;
@@ -219,7 +231,7 @@ always_comb begin
 			WREADY = WREADY_S4;
 		end
 		6'b100000 : begin
-			master = {AWID_S5[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
+			master = {ID_reg[`AXI_IDS_BITS-1:`AXI_ID_BITS]};
 			WVALID_S0 = 1'b0;
 			WVALID_S1 = 1'b0;
 			WVALID_S2 = 1'b0;

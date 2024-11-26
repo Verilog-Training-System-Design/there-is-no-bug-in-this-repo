@@ -73,14 +73,14 @@ always_comb begin
         3'd3 : begin                //LUI
             ALUContrl = 5'b10000;
         end
-        3'd4 : begin                //CSR
-            case (CSRimm)
-                12'b110010000010 : ALUContrl = 5'b10101;
-                12'b110000000010 : ALUContrl = 5'b10110;
-                12'b110010000000 : ALUContrl = 5'b10111;
-                default : ALUContrl = 5'b11000;
-            endcase
-        end
+        // 3'd4 : begin                //CSR
+        //     case (CSRimm)
+        //         12'b110010000010 : ALUContrl = 5'b10101;
+        //         12'b110000000010 : ALUContrl = 5'b10110;
+        //         12'b110010000000 : ALUContrl = 5'b10111;
+        //         default : ALUContrl = 5'b11000;
+        //     endcase
+        // end
         3'd5 : begin                //float add and sub
             case(funct7)
                 7'b0000000 : FALUControl = 2'd0;
