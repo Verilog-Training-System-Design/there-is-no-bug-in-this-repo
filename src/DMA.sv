@@ -89,7 +89,7 @@
   //   reg_dma_en
 
   //----------------------  FSM ----------------------------//
-      always_ff @(posedge clk) begin
+      always_ff @(posedge clk or negedge rst) begin
           if(!rst)
               S_cur   = INITIAL;
           else
@@ -167,7 +167,7 @@
     assign  Wresp_done  = M_BValid  & M_BReady;
   //------------------- DMA transfer Signal -------------------//
     always_ff @(posedge clk or negedge rst) begin
-      if(rst) 
+      if(!rst) 
         remainder_data  <=  32'd0;
       else if(S_cur == PREPARE)
         remainder_data  <=  total_data;
@@ -176,7 +176,7 @@
     end
 
     always_ff @(posedge clk or negedge rst) begin
-      if(rst) 
+      if(!rst) 
         single_trans_data  <=  5'd0;
       else if(S_cur == PREPARE)
         single_trans_data  <=  (total_data < 32'd16)   ? total_data[4:0] : 5'd16;
@@ -186,7 +186,7 @@
 
     assign  busy_check  = (|remainder_data) ? 1'b1 : 1'b0;
   //------------------------- CNT -------------------------//
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk or negedge rst) begin
       if (!rst) begin
         cnt   <=  `AXI_LEN_BITS'd0;
       end 
@@ -203,8 +203,8 @@
       end
     end
   //---------------------- interrupt ----------------------//  
-    always_ff @(posedge clk) begin
-      if (rst)  
+    always_ff @(posedge clk or negedge rst) begin
+      if (!rst)  
         DMA_interrupt <=    1'b0;      
       else if (S_cur == FINISH)
         DMA_interrupt <=    1'b1;               
@@ -217,7 +217,7 @@
     assign  M_AWBurst   = `AXI_BURST_INC; 
     assign  M_AWAddr    = slave_dst;
   
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk or negedge rst) begin
       if (!rst)
         M_AWValid   <=  1'b0;
       else begin
@@ -248,7 +248,7 @@
     assign  M_ARBurst   = `AXI_BURST_INC; 
     assign  M_ARAddr    = slave_src; 
 
-    always_ff @(posedge clk) begin
+    always_ff @(posedge clk or negedge rst) begin
       if (!rst)
         M_ARValid   <=  1'b0;
       else begin
@@ -260,9 +260,10 @@
       end
     end    
   //------------------------ Data -------------------------//
+    assign  M_RReady    = (S_cur == RDATA)  ? 1'b1 : 1'b0; 
     //slave info for DMA
-      always_ff @(posedge clk) begin
-        if (rst) begin
+      always_ff @(posedge clk or negedge rst) begin
+        if (!rst) begin
           slave_src   <=  32'd0;
           slave_dst   <=  32'd0;
           total_data  <=  32'd0;        
@@ -275,7 +276,7 @@
       end
     //store_load data (axi length = 16) (seq. timing have some problem) 
       always_ff @(posedge clk or negedge rst) begin
-        if (rst) begin
+        if (!rst) begin
           for(i = 4'd0; i <= 4'd15; i = i + 1)
             data_buffer[i] <= 32'd0; 
         end 

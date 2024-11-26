@@ -59,7 +59,8 @@
       logic   [`AXI_LEN_BITS -1:0]  cnt;
     //Data register
       logic   [`AXI_IDS_BITS -1:0]  reg_ARID , reg_AWID;
-      logic   [`MEM_ADDR_LEN -1:0]  reg_ARAddr, reg_AWAddr; 
+      //logic   [`MEM_ADDR_LEN -1:0]  reg_ARAddr, reg_AWAddr; 
+      logic   [31:0]  reg_ARAddr, reg_AWAddr; 
       logic   [`AXI_LEN_BITS -1:0]  reg_ARLen, reg_AWLen;
     //Last Signal
       logic   W_last, R_last;
@@ -128,7 +129,7 @@
 
         always_ff @(posedge clk or negedge rst) begin
           if(!rst)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
-          else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:2] : reg_AWAddr;
+          else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:0] : reg_AWAddr;
         end   
         
         always_ff @(posedge clk or negedge rst ) begin
