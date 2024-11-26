@@ -99,7 +99,7 @@ assign RDATA_M2 = RDATA;
 assign RRESP_M2 = RRESP;
 assign RLAST_M2 = RLAST;
 
-logic lock_S0, lock_S1, lock_S2, lock_S3, lock_S4, lock_S5;         //S4 > S3 > S0 > S2 > S1 > S5
+logic lock_S0, lock_S1, lock_S2, lock_S3, lock_S4, lock_S5;         //S4 > S3 > S5 > S2 > S1 > S0
 logic [3:0] master;
 logic [5:0] slave;
 
@@ -113,12 +113,12 @@ always_ff @( posedge clk or negedge rst) begin
         lock_S5 <= 1'b0;
     end
     else begin
-        if(lock_S5 & RREADY & RLAST_S5)
-            lock_S5 <= 1'b0;
-        else if(RVALID_S5 & ~RVALID_S0 & ~RVALID_S1 & ~RVALID_S2 & ~RVALID_S3 & ~RVALID_S4 & ~RREADY)
-            lock_S5 <= 1'b1;
+        if(lock_S0 & RREADY & RLAST_S0)
+            lock_S0 <= 1'b0;
+        else if(RVALID_S0 & ~RVALID_S5 & ~RVALID_S1 & ~RVALID_S2 & ~RVALID_S3 & ~RVALID_S4 & ~RREADY)
+            lock_S0 <= 1'b1;
         else 
-            lock_S5 <= lock_S5;
+            lock_S0 <= lock_S0;
         
         if(lock_S1 & RREADY & RLAST_S1)
             lock_S1 <= 1'b0;
@@ -134,12 +134,12 @@ always_ff @( posedge clk or negedge rst) begin
         else 
             lock_S2 <= lock_S2;
         
-        if(lock_S0 & RREADY & RLAST_S0)
-            lock_S0 <= 1'b0;
-        else if(RVALID_S0 & ~lock_S1 & ~lock_S2 & ~RVALID_S3 & ~RVALID_S4 & ~lock_S5 & ~RREADY)
-            lock_S0 <= 1'b1;
+        if(lock_S5 & RREADY & RLAST_S5)
+            lock_S5 <= 1'b0;
+        else if(RVALID_S5 & ~lock_S1 & ~lock_S2 & ~RVALID_S3 & ~RVALID_S4 & ~lock_S0 & ~RREADY)
+            lock_S5 <= 1'b1;
         else 
-            lock_S0 <= lock_S0;
+            lock_S5 <= lock_S5;
         
         if(lock_S3 & RREADY & RLAST_S3)
             lock_S3 <= 1'b0;
@@ -162,14 +162,14 @@ always_comb begin
         slave = 6'b010000;
     else if((RVALID_S3 & ~lock_S0 & ~lock_S1 & ~lock_S2 & ~lock_S5) | lock_S3)
         slave = 6'b001000;
-    else if((RVALID_S0 & ~lock_S1 & ~lock_S2 & ~lock_S5) | lock_S0)
-        slave = 6'b000001;
+    else if((RVALID_S5 & ~lock_S1 & ~lock_S2 & ~lock_S0) | lock_S5)
+        slave = 6'b100000;
     else if((RVALID_S2 & ~lock_S5 & ~lock_S1) | lock_S2)
         slave = 6'b000100;
     else if((RVALID_S1 & ~lock_S5) | lock_S1)
         slave = 6'b000010;
-    else if(RVALID_S5 | lock_S5)
-        slave = 6'b100000;
+    else if(RVALID_S0 | lock_S0)
+        slave = 6'b000001;
     else
         slave = 6'd0;
 end
@@ -301,7 +301,7 @@ always_comb begin
             RVALID_M0 = 1'b0;
             RVALID_M1 = 1'b0;
             RVALID_M2 = 1'b0;
-            RREADY = 1'b1;          //ready before valid
+            RREADY = 1'b0;          //ready before valid
         end
     endcase
 end

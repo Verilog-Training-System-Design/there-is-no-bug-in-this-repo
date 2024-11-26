@@ -196,7 +196,7 @@
         assign  S_RData   = ROM_out;
 
         assign  S_RResp   = `AXI_RESP_OKAY;
-        assign  S_RLast   = (cnt == reg_ARLen)  ? 1'b1  : 1'b0;    
+        assign  S_RLast   = ((cnt == reg_ARLen) && (S_cur == RDATA))  ? 1'b1  : 1'b0;    
         assign  S_RValid  = (S_cur == RDATA)    ? 1'b1  : 1'b0;          
     //-------------------- for ROM --------------------------//   
         // always_comb begin

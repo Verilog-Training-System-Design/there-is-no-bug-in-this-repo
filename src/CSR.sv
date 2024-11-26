@@ -36,15 +36,16 @@ localparam [4:0]  MIE = 5'd3,
                   MEIE = 5'd11;
 
 logic [31:0] mcycle, mcycleh, minstret, minstreth;
-logic [31:0] mstatus, mepc, mip, mie;
+logic [31:0] mstatus, mepc, mie;
+logic mip_trap, mip_time;
 
 assign CSR_reset = timeout;         //WDT reset
 assign CSR_retpc = mepc;
 assign CSR_ISR_pc = 32'h00010000;
 assign CSR_ret = ((funct3 == 3'd0) & (funct7 == 7'b0011000) & (CSR_write)) ? 1'b1 : 1'b0;
-assign CSR_interrupt = interrupt & mstatus[MIE] & mie[MEIE] & mip[MEIP];        //there is trap, mstatus there is a trap in the cpu, mie there is a trap other trap can't cause trap, mip there is a trap waiting
-assign mip[MTIP] = (mie[MTIE]) ? timeout : 1'b0;
-assign mip[MEIP] = (mie[MEIE]) ? interrupt : 1'b0;
+assign CSR_interrupt = interrupt & mstatus[MIE] & mie[MEIE] & mip_trap;        //there is trap, mstatus there is a trap in the cpu, mie there is a trap other trap can't cause trap, mip there is a trap waiting
+assign mip_time = (mie[MTIE]) ? timeout : 1'b0;
+assign mip_trap = (mie[MEIE]) ? interrupt : 1'b0;
 
 //counting cycles and instruction counts
 always_ff @( posedge clk or negedge rst ) begin 
@@ -81,14 +82,14 @@ always_ff @( posedge clk or negedge rst ) begin
         end
     end
     else if(interrupt & ~im_stall & ~dm_stall) begin    //external interrupt is taken
-        mstatus[MPIE] <= (mip[MEIP]) ? mstatus[MIE] : mstatus[MPIE];
-        mstatus[MIE] <= (mip[MEIP]) ? 1'b0 : mstatus[MIE];
-        mstatus[MPP+:2] <= (mip[MEIP]) ? 2'b11 : mstatus[MPP+:2];
+        mstatus[MPIE] <= (mip_trap) ? mstatus[MIE] : mstatus[MPIE];
+        mstatus[MIE] <= (mip_trap) ? 1'b0 : mstatus[MIE];
+        mstatus[MPP+:2] <= (mip_trap) ? 2'b11 : mstatus[MPP+:2];
     end
     else if(timeout & ~im_stall & ~dm_stall)begin       //timer interrupt is taken
-        mstatus[MPIE] <= (mip[MTIP]) ? mstatus[MIE] : mstatus[MPIE];
-        mstatus[MIE] <= (mip[MTIP]) ? 1'b0 : mstatus[MIE];
-        mstatus[MPP+:2] <= (mip[MTIP]) ? 2'b11 : mstatus[MPP+:2];
+        mstatus[MPIE] <= (mip_trap) ? mstatus[MIE] : mstatus[MPIE];
+        mstatus[MIE] <= (mip_trap) ? 1'b0 : mstatus[MIE];
+        mstatus[MPP+:2] <= (mip_trap) ? 2'b11 : mstatus[MPP+:2];
     end
     else begin              //CSR instructions
         if(~im_stall & ~dm_stall & CSR_write)begin
@@ -266,7 +267,7 @@ always_comb begin
         12'h304 : CSR_data = mie;
         12'h305 : CSR_data = 32'h00010000;
         12'h341 : CSR_data = mepc;
-        12'h344 : CSR_data = mip;
+        12'h344 : CSR_data = {19'd0, mip_trap,3'b0, mip_time, 7'b0};
         12'hb00 : CSR_data = mcycle;
         12'hb80 : CSR_data = mcycleh;
         12'hb02 : CSR_data = minstret;
@@ -282,7 +283,7 @@ always_ff @( posedge clk or negedge rst ) begin
     end
     else if(~dm_stall & ~im_stall)begin
         if((funct7 == 7'b0001000) & (funct3 == 3'b000) & CSR_write)begin        //wfi wait for interrupt (when DMA is moving data from DRAM to ROM) see /prog4/boot.c
-            CSR_stall <= mip[MEIP];                         //there is a trap not deal with yet
+            CSR_stall <= mip_trap;                         //there is a trap not deal with yet
         end
         else if(CSR_interrupt) begin                                            //move to isr to tackle with trap
             CSR_stall <= 1'b0;                     

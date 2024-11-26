@@ -82,7 +82,7 @@
     logic   busy_check;
   //Data store
     integer [3:0]               i;
-    logic [15:0]                data_buffer [`AXI_DATA_BITS -1: 0];
+    logic [`AXI_DATA_BITS -1: 0]                data_buffer [15:0];
 
 //---------------------- Main code -------------------------//
   // //--------------- CPU control signal reg -----------------//
@@ -115,20 +115,20 @@
             else            S_nxt = PREPARE;
           end
           RADDR:  begin
-            if(Raddr_done)  S_nxt  = WADDR;
-            else            S_nxt  = RDATA;            
+            if(Raddr_done)  S_nxt  = RDATA;
+            else            S_nxt  = RADDR;            
           end
           RDATA:  begin
             if(R_last)      S_nxt  = WADDR;
             else            S_nxt  = RDATA;
           end
           WADDR:  begin
-            if(Waddr_done)  S_nxt  = WADDR;
-            else            S_nxt  = RDATA;            
+            if(Waddr_done)  S_nxt  = WDATA;
+            else            S_nxt  = WADDR;            
           end
           WDATA:  begin
-            if(W_last)      S_nxt  = WADDR;
-            else            S_nxt  = RDATA;            
+            if(W_last)      S_nxt  = WRESP;
+            else            S_nxt  = WDATA;            
           end
           WRESP:  begin
             if(W_last)
@@ -212,7 +212,7 @@
   //---------------------- W-channel ----------------------//
     //Addr
     assign  M_AWID      = `AXI_ID_BITS'd0;//4'b0010;
-    assign  M_AWLen     = `AXI_LEN_BITS;
+    assign  M_AWLen     = `AXI_LEN_BITS'hf;
     assign  M_AWSize    = `AXI_SIZE_BITS'd0;
     assign  M_AWBurst   = `AXI_BURST_INC; 
     assign  M_AWAddr    = slave_dst;
@@ -243,7 +243,7 @@
   //---------------------- R-channel ----------------------//
     //Addr
     assign  M_ARID      = `AXI_ID_BITS'd0;
-    assign  M_ARLen     = `AXI_LEN_BITS;
+    assign  M_ARLen     = `AXI_LEN_BITS'hf;
     assign  M_ARSize    = `AXI_SIZE_BITS'd0;
     assign  M_ARBurst   = `AXI_BURST_INC; 
     assign  M_ARAddr    = slave_src; 

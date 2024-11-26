@@ -73,7 +73,7 @@ logic [`AXI_LEN_BITS-1:0] counter;
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
 assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 assign RRESP_S = `AXI_RESP_OKAY;
-assign RLAST_S = ((stage == read_data) && (counter == arlen)); 
+assign RLAST_S = ((stage == read_data) && (counter == arlen-1) && (delay == 3'd4)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
@@ -156,12 +156,13 @@ always_ff @( posedge clk or negedge rst ) begin
     end
 end
 
+logic ret_flag;
 //delay clock
 always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)
 		delay <= 3'd0;
 	else begin
-		if((stage == idle) | (delay == 3'd4))
+		if(stage == idle || ret_flag)
 			delay <= 3'd0;
 		else 
 			delay <= delay + 3'd1;
@@ -178,6 +179,7 @@ always_ff @( posedge clk or negedge rst) begin
 end
 
 always_comb begin
+	ret_flag = 1'b0;
     case (stage)
         idle : begin
             if((AWVALID_S & AWREADY_S) | (ARVALID_S & ARREADY_S))begin
@@ -187,29 +189,41 @@ always_comb begin
                 next_stage = idle;
         end
 		activate : begin
-			if(delay == 3'd4)begin
-				if(WVALID_S)
+			if(delay >= 3'd4)begin
+				if(WVALID_S)begin
+					ret_flag = 1'b1;
 					next_stage = write_data;
-				else
+				end
+				else begin
 					next_stage = read_data;
+					ret_flag = 1'b1;
+				end
 			end
 			else 
 				next_stage = activate;
 		end
         read_data : begin
-            if(delay == 3'd4)begin
-				if(RVALID_S & RREADY_S & RLAST_S)
+            if(delay >= 3'd4)begin
+				if(RVALID_S & RREADY_S & RLAST_S)begin
+					ret_flag = 1'b1;
 					next_stage = precharge;
-				else
+				end
+				else if(RVALID_S & RREADY_S)begin
+					ret_flag = 1'b1;
+					next_stage = activate;
+				end
+				else 
 					next_stage = read_data;
 			end
 			else 
 				next_stage = read_data;
         end
         write_data : begin
-			if(delay == 3'd4)begin
-				if(WVALID_S & WREADY_S & WLAST_S)
+			if(delay >= 3'd4)begin
+				if(WVALID_S & WREADY_S & WLAST_S)begin
+					ret_flag = 1'b1;
             	    next_stage = precharge;
+				end
             	else
             	    next_stage = write_data;
 			end
@@ -217,19 +231,21 @@ always_comb begin
 				next_stage = write_data;
         end
 		precharge : begin
-			if(delay == 3'd4)
+			if(delay == 3'd4)begin
 				next_stage = idle;
+				ret_flag = 1'b1;
+			end
 			else
 				next_stage = precharge;
 		end
     endcase    
 end
 
-always_ff @( posedge clk or negedge rst ) begin : blockName
+always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)
 		row <= 11'd0;
 	else if(stage == idle)begin
-		row <= (AWVALID_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
+		row <= (ARREADY_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
 	end
 	else 
 		row <= row;
@@ -241,35 +257,35 @@ always_comb begin
 	case (stage)
 		idle : begin
 			DRAM_CASn = 1'd1;
-			DRAM_RASn = (AWVALID_S & ARVALID_S) ? 1'd0 : ((AWVALID_S & AWREADY_S) ? 1'd0 : 1'd1);
+			DRAM_RASn = (ARREADY_S & ARVALID_S) ? 1'd0 : ((AWVALID_S & AWREADY_S) ? 1'd0 : 1'd1);
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
-			DRAM_A = (AWVALID_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
+			DRAM_A = (ARREADY_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
 		end
 		activate : begin
-			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_CASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end
 		read_data : begin
-			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_CASn = 1'b1; //(delay >= 3'd4 & (RVALID_S & RREADY_S)) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end
 		write_data : begin
-			DRAM_CASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_CASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
-			DRAM_WEn = (delay == 3'd4) ? WSTRB_S : 4'hf;
+			DRAM_WEn = (delay >= 3'd4) ? WSTRB_S : 4'hf;
 			DRAM_D = WDATA_S;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end 
 		precharge : begin
 			DRAM_CASn = 1'd1;
-			DRAM_RASn = (delay == 3'd4) ? 1'd0 : 1'd1;
+			DRAM_RASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
 			DRAM_WEn = 4'h0;
 			DRAM_D = 32'd0;
 			DRAM_A = row;
