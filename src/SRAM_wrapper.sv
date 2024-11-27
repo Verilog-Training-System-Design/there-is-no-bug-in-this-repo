@@ -51,7 +51,6 @@ module SRAM_wrapper (
 //         late_rst <= ARESETn;
 // end
 
-
 // logic CEB;
 logic WEB;
 logic [31:0] BWEB;
@@ -82,7 +81,7 @@ localparam  idle = 2'b0,
 // logic [`AXI_LEN_BITS-1:0] AWLEN_reg;
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
-logic RVALID_reg;
+// logic RVALID_reg;
 logic ceb;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;

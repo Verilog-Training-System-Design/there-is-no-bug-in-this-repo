@@ -482,7 +482,7 @@ CSR csr(
 .funct7(exe_funct7),
 .CSR_type(exe_csr_type),
     
-.rs1_data(exe_rd_reg1_data),
+.rs1_data(alu1),
 .imm(exe_imm),
 
 .csr_addr(exe_csr_addr),

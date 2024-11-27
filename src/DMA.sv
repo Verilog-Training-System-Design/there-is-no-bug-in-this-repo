@@ -54,7 +54,7 @@
 
 //---------------------- Parameter -------------------------//
   //FSM
-    logic   [3:0] S_cur, S_nxt;
+    logic   [2:0] S_cur, S_nxt;
     parameter   INITIAL   = 3'd0,
                 PREPARE   = 3'd1,
                 RADDR     = 3'd2,
@@ -81,7 +81,7 @@
     logic   Raddr_done, Rdata_done, Waddr_done, Wdata_done, Wresp_done;
     logic   busy_check;
   //Data store
-    integer [3:0]               i;
+    logic [3:0]               i;
     logic [`AXI_DATA_BITS -1: 0]                data_buffer [15:0];
 
 //---------------------- Main code -------------------------//
@@ -131,11 +131,11 @@
             else            S_nxt  = WDATA;            
           end
           WRESP:  begin
-            if(W_last)
+            if(Wresp_done)
               S_nxt = (busy_check) ? RADDR : FINISH;
             else
-              S_nxt = FINISH;   
-          end 
+              S_nxt = WRESP;
+          end
           default:  S_nxt  = INITIAL;   //FINISH
         endcase
       end
@@ -211,7 +211,7 @@
     end
   //---------------------- W-channel ----------------------//
     //Addr
-    assign  M_AWID      = `AXI_ID_BITS'd0;//4'b0010;
+    assign  M_AWID      = `AXI_ID_BITS'b0100;//4'b0010;
     assign  M_AWLen     = `AXI_LEN_BITS'hf;
     assign  M_AWSize    = `AXI_SIZE_BITS'd0;
     assign  M_AWBurst   = `AXI_BURST_INC; 
@@ -273,6 +273,10 @@
           slave_dst   <=  DMADST;
           total_data  <=  DMALEN;
         end
+        else if (S_cur == WRESP) begin
+          slave_src   <=  slave_src + ((`AXI_DATA_BITS'hf + 32'd1) << 2);
+          slave_dst   <=  slave_dst + ((`AXI_DATA_BITS'hf + 32'd1) << 2);
+        end
       end
     //store_load data (axi length = 16) (seq. timing have some problem) 
       always_ff @(posedge clk or negedge rst) begin
@@ -285,15 +289,20 @@
             data_buffer[0]  <=  M_RData;
             for(i = 4'd0; i <= 4'd14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
-          end       
+          end
+          // else if ((S_cur == WADDR)) begin
+          //   M_WData <= data_buffer[15];
+          // end       
           else if ((S_cur == WDATA) && (Wdata_done)) begin
-            M_WData <=  data_buffer[15];
+            data_buffer[0] <= 32'd0;
+            // M_WData <=  data_buffer[15];
             for(i = 4'd0; i <= 4'd14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end    
         end
       end
 
+    assign M_WData = data_buffer[15];  
     // always_ff @(posedge clk) begin
     //   if (rst) begin
     //     data_pointer  <=  4'd0;        

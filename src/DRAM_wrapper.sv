@@ -59,6 +59,7 @@ logic [`AXI_SIZE_BITS-1:0] SIZE_reg;
 logic [1:0] BURST_reg;
 logic [`AXI_DATA_BITS-1:0] RDATA_reg;
 logic [10:0] row;
+logic B_done;
 
 logic [2:0] stage, next_stage;
 localparam [2:0] idle = 3'b000,
@@ -70,10 +71,11 @@ localparam [2:0] idle = 3'b000,
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
 
+assign B_done = BVALID_S & BREADY_S;
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
 assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 assign RRESP_S = `AXI_RESP_OKAY;
-assign RLAST_S = ((stage == read_data) && (counter == arlen-1) && (delay == 3'd4)); 
+assign RLAST_S = ((stage == read_data) && (counter == arlen) && (delay == 3'd4)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
@@ -301,7 +303,7 @@ always_comb begin
             RVALID_S = 1'b0;
             AWREADY_S = 1'b1;
             WREADY_S = 1'b0;
-            BVALID_S = 1'b0;
+            // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = (AWVALID_S) ? AWADDR_S[15:2] : ARADDR_S[15:2];
         end
@@ -310,7 +312,7 @@ always_comb begin
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
-            BVALID_S = 1'b0;
+            // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
 		end
         read_data : begin
@@ -318,7 +320,7 @@ always_comb begin
             RVALID_S = (delay == 3'd4) ? 1'b1 : 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
-            BVALID_S = 1'b0;
+            // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = (RVALID_S & RREADY_S & RLAST_S) ? address : (RVALID_S & RREADY_S) ? address_4 : address;
         end
@@ -327,7 +329,7 @@ always_comb begin
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = (delay == 3'd4) ? 1'b1 : 1'b0;
-            BVALID_S = 1'b0;
+            // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = address;
         end
@@ -336,10 +338,23 @@ always_comb begin
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
-            BVALID_S = 1'b1;
+            // BVALID_S = 1'b1;
 			DRAM_CSn = 1'b0;
 		end
     endcase
+end
+
+always_ff @( posedge clk or negedge rst ) begin 
+	if(~rst)
+		BVALID_S <= 1'b0;
+	else begin
+		if(WVALID_S & WREADY_S & WLAST_S)
+			BVALID_S <= 1'b1;
+		else if(B_done)
+			BVALID_S <= 1'b0;
+		else 
+			BVALID_S <= BVALID_S;
+	end
 end
 
 endmodule

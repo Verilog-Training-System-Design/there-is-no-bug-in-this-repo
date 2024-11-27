@@ -174,7 +174,8 @@
         .DMAEN      (w_DMAEN ),
         .DMASRC     (w_DMASRC),
         .DMADST     (w_DMADST),
-        .DMALEN     (w_DMALEN)
+        .DMALEN     (w_DMALEN),
+        .DMA_interrupt(DMA_interrupt)
     );
 
 
