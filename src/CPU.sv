@@ -189,6 +189,7 @@ IFID_reg IFID_pipe(
 .CSR_stall(w_csr_stall),
 .CSR_interrupt(w_csr_interrupt),
 .CSR_ret(w_csr_ret),
+.CSR_reset(w_csr_reset),
 
 .ID_pc_out(id_pc),
 .read_reg1(rd_r1),

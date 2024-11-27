@@ -200,14 +200,16 @@
       if (!rst)  
         DMA_interrupt <=    1'b0;      
       else if (S_cur == FINISH)
-        DMA_interrupt <=    1'b1;             
+        DMA_interrupt <=    1'b1;
+      else 
+        DMA_interrupt <=    1'b0;             
     end
   //---------------------- W-channel ----------------------//
     //Addr
     assign  M_AWID      = `AXI_ID_BITS'b0100;//4'b0010;
 
-    assign    M_AWLen     = single_trans_data -1;
-    // assign  M_AWLen     = `AXI_LEN_BITS'hf;
+    //assign    M_AWLen     = single_trans_data -1;
+     assign  M_AWLen     = `AXI_LEN_BITS'hf;
     assign  M_AWSize    = `AXI_SIZE_BITS'd0;
     assign  M_AWBurst   = `AXI_BURST_INC; 
     assign  M_AWAddr    = slave_dst;
@@ -238,8 +240,8 @@
   //---------------------- R-channel ----------------------//
     //Addr
     assign  M_ARID      = `AXI_ID_BITS'd0;
-    assign  M_ARLen     = single_trans_data -1;
-    // assign  M_ARLen     = `AXI_LEN_BITS'hf;
+    //assign  M_ARLen     = single_trans_data -1;
+    assign  M_ARLen     = `AXI_LEN_BITS'hf;
     assign  M_ARSize    = `AXI_SIZE_BITS'd0;
     assign  M_ARBurst   = `AXI_BURST_INC; 
     assign  M_ARAddr    = slave_src; 

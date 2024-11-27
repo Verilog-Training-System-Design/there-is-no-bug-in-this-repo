@@ -75,7 +75,7 @@ assign B_done = BVALID_S & BREADY_S;
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
 assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 assign RRESP_S = `AXI_RESP_OKAY;
-assign RLAST_S = ((stage == read_data) && (counter == arlen) && (delay == 3'd4)); 
+assign RLAST_S = ((stage == read_data) && (counter == arlen) && (delay == 3'd5)); 
 assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
 assign BRESP_S = `AXI_RESP_OKAY;
 
@@ -159,20 +159,49 @@ always_ff @( posedge clk or negedge rst ) begin
 end
 
 logic ret_flag;
-//delay clock
+logic delay_done;
+assign delay_done = (delay == 3'd5) ? 1'b1 : 1'b0;		//change
+
 always_ff @( posedge clk or negedge rst ) begin 
-	if(~rst)
+	if(~rst | ret_flag)
 		delay <= 3'd0;
-	else begin
-		if(stage == idle || ret_flag)
-			delay <= 3'd0;
-		else 
-			delay <= delay + 3'd1;
+	else if(delay == 3'd5) begin
+		if (next_stage == read_data) begin
+			delay <=  3'd0;			
+		end 
+		else begin
+			delay <=  delay;						
+		end
 	end
+	else 
+		delay <= delay + 3'd1;
 end
 
+//delay clock
+	// always_ff @( posedge clk or negedge rst ) begin 
+	// 	if(~rst)
+	// 		delay <= 3'd0;
+	// 	else begin
+	// 		case (stage)
+	// 			idle:	    delay	<=	((ARVALID_S & ARREADY_S) | (AWVALID_S & AWREADY_S)) ? 3'd0 : (delay == 3'd4) ? delay : delay + 3'd1;
+	// 			activate:	delay	<=	(WVALID_S & (delay == 3'd4)) ? 3'd0 : delay + 3'd1;
+	// 			read_data:  delay	<=	(RVALID_S & RREADY_S & RLAST_S) ? 3'd0 : (delay == 3'd4) ? delay : delay + 3'd1; 
+	// 			write_data: delay	<=	(WVALID_S & WREADY_S & WLAST_S & (delay == 3'd4)) ? 3'd0 : (delay == 3'd4) ? delay : delay + 3'd1; 
+	// 			precharge:  delay	<=	(delay_done) ? 3'd0 : (delay == 3'd4) ? delay : delay + 3'd1; 
+	// 			default:    delay	<=	3'd0;
+	// 		endcase
+	// 		// if(ret_flag)		// stage == idle || ret_flag
+	// 		// 	delay <= 3'd0;
+	// 		// else 
+	// 		// 	delay <= delay + 3'd1;
+	// 	end
+	// end
+
 //FSM for slave to switch channel
-//idle --> activate --> get row --> get col --> get data --> precharge
+//read
+//idle --> activate(get row) --> read_data(get col) --> wait 5 cycles get data --> precharge
+//write
+//idle --> activate(get row) -->write_data(get col) --> wait 5 cycles --> precharge
 always_ff @( posedge clk or negedge rst) begin 
     if(~rst)
         stage <= idle;
@@ -181,61 +210,57 @@ always_ff @( posedge clk or negedge rst) begin
 end
 
 always_comb begin
-	ret_flag = 1'b0;
-    case (stage)
+    ret_flag = 1'b0;
+	case (stage)
         idle : begin
-            if((AWVALID_S & AWREADY_S) | (ARVALID_S & ARREADY_S))begin
+            if(((ARVALID_S & ARREADY_S) | (AWVALID_S & AWREADY_S)) & delay_done)begin
+				ret_flag = 1'b1;
 				next_stage = activate;
 			end
             else
                 next_stage = idle;
         end
 		activate : begin
-			if(delay >= 3'd4)begin
+			if(delay_done)begin
 				if(WVALID_S)begin
 					ret_flag = 1'b1;
 					next_stage = write_data;
 				end
 				else begin
 					next_stage = read_data;
-					ret_flag = 1'b1;
 				end
 			end
 			else 
 				next_stage = activate;
 		end
-        read_data : begin
-            if(delay >= 3'd4)begin
+        read_data : begin		//different row??
+			if(delay_done)begin
 				if(RVALID_S & RREADY_S & RLAST_S)begin
 					ret_flag = 1'b1;
 					next_stage = precharge;
 				end
 				else if(RVALID_S & RREADY_S)begin
 					ret_flag = 1'b1;
-					next_stage = activate;
-				end
-				else 
 					next_stage = read_data;
+				end
 			end
 			else 
 				next_stage = read_data;
         end
-        write_data : begin
-			if(delay >= 3'd4)begin
+        write_data : begin		//write multiple data??
+			if(delay_done)begin
 				if(WVALID_S & WREADY_S & WLAST_S)begin
 					ret_flag = 1'b1;
             	    next_stage = precharge;
 				end
-            	else
-            	    next_stage = write_data;
 			end
             else 
 				next_stage = write_data;
-        end
+		end
 		precharge : begin
-			if(delay == 3'd4)begin
-				next_stage = idle;
+			if(delay_done)begin
 				ret_flag = 1'b1;
+				next_stage = idle;
 			end
 			else
 				next_stage = precharge;
@@ -259,36 +284,36 @@ always_comb begin
 	case (stage)
 		idle : begin
 			DRAM_CASn = 1'd1;
-			DRAM_RASn = (ARREADY_S & ARVALID_S) ? 1'd0 : ((AWVALID_S & AWREADY_S) ? 1'd0 : 1'd1);
+			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
 			DRAM_A = (ARREADY_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
 		end
 		activate : begin
-			DRAM_CASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
-			DRAM_RASn = 1'd1;
+			DRAM_CASn = 1'd1;
+			DRAM_RASn = (delay == 3'd0) ? 1'd0 : 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
-			DRAM_A = {1'b0, ADDR_reg[11:2]};
+			DRAM_A = ADDR_reg[22:12];
 		end
 		read_data : begin
-			DRAM_CASn = 1'b1; //(delay >= 3'd4 & (RVALID_S & RREADY_S)) ? 1'd0 : 1'd1;
+			DRAM_CASn = (delay == 3'd0) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end
 		write_data : begin
-			DRAM_CASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
+			DRAM_CASn = (delay == 3'd0) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
-			DRAM_WEn = (delay >= 3'd4) ? WSTRB_S : 4'hf;
+			DRAM_WEn = (delay == 3'd0) ? WSTRB_S : 4'hf;
 			DRAM_D = WDATA_S;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end 
 		precharge : begin
 			DRAM_CASn = 1'd1;
-			DRAM_RASn = (delay >= 3'd4) ? 1'd0 : 1'd1;
-			DRAM_WEn = 4'h0;
+			DRAM_RASn = (delay == 3'd0) ? 1'd0 : 1'd1;
+			DRAM_WEn = (delay == 3'd0) ? 4'h0 : 4'hf;
 			DRAM_D = 32'd0;
 			DRAM_A = row;
 		end
@@ -299,9 +324,9 @@ end
 always_comb begin
     case (stage)
         idle : begin
-            ARREADY_S = ~AWVALID_S;         //if want to write, write first
+            ARREADY_S = (delay_done) ? ~AWVALID_S : 1'b0;         //if want to write, write first
             RVALID_S = 1'b0;
-            AWREADY_S = 1'b1;
+            AWREADY_S = (delay_done) ? 1'b1 : 1'b0;
             WREADY_S = 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
@@ -317,7 +342,7 @@ always_comb begin
 		end
         read_data : begin
             ARREADY_S = 1'b0;
-            RVALID_S = (delay == 3'd4) ? 1'b1 : 1'b0;
+            RVALID_S = (delay_done) ? 1'b1 : 1'b0;
             AWREADY_S = 1'b0;
             WREADY_S = 1'b0;
             // BVALID_S = 1'b0;
@@ -328,7 +353,7 @@ always_comb begin
             ARREADY_S = 1'b0;
             RVALID_S = 1'b0;
             AWREADY_S = 1'b0;
-            WREADY_S = (delay == 3'd4) ? 1'b1 : 1'b0;
+            WREADY_S = (delay_done) ? 1'b1 : 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = address;

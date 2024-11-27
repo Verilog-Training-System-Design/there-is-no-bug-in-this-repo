@@ -51,12 +51,12 @@ void boot() {
   // disable DMA Controller
   dma_addr_boot[0x40] = 0; // disable DMA
   
- /* 
-  int *data_paddr_start = &__data_paddr_start;
-  for(int k=0; k<=(&__data_end-&__data_start); k++)
-  {
- *(&__data_start+k) = data_paddr_start[k];
-  }  */
+ 
+//   int *data_paddr_start = &__data_paddr_start;
+//   for(int k=0; k<=(&__data_end-&__data_start); k++)
+//   {
+//  *(&__data_start+k) = data_paddr_start[k];
+//   }  
  
 
 
