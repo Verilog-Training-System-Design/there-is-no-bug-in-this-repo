@@ -29,13 +29,16 @@
   //CDC_multi bit
   logic     [31:0]  reg_clk1_WTOCNT;
   logic     [31:0]  reg_clk2_WTOCNT_1;
-  logic     [31:0]  reg_clk2_WTOCNT_2;
+
+  //Multi bit load stable
+  logic     reg_clk1_load_stable;
+  logic     reg_clk2_load_stable_1, reg_clk2_load_stable_2;    
 
 //---------------------- Main code -------------------------//
 //----------- CDC Problem for clk1 input signal ------------//
   //WDLIVE/Enable- clock1 flop
-    always_ff @(posedge clk) begin
-      if(rst)begin
+    always_ff @(posedge clk or negedge rst) begin
+      if(!rst)begin
         reg_clk1_WDLIVE <=  1'b0;
         reg_clk1_WDEN   <=  1'b0;
       end
@@ -45,8 +48,8 @@
       end      
     end
   //WDLIVE/Enable- clock2 flop (WDLIVE 是否需要每次都變化都同步)
-    always_ff @(posedge clk2) begin
-      if(rst2) begin
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if(!rst2) begin
         reg_clk2_WDLIVE_1 <=  1'b0;  
         reg_clk2_WDLIVE_2 <=  1'b0;
         reg_clk2_WDEN_1   <=  1'b0;  
@@ -60,26 +63,43 @@
       end
     end
   //WTOCNT(mult bit syn problem, method 2, no load signal & feedback)
-    always_ff @(posedge clk) begin
-      if(rst)
+    always_ff @(posedge clk or negedge rst) begin
+      if(!rst)
         reg_clk1_WTOCNT <=  32'd0;
       else
         reg_clk1_WTOCNT <=  WTOCNT;
     end
+    //load stable
+    always_ff @(posedge clk or negedge rst) begin
+      if(!rst)
+        reg_clk1_load_stable <=  32'd0;
+      else
+        reg_clk1_load_stable <=  (|WTOCNT);
+    end    
 
-    always_ff @(posedge clk2) begin
-      if(rst2) begin
-        reg_clk2_WTOCNT_1 <=  32'd0;  
-        reg_clk2_WTOCNT_2 <=  32'd0;
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if(!rst2) begin
+        reg_clk2_load_stable_1 <=  32'd0;  
+        reg_clk2_load_stable_2 <=  32'd0;
       end
       else begin
-        reg_clk2_WTOCNT_1 <=  reg_clk1_WTOCNT;  
-        reg_clk2_WTOCNT_2 <=  reg_clk2_WDLIVE_1;        
+        reg_clk2_load_stable_1 <=  reg_clk1_load_stable;  
+        reg_clk2_load_stable_2 <=  reg_clk2_load_stable_1;        
       end
     end
+    //check signaal stable
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if(!rst2) begin
+        reg_clk2_WTOCNT_1 <=  32'd0;
+      end
+      else begin
+        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_2) ? reg_clk1_WTOCNT : 32'd0;     
+      end
+    end    
+
 //------------------------- FSM -------------------------//
-  always_ff @(posedge clk2) begin
-    if (rst2)   S_cur <=  INITIAL;
+  always_ff @(posedge clk2 or negedge rst2) begin
+    if (!rst2)   S_cur <=  INITIAL;
     else        S_cur <=  S_nxt;
   end
 
@@ -107,13 +127,18 @@
 //-------------------Count Down module---------------------//
     assign  CNT_EXCEED  = ((S_cur == CNTDOWN) && (WDT_CNT == 0)) ? 1'b1 : 1'b0;
   //------------------------- CNT -------------------------//
-    always_ff @(posedge clk2) begin
-      if (rst2)
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if (!rst2)
         WDT_CNT <=  32'd0;
       else begin
         case (S_cur)
-          INITIAL: WDT_CNT <=  reg_clk2_WTOCNT_2;
-          CNTDOWN: WDT_CNT <=  WTOCNT - 32'd1;
+          INITIAL: WDT_CNT <=  reg_clk2_WTOCNT_1;
+          CNTDOWN: begin
+            if(reg_clk2_WDLIVE_2)
+              WDT_CNT <=  reg_clk2_WTOCNT_1;
+            else
+              WDT_CNT <=  WDT_CNT - 32'd1;              
+          end
           RSTCNT:  WDT_CNT <=  32'd0;
           default: WDT_CNT <=  WDT_CNT;
         endcase
@@ -121,8 +146,8 @@
     end
 
   //------------------------- WTO -------------------------//
-    always_ff @(posedge clk2) begin
-      if (rst2) begin
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if (!rst2) begin
         WTO   <=  1'b0;  
       end 
       else if (S_cur == TIMEOUT)

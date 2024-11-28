@@ -63,7 +63,7 @@
       logic   [`AXI_LEN_BITS -1:0]  cnt;
     //Data register
       logic   [`AXI_IDS_BITS -1:0]  reg_ARID , reg_AWID;
-      logic   [`MEM_ADDR_LEN -1:0]  reg_ARAddr, reg_AWAddr; 
+      logic   [`AXI_ADDR_BITS -1:0]  reg_ARAddr, reg_AWAddr; 
       logic   [`AXI_LEN_BITS -1:0]  reg_ARLen, reg_AWLen;
     //Last Signal
       logic   W_last, R_last;
@@ -138,7 +138,7 @@
 
         always_ff @(posedge clk or negedge rst) begin
           if(!rst)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
-          else           reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:2] : reg_AWAddr;
+          else           reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:0] : reg_AWAddr;
         end   
         
         always_ff @(posedge clk or negedge rst ) begin
@@ -211,7 +211,7 @@
                 WDLIVE  <=  1'b0;
                 WTOCNT  <=  32'd0;
             end 
-            else if (S_WValid) begin
+            else if (Wdata_done) begin
                 case (reg_AWAddr[15:0])
                 16'h0100:   WDEN    <=  S_WData[0];
                 16'h0200:   WDLIVE  <=  S_WData[0];
