@@ -6,7 +6,7 @@ module Decoder(
     input [`AXI_ADDR_BITS-1:0] 			ADDR,
     input                               VALID,              //the address correctness
     output logic                        READY,              //slave take the address
-    input                               READY_S0,           
+    input                               READY_S0,
     input                               READY_S1,
     input                               READY_S2,
     input                               READY_S3,
@@ -18,6 +18,7 @@ module Decoder(
     output logic                        VALID_S3,
     output logic                        VALID_S4,
     output logic                        VALID_S5
+    // output logic [5:0]                  SLAVE
 );
 
 always_comb begin
@@ -29,6 +30,7 @@ always_comb begin
             VALID_S3 = 1'b0;
             VALID_S4 = 1'b0;
             VALID_S5 = 1'b0;
+            // SLAVE = 6'b000001;
             if(VALID)
                 READY = READY_S0;
             else 
@@ -41,6 +43,7 @@ always_comb begin
             VALID_S3 = 1'b0;
             VALID_S4 = 1'b0;
             VALID_S5 = 1'b0;
+            // SLAVE = 6'b000010;
             if(VALID)
                 READY = READY_S1;
             else 
@@ -53,6 +56,7 @@ always_comb begin
             VALID_S3 = 1'b0;
             VALID_S4 = 1'b0;
             VALID_S5 = 1'b0;
+            // SLAVE = 6'b000100;
             if(VALID)
                 READY = READY_S2;
             else 
@@ -65,6 +69,7 @@ always_comb begin
             VALID_S3 = VALID;
             VALID_S4 = 1'b0;
             VALID_S5 = 1'b0;
+            // SLAVE = 6'b001000;
             if(VALID)
                 READY = READY_S3;
             else 
@@ -77,6 +82,7 @@ always_comb begin
             VALID_S3 = 1'b0;
             VALID_S4 = VALID;
             VALID_S5 = 1'b0;
+            // SLAVE = 6'b010000;
             if(VALID)
                 READY = READY_S4;
             else 
@@ -89,6 +95,7 @@ always_comb begin
             VALID_S3 = 1'b0;
             VALID_S4 = 1'b0;
             VALID_S5 = VALID;
+            // SLAVE = 6'b100000;
             if(VALID)
                 READY = READY_S5;
             else 

@@ -197,6 +197,7 @@ Decoder WADecoder(
 	.VALID_S3(AWVALID_S3),
 	.VALID_S4(AWVALID_S4),
 	.VALID_S5(AWVALID_S5)
+	// .SLAVE(slave)
 );
 
 endmodule

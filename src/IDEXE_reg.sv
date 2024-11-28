@@ -93,7 +93,7 @@ always_ff @(posedge clk or negedge reset) begin
         EXE_CSR_addr <= 11'b0;
     end
     else begin
-        if(im_stall | dm_stall | CSR_stall) begin
+        if(im_stall | dm_stall ) begin
             EXE_pc_out <= EXE_pc_out;
             EXE_rd_reg1_data <= EXE_rd_reg1_data;
             EXE_rd_reg2_data <= EXE_rd_reg2_data;
@@ -121,7 +121,7 @@ always_ff @(posedge clk or negedge reset) begin
             EXE_CSR_type <= EXE_CSR_type;
             EXE_CSR_addr <= EXE_CSR_addr;
         end
-        else if(Control_flush) begin
+        else if(Control_flush | CSR_stall) begin
             EXE_MenWrite <= 1'b0;
             EXE_MemRead <= 1'b0;
             EXE_RegWrite <= 1'b0;

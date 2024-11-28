@@ -110,7 +110,7 @@ logic [1:0]                      BRESP_M0;
 logic                            BVALID_M0;
 logic                            BREADY_M0;
 
-logic w_read, w_write, w_im_stall, w_dm_stall;
+logic w_read, w_write, w_im_stall, w_dm_stall, read;
 logic [`AXI_STRB_BITS-1:0] w_write_type;
 logic [`AXI_ADDR_BITS-1:0] w_addr, w_im_addr;
 logic [`AXI_DATA_BITS-1:0] w_data_in, w_data_out, w_im_data_out;
@@ -143,6 +143,7 @@ CPU cpu(
 .DM_addr(w_addr),
 .DM_DI(w_data_in),
 .DM_write(w_write),
+.IM_read(read),
 //stall
 .IM_stall(w_im_stall),
 .DM_stall(w_dm_stall),
@@ -157,7 +158,7 @@ Master M0(                          //IM
     .reset(ARESETn)                 ,
 
     //from cpu
-    .READ(1'b1)                 ,
+    .READ(read)                 ,
     .WRITE(1'b0)                ,
     .WRITE_TYPE(4'hf)           ,
     .ADDR_IN(w_im_addr)         ,
