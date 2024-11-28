@@ -97,6 +97,7 @@ always_comb begin       //make sure DATA_OUT will always get last data
     else 
         DATA_OUT = DATA_BUF;
 end
+// assign DATA_OUT = DATA_BUF;
 
 //make sure read data won't disappear 
 always_ff @( posedge clk or negedge reset) begin 

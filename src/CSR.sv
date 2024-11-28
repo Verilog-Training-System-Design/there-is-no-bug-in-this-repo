@@ -203,52 +203,40 @@ always_ff @( posedge clk or negedge rst ) begin
                             mie <= mie;
                     endcase
                 end
-                12'h344 : begin                         //mepc
+                12'h341 : begin                         //mepc
                     case (funct3)
                         3'b001 : begin          //CSRRW
-                            mepc[MIE] <= rs1_data[MIE];
-                            mepc[MPIE] <= rs1_data[MPIE];
-                            mepc[MPP+:2] <= rs1_data[MPP+:2];
+                            mepc <= rs1_data;
                         end
                         3'b010 : begin          //CSRRS
                             if(rs1_data == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc[MIE] <= mepc[MIE] | rs1_data[MIE];
-                                mepc[MPIE] <= mepc[MPIE] | rs1_data[MPIE];
-                                mepc[MPP+:2] <= mepc[MPP+:2] | rs1_data[MPP+:2];
+                                mepc <= mepc || rs1_data;
                             end
                         end
                         3'b011 : begin          //CSRRC
                             if(rs1_data == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc[MIE] <= mepc[MIE] & ~rs1_data[MIE];
-                                mepc[MPIE] <= mepc[MPIE] & ~rs1_data[MPIE];
-                                mepc[MPP+:2] <= mepc[MPP+:2] & ~rs1_data[MPP+:2];
+                                mepc <= mepc && ~rs1_data;
                             end
                         end
                         3'b101 : begin          //CSRRWI
-                            mepc[MIE] <= imm[MIE];
-                            mepc[MPIE] <= imm[MPIE];
-                            mepc[MPP+:2] <= imm[MPP+:2];
+                            mepc <= imm;
                         end
                         3'b110 : begin          //CSRRSI
                             if(imm == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc[MIE] <= mepc[MIE] | imm[MIE];
-                                mepc[MPIE] <= mepc[MPIE] | imm[MPIE];
-                                mepc[MPP+:2] <= mepc[MPP+:2] | imm[MPP+:2];
+                                mepc <= mepc || imm;
                             end
                         end
                         3'b111 : begin          //CSRRCI
                             if(imm == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc[MIE] <= mepc[MIE] & ~imm[MIE];
-                                mepc[MPIE] <= mepc[MPIE] & ~imm[MPIE];
-                                mepc[MPP+:2] <= mepc[MPP+:2] & ~imm[MPP+:2];
+                                mepc <= mepc && ~imm;
                             end
                         end
                         default:
