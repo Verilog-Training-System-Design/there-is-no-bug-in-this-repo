@@ -89,12 +89,14 @@ always_ff @( posedge clk or negedge rst ) begin
         mstatus[MIE] <= (mip[MEIP]) ? 1'b0 : mstatus[MIE];
         mstatus[MPP+:2] <= (mip[MEIP]) ? 2'b11 : mstatus[MPP+:2];
 
-        mip[MEIP] <= 1'b0;
+        mip[MEIP] = 1'b0;
     end
     else if(timeout & ~im_stall & ~dm_stall)begin       //timer interrupt is taken
         mstatus[MPIE] <= (mip[MTIE]) ? mstatus[MIE] : mstatus[MPIE];
         mstatus[MIE] <= (mip[MTIE]) ? 1'b0 : mstatus[MIE];
         mstatus[MPP+:2] <= (mip[MTIE]) ? 2'b11 : mstatus[MPP+:2];
+
+        mip[MTIP] <= 1'b0;
     end
     else begin              //CSR instructions
         if(~im_stall & ~dm_stall & CSR_write)begin

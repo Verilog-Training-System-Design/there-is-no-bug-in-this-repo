@@ -156,6 +156,8 @@ assign ARLEN_S5 = ARLEN;
 assign ARSIZE_S5 = ARSIZE;
 assign ARBURST_S5 = ARBURST;
 
+// logic [5:0] slave;
+
 Arbiter RAarbiter(
     .clk(clk),
     .rst(rst),
@@ -221,7 +223,55 @@ Decoder RADecoder(
 	.VALID_S3(ARVALID_S3),
 	.VALID_S4(ARVALID_S4),
     .VALID_S5(ARVALID_S5)
+	// .SLAVE(slave)
 );
+
+// always_comb begin 
+// 	case (slave)
+// 		6'b000001 : begin
+// 			ARID_S0 = ARID;
+// 			ARADDR_S0 = ARADDR;
+// 			ARLEN_S0 = ARLEN;
+// 			ARSIZE_S0 = ARSIZE;
+// 			ARBURST_S0 = ARBURST;
+// 		end
+// 		6'b000010 : begin
+// 			ARID_S1 = ARID;
+// 			ARADDR_S1 = ARADDR;
+// 			ARLEN_S1 = ARLEN;
+// 			ARSIZE_S1 = ARSIZE;
+// 			ARBURST_S1 = ARBURST;
+// 		end
+// 		6'b000100 : begin
+// 			ARID_S2 = ARID;
+// 			ARADDR_S2 = ARADDR;
+// 			ARLEN_S2 = ARLEN;
+// 			ARSIZE_S2 = ARSIZE;
+// 			ARBURST_S2 = ARBURST;
+// 		end
+// 		6'b001000 : begin
+// 			ARID_S3 = ARID;
+// 			ARADDR_S3 = ARADDR;
+// 			ARLEN_S3 = ARLEN;
+// 			ARSIZE_S3 = ARSIZE;
+// 			ARBURST_S3 = ARBURST;
+// 		end
+// 		6'b010000 : begin
+// 			ARID_S4 = ARID;
+// 			ARADDR_S4 = ARADDR;
+// 			ARLEN_S4 = ARLEN;
+// 			ARSIZE_S4 = ARSIZE;
+// 			ARBURST_S4 = ARBURST;
+// 		end
+// 		6'b100000 : begin
+// 			ARID_S5 = ARID;
+// 			ARADDR_S5 = ARADDR;
+// 			ARLEN_S5 = ARLEN;
+// 			ARSIZE_S5 = ARSIZE;
+// 			ARBURST_S5 = ARBURST;
+// 		end
+// 	endcase
+// end
 
 endmodule
 

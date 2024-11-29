@@ -32,6 +32,7 @@ module CPU (
     output logic [31:0] DM_addr,
     output logic [31:0] DM_DI,
     output logic DM_write,
+    output logic IM_read,
 
     input DMA_interrupt,
     input WDT_timeout
@@ -122,6 +123,8 @@ wire w_csr_stall;
 wire w_csr_interrupt;
 wire w_csr_reset;
 wire w_csr_ret;
+
+assign IM_read = (w_csr_stall) ? 1'b0 : 1'b1;
 
 //MEM wire
 wire [31:0] mem_ALU_out;

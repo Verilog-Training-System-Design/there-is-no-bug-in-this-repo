@@ -35,12 +35,12 @@ assign funct7 = instr[31:25];
 assign csr_addr = instr[31:20];
 
 always_ff @( posedge clk or negedge reset) begin
-    if(~reset | CSR_reset)begin
+    if(~reset | CSR_reset | CSR_stall)begin
         ID_pc_out <= 32'h0;
         instr <= 32'h0;
     end
     else begin
-        if(IFID_write & ~im_stall & ~dm_stall & ~CSR_stall)begin
+        if(IFID_write & ~im_stall & ~dm_stall)begin
             ID_pc_out <= pc;
             if(IFID_flush)
                 instr <= 32'h0;
