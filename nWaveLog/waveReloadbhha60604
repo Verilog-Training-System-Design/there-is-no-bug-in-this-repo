@@ -1,0 +1,448 @@
+Magic 271485
+Revision Verdi_Q-2020.03
+
+; Window Layout <x> <y> <width> <height> <signalwidth> <valuewidth>
+viewPort 0 23 1920 1017 287 347
+
+; File list:
+; openDirFile [-d delimiter] [-s time_offset] [-rf auto_bus_rule_file] path_name file_name
+openDirFile -d / -i 0 "" "/home/WangYanTing/there-is-no-bug-in-this-repo/build/top.fsdb"
+
+; file time scale:
+; fileTimeScale ### s|ms|us|ns|ps
+
+; signal spacing:
+signalSpacing 5
+
+; windowTimeUnit is used for zoom, cursor & marker
+; waveform viewport range
+zoom 0.000000 11370516875.000000
+cursor 708657500.000000
+marker 0.000000
+
+; visible top row signal index
+top 0
+; marker line index
+markerPos 205
+
+; event list
+; addEvent event_name event_expression
+; curEvent event_name
+
+
+
+COMPLEX_EVENT_BEGIN
+
+
+COMPLEX_EVENT_END
+
+
+
+; toolbar current search type
+; curSTATUS search_type
+curSTATUS ByValue
+
+
+addGroup "G1"
+activeDirFile "" "/home/WangYanTing/there-is-no-bug-in-this-repo/build/top.fsdb"
+addSignal -h 15 /top_tb/TOP/CPU/ACLK
+addSignal -h 15 /top_tb/TOP/CPU/cpu/IDEXE_pipe/Branch[1:0]
+addSignal -h 15 -holdScope EXE_Branch[1:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/PC/Write_en
+addSignal -h 15 /top_tb/TOP/CPU/cpu/DM_stall
+addSignal -h 15 -holdScope IM_stall
+addSignal -h 15 -holdScope IM_instr[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/PC/CSR_interrupt
+addSignal -h 15 -holdScope pc_out[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/progcnt_out[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/PC/CSR_ret
+addSignal -h 15 /top_tb/TOP/CPU/cpu/csr/CSR_stall
+addGroup "cpu" -e FALSE
+addSignal -h 15 /top_tb/TOP/CPU/cpu/PC/clk
+addSignal -h 15 -holdScope CSR_interrupt
+addSignal -h 15 -holdScope CSR_stall
+addSignal -h 15 -holdScope Write_en
+addSignal -h 15 -holdScope dm_stall
+addSignal -h 15 -holdScope im_stall
+addSignal -h 15 -holdScope pc_out[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/exe_pc_out[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/alu/in1[31:0]
+addSignal -h 15 -holdScope in2[31:0]
+addSignal -h 15 -holdScope out[31:0]
+addSignal -h 15 -holdScope zero
+addSignal -h 15 -UNSIGNED -UDEC -holdScope control[4:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/Regster_file/w_data[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/DM_WEB
+addSignal -h 15 -holdScope DM_DI[31:0]
+addSignal -h 15 -holdScope mem_memory_in[31:0]
+addSignal -h 15 -holdScope DM_DO[31:0]
+addSignal -h 15 /top_tb/TOP/CPU/cpu/Regster_file/w_data[31:0]
+addSignal -h 15 -holdScope w_reg_addr[4:0]
+addGroup "DMA"
+addSignal -h 15 /top_tb/TOP/dma/DMA_inst/DMAEN
+addSignal -h 15 -holdScope DMASRC[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope DMALEN[31:0]
+addSignal -h 15 -holdScope DMADST[31:0]
+addSignal -h 15 -holdScope S_cur[2:0]
+addSignal -h 15 -holdScope S_nxt[2:0]
+addSignal -h 15 /top_tb/TOP/dma/BREADY_M2
+addSignal -h 15 /top_tb/TOP/w_BRESP_M2[1:0]
+addSignal -h 15 -holdScope w_BREADY_M2
+addSignal -h 15 /top_tb/TOP/axi/BREADY_M2
+addSignal -h 15 /top_tb/TOP/axi/write_response/BREADY_M2
+addSignal -h 15 -holdScope BREADY_S1
+addSignal -h 15 -UNSIGNED -BIN -holdScope master[3:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope slave[5:0]
+addSignal -h 15 /top_tb/TOP/dma/DMA_inst/slave_dst[31:0]
+addSignal -h 15 -holdScope slave_src[31:0]
+addSignal -h 15 -holdScope data_buffer[15:0]
+addSignal -h 15 -holdScope DMA_interrupt
+addSignal -h 15 -holdScope W_last
+addSignal -h 15 -holdScope M_AWLen[3:0]
+addSignal -h 15 -holdScope cnt[3:0]
+addSignal -h 15 -holdScope M_BReady
+addSignal -h 15 -holdScope M_BValid
+addSignal -h 15 -UNSIGNED -UDEC -holdScope remainder_data[31:0]
+addSignal -h 15 -holdScope DMA_interrupt
+addSignal -h 15 -holdScope single_trans_data[31:0]
+addSignal -h 15 -holdScope M_WData[31:0]
+addGroup "AXI read" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/ARADDR_M0[31:0]
+addSignal -h 15 -holdScope ARADDR_M1[31:0]
+addSignal -h 15 -holdScope ARADDR_M2[31:0]
+addSignal -h 15 -holdScope ARADDR_S0[31:0]
+addSignal -h 15 -holdScope ARADDR_S1[31:0]
+addSignal -h 15 -holdScope ARADDR_S2[31:0]
+addSignal -h 15 -holdScope ARADDR_S3[31:0]
+addSignal -h 15 -holdScope ARADDR_S4[31:0]
+addSignal -h 15 -holdScope ARADDR_S5[31:0]
+addSignal -h 15 -holdScope ARREADY_M0
+addSignal -h 15 -holdScope ARREADY_M1
+addSignal -h 15 -holdScope ARREADY_M2
+addSignal -h 15 -holdScope ARREADY_S0
+addSignal -h 15 -holdScope ARREADY_S1
+addSignal -h 15 -holdScope ARREADY_S2
+addSignal -h 15 -holdScope ARREADY_S3
+addSignal -h 15 -holdScope ARREADY_S4
+addSignal -h 15 -holdScope ARREADY_S5
+addSignal -h 15 -holdScope ARVALID_M0
+addSignal -h 15 -holdScope ARVALID_M1
+addSignal -h 15 -holdScope ARVALID_M2
+addSignal -h 15 -holdScope ARVALID_S0
+addSignal -h 15 -holdScope ARVALID_S1
+addSignal -h 15 -holdScope ARVALID_S2
+addSignal -h 15 -holdScope ARVALID_S3
+addSignal -h 15 -holdScope ARVALID_S4
+addSignal -h 15 -holdScope ARVALID_S5
+addSignal -h 15 -holdScope RREADY_M0
+addSignal -h 15 -holdScope RREADY_M1
+addSignal -h 15 -holdScope RREADY_M2
+addSignal -h 15 -holdScope RREADY_S0
+addSignal -h 15 -holdScope RREADY_S1
+addSignal -h 15 -holdScope RREADY_S2
+addSignal -h 15 -holdScope RREADY_S3
+addSignal -h 15 -holdScope RREADY_S4
+addSignal -h 15 -holdScope RREADY_S5
+addSignal -h 15 -holdScope RVALID_M0
+addSignal -h 15 -holdScope RVALID_M1
+addSignal -h 15 -holdScope RVALID_M2
+addSignal -h 15 -holdScope RVALID_S0
+addSignal -h 15 -holdScope RVALID_S1
+addSignal -h 15 -holdScope RVALID_S2
+addSignal -h 15 -holdScope RVALID_S3
+addSignal -h 15 -holdScope RVALID_S4
+addSignal -h 15 -holdScope RVALID_S5
+addSignal -h 15 -holdScope ARLEN_M2[3:0]
+addSignal -h 15 -holdScope ARLEN_S2[3:0]
+addSignal -h 15 -holdScope RLAST_S0
+addSignal -h 15 -holdScope RLAST_S1
+addSignal -h 15 -holdScope RLAST_S2
+addSignal -h 15 -holdScope RLAST_S3
+addSignal -h 15 -holdScope RLAST_S4
+addSignal -h 15 -holdScope RLAST_S5
+addSignal -h 15 -holdScope RDATA_M0[31:0]
+addSignal -h 15 -holdScope RDATA_M1[31:0]
+addSignal -h 15 -holdScope RDATA_M2[31:0]
+addSignal -h 15 -holdScope RDATA_S0[31:0]
+addSignal -h 15 -holdScope RDATA_S1[31:0]
+addSignal -h 15 -holdScope RDATA_S2[31:0]
+addSignal -h 15 -holdScope RDATA_S3[31:0]
+addSignal -h 15 -holdScope RDATA_S4[31:0]
+addSignal -h 15 -holdScope RDATA_S5[31:0]
+addGroup "instruction memory" -e FALSE
+addSignal -h 15 /top_tb/TOP/IM1/ACLK
+addSignal -h 15 -holdScope ARADDR_S[31:0]
+addSignal -h 15 -holdScope ARREADY_S
+addSignal -h 15 -holdScope ARVALID_S
+addSignal -h 15 -holdScope RREADY_S
+addSignal -h 15 -holdScope RVALID_S
+addSignal -h 15 -holdScope RDATA_S[31:0]
+addSignal -h 15 -holdScope AWREADY_S
+addSignal -h 15 -holdScope AWVALID_S
+addSignal -h 15 -holdScope AWADDR_S[31:0]
+addSignal -h 15 -holdScope WREADY_S
+addSignal -h 15 -holdScope WVALID_S
+addSignal -h 15 -holdScope WLAST_S
+addSignal -h 15 -holdScope WDATA_S[31:0]
+addSignal -h 15 -holdScope BREADY_S
+addSignal -h 15 -holdScope BVALID_S
+addSignal -h 15 -holdScope A[13:0]
+addSignal -h 15 -holdScope address[13:0]
+addSignal -h 15 -holdScope counter[3:0]
+addSignal -h 15 -holdScope stage[1:0]
+addSignal -h 15 -holdScope RDATA_reg[31:0]
+addSignal -h 15 -holdScope DO[31:0]
+addGroup "data memory" -e FALSE
+addSignal -h 15 /top_tb/TOP/DM1/ACLK
+addSignal -h 15 -holdScope ARREADY_S
+addSignal -h 15 -holdScope ARVALID_S
+addSignal -h 15 -holdScope ARADDR_S[31:0]
+addSignal -h 15 -holdScope RREADY_S
+addSignal -h 15 -holdScope RVALID_S
+addSignal -h 15 -holdScope RLAST_S
+addSignal -h 15 -holdScope RDATA_S[31:0]
+addSignal -h 15 -holdScope RDATA_reg[31:0]
+addSignal -h 15 -holdScope address[13:0]
+addSignal -h 15 -holdScope arlen[3:0]
+addSignal -h 15 -holdScope ARLEN_S[3:0]
+addSignal -h 15 -holdScope AWREADY_S
+addSignal -h 15 -holdScope AWVALID_S
+addSignal -h 15 -holdScope AWADDR_S[31:0]
+addSignal -h 15 -holdScope WREADY_S
+addSignal -h 15 -holdScope WVALID_S
+addSignal -h 15 -holdScope WDATA_S[31:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope WSTRB_S[3:0]
+addSignal -h 15 -holdScope BREADY_S
+addSignal -h 15 -holdScope BVALID_S
+addGroup "DRAM"
+addSignal -h 15 -UNSIGNED -HEX /top_tb/TOP/dram/ADDR_reg[31:0]
+addSignal -h 15 -holdScope ARADDR_S[31:0]
+addSignal -h 15 -holdScope arlen[3:0]
+addSignal -h 15 -holdScope ARREADY_S
+addSignal -h 15 -holdScope ARVALID_S
+addSignal -h 15 -holdScope RREADY_S
+addSignal -h 15 -holdScope RVALID_S
+addSignal -h 15 -holdScope RLAST_S
+addSignal -h 15 -UNSIGNED -UDEC /top_tb/i_DRAM/addr[20:0]
+addSignal -h 15 /top_tb/TOP/dram/AWREADY_S
+addSignal -h 15 -holdScope AWVALID_S
+addSignal -h 15 -holdScope AWADDR_S[31:0]
+addSignal -h 15 -holdScope WREADY_S
+addSignal -h 15 -holdScope WVALID_S
+addSignal -h 15 -holdScope WLAST_S
+addSignal -h 15 -holdScope BREADY_S
+addSignal -h 15 -holdScope BVALID_S
+addSignal -h 15 -holdScope delay[2:0]
+addSignal -h 15 -holdScope delay_done
+addSignal -h 15 -UNSIGNED -UDEC -holdScope stage[2:0]
+addSignal -h 15 -holdScope clk
+addSignal -h 15 -UNSIGNED -BIN -holdScope DRAM_A[10:0]
+addSignal -h 15 -holdScope DRAM_RASn
+addSignal -h 15 -holdScope DRAM_CASn
+addSignal -h 15 -UNSIGNED -HEX -holdScope DRAM_D[31:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope DRAM_WEn[3:0]
+addSignal -h 15 -holdScope DRAM_valid
+addSignal -h 15 -holdScope DRAM_Q[31:0]
+addSignal -h 15 -UNSIGNED -HEX -holdScope row[10:0]
+addSignal -h 15 -holdScope counter[3:0]
+addSignal -h 15 -holdScope diffrow_dect
+addSignal -h 15 -holdScope pre_row[10:0]
+addSignal -h 15 -holdScope reading
+addSignal -h 15 -holdScope write
+addSignal -h 15 -holdScope reset_row
+addGroup "read data" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/read_data/clk
+addSignal -h 15 -holdScope lock_S0
+addSignal -h 15 -holdScope lock_S1
+addSignal -h 15 -holdScope lock_S2
+addSignal -h 15 -holdScope lock_S3
+addSignal -h 15 -holdScope lock_S4
+addSignal -h 15 -holdScope lock_S5
+addSignal -h 15 -holdScope master[3:0]
+addSignal -h 15 -holdScope slave[5:0]
+addSignal -h 15 -holdScope RREADY_S0
+addSignal -h 15 -holdScope RREADY_S1
+addSignal -h 15 -holdScope RREADY_S2
+addSignal -h 15 -holdScope RREADY_S3
+addSignal -h 15 -holdScope RREADY_S4
+addSignal -h 15 -holdScope RREADY_S5
+addSignal -h 15 -holdScope RVALID_S0
+addSignal -h 15 -holdScope RVALID_S1
+addSignal -h 15 -holdScope RVALID_S2
+addSignal -h 15 -holdScope RVALID_S3
+addSignal -h 15 -holdScope RVALID_S4
+addSignal -h 15 -holdScope RVALID_S5
+addSignal -h 15 -holdScope RREADY_M0
+addSignal -h 15 -holdScope RREADY_M1
+addSignal -h 15 -holdScope RREADY_M2
+addSignal -h 15 -holdScope RVALID_M0
+addSignal -h 15 -holdScope RVALID_M1
+addSignal -h 15 -holdScope RVALID_M2
+addSignal -h 15 -holdScope RREADY
+addSignal -h 15 /top_tb/TOP/dma/DMA_inst/data_buffer[15:0]
+addGroup "read address" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/read_address/RAarbiter/clk
+addSignal -h 15 -UNSIGNED -BIN -holdScope stage[2:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope ID_S[7:0]
+addSignal -h 15 -holdScope READY_M0
+addSignal -h 15 -holdScope READY_M1
+addSignal -h 15 -holdScope READY_M2
+addSignal -h 15 -holdScope READY_S
+addSignal -h 15 -holdScope VALID_M0
+addSignal -h 15 -holdScope VALID_M1
+addSignal -h 15 -holdScope VALID_M2
+addSignal -h 15 -holdScope VALID_S
+addSignal -h 15 -holdScope lock_M0
+addSignal -h 15 -holdScope lock_M1
+addSignal -h 15 -holdScope lock_M2
+addGroup "read address decoder" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/read_address/RADecoder/READY_S0
+addSignal -h 15 -holdScope READY_S1
+addSignal -h 15 -holdScope READY_S2
+addSignal -h 15 -holdScope READY_S3
+addSignal -h 15 -holdScope READY_S4
+addSignal -h 15 -holdScope READY_S5
+addSignal -h 15 -holdScope VALID_S0
+addSignal -h 15 -holdScope VALID_S1
+addSignal -h 15 -holdScope VALID_S2
+addSignal -h 15 -holdScope VALID_S3
+addSignal -h 15 -holdScope VALID_S4
+addSignal -h 15 -holdScope VALID_S5
+addGroup "csr" -e FALSE
+addSignal -h 15 /top_tb/TOP/CPU/cpu/csr/clk
+addSignal -h 15 -holdScope csr_addr[11:0]
+addSignal -expanded -h 15 -holdScope mie[31:0]
+addSignal -h 15 -holdScope mie[11]
+addSignal -h 15 -holdScope mie[7]
+addSignal -h 15 -holdScope rs1_data[31:0]
+addSignal -h 15 -holdScope CSR_write
+addSignal -h 15 -holdScope CSR_data[31:0]
+addSignal -h 15 -holdScope CSR_stall
+addSignal -h 15 -UNSIGNED -BIN -holdScope funct3[2:0]
+addSignal -h 15 -UNSIGNED -BIN -holdScope funct7[6:0]
+addSignal -h 15 -holdScope interrupt
+addSignal -h 15 -holdScope CSR_retpc[31:0]
+addSignal -expanded -h 15 -holdScope mstatus[31:0]
+addSignal -h 15 -holdScope mstatus[12]
+addSignal -h 15 -holdScope mstatus[11]
+addSignal -h 15 -holdScope mstatus[7]
+addSignal -h 15 -holdScope mstatus[3]
+addSignal -h 15 -holdScope CSR_interrupt
+addSignal -h 15 -holdScope CSR_ret
+addSignal -expanded -h 15 -holdScope mip[31:0]
+addSignal -h 15 -holdScope mip[11]
+addSignal -h 15 -holdScope mip[7]
+addSignal -h 15 -holdScope dm_stall
+addSignal -h 15 -holdScope im_stall
+addSignal -h 15 -holdScope mepc[31:0]
+addSignal -h 15 -holdScope pc[31:0]
+addGroup "write response" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/write_response/clk
+addSignal -h 15 -holdScope BID[3:0]
+addSignal -h 15 -holdScope BREADY_M1
+addSignal -h 15 -holdScope BREADY_M2
+addSignal -h 15 -holdScope BREADY_S0
+addSignal -h 15 -holdScope BREADY_S1
+addSignal -h 15 -holdScope BREADY_S2
+addSignal -h 15 -holdScope BREADY_S3
+addSignal -h 15 -holdScope BREADY_S4
+addSignal -h 15 -holdScope BREADY_S5
+addSignal -h 15 -holdScope BVALID_M1
+addSignal -h 15 -holdScope BVALID_M2
+addSignal -h 15 -holdScope BVALID_S0
+addSignal -h 15 -holdScope BVALID_S1
+addSignal -h 15 -holdScope BVALID_S2
+addSignal -h 15 -holdScope BVALID_S3
+addSignal -h 15 -holdScope BVALID_S4
+addSignal -h 15 -holdScope BVALID_S5
+addSignal -h 15 -holdScope lock_S0
+addSignal -h 15 -holdScope lock_S1
+addSignal -h 15 -holdScope lock_S2
+addSignal -h 15 -holdScope lock_S3
+addSignal -h 15 -holdScope lock_S4
+addSignal -h 15 -holdScope lock_S5
+addGroup "AXI write" -e FALSE
+addSignal -h 15 /top_tb/TOP/axi/AWADDR_M1[31:0]
+addSignal -h 15 -holdScope AWADDR_M2[31:0]
+addSignal -h 15 -holdScope AWADDR_S0[31:0]
+addSignal -h 15 -holdScope AWADDR_S1[31:0]
+addSignal -h 15 -holdScope AWADDR_S2[31:0]
+addSignal -h 15 -holdScope AWADDR_S3[31:0]
+addSignal -h 15 -holdScope AWADDR_S4[31:0]
+addSignal -h 15 -holdScope AWADDR_S5[31:0]
+addSignal -h 15 -holdScope AWREADY_M1
+addSignal -h 15 -holdScope AWREADY_M2
+addSignal -h 15 -holdScope AWREADY_S0
+addSignal -h 15 -holdScope AWREADY_S1
+addSignal -h 15 -holdScope AWREADY_S2
+addSignal -h 15 -holdScope AWREADY_S3
+addSignal -h 15 -holdScope AWREADY_S4
+addSignal -h 15 -holdScope AWREADY_S5
+addSignal -h 15 -holdScope AWVALID_M1
+addSignal -h 15 -holdScope AWVALID_M2
+addSignal -h 15 -holdScope AWVALID_S0
+addSignal -h 15 -holdScope AWVALID_S1
+addSignal -h 15 -holdScope AWVALID_S2
+addSignal -h 15 -holdScope AWVALID_S3
+addSignal -h 15 -holdScope AWVALID_S4
+addSignal -h 15 -holdScope AWVALID_S5
+addSignal -h 15 -holdScope WVALID_M1
+addSignal -h 15 -holdScope WVALID_M2
+addSignal -h 15 -holdScope WVALID_S0
+addSignal -h 15 -holdScope WVALID_S1
+addSignal -h 15 -holdScope WVALID_S2
+addSignal -h 15 -holdScope WVALID_S3
+addSignal -h 15 -holdScope WVALID_S4
+addSignal -h 15 -holdScope WVALID_S5
+addSignal -h 15 -holdScope WREADY_M1
+addSignal -h 15 -holdScope WREADY_M2
+addSignal -h 15 -holdScope WREADY_S0
+addSignal -h 15 -holdScope WREADY_S1
+addSignal -h 15 -holdScope WREADY_S2
+addSignal -h 15 -holdScope WREADY_S3
+addSignal -h 15 -holdScope WREADY_S4
+addSignal -h 15 -holdScope WREADY_S5
+addSignal -h 15 -holdScope BREADY_M1
+addSignal -h 15 -holdScope BREADY_M2
+addSignal -h 15 -holdScope BREADY_S0
+addSignal -h 15 -holdScope BREADY_S1
+addSignal -h 15 -holdScope BREADY_S2
+addSignal -h 15 -holdScope BREADY_S3
+addSignal -h 15 -holdScope BREADY_S4
+addSignal -h 15 -holdScope BREADY_S5
+addSignal -h 15 -holdScope BVALID_M1
+addSignal -h 15 -holdScope BVALID_M2
+addSignal -h 15 -holdScope BVALID_S0
+addSignal -h 15 -holdScope BVALID_S1
+addSignal -h 15 -holdScope BVALID_S2
+addSignal -h 15 -holdScope BVALID_S3
+addSignal -h 15 -holdScope BVALID_S4
+addSignal -h 15 -holdScope BVALID_S5
+addSignal -h 15 -holdScope WDATA_M1[31:0]
+addSignal -h 15 -holdScope WDATA_M2[31:0]
+addSignal -h 15 -holdScope WDATA_S5[31:0]
+addSignal -h 15 -holdScope WSTRB_M1[3:0]
+addSignal -h 15 -holdScope WSTRB_M2[3:0]
+addSignal -h 15 -holdScope WSTRB_S5[3:0]
+addSignal -h 15 /top_tb/TOP/axi/write_data/WSTRB_S5[3:0]
+addGroup "G14"
+
+; getSignalForm Scope Hierarchy Status
+; active file of getSignalForm
+activeDirFile "" "/home/WangYanTing/there-is-no-bug-in-this-repo/build/top.fsdb"
+
+GETSIGNALFORM_SCOPE_HIERARCHY_BEGIN
+getSignalForm close
+
+"/top_tb"
+"/top_tb/TOP"
+
+SCOPE_LIST_BEGIN
+"/top_tb"
+"/top_tb/TOP/dma"
+"/top_tb/TOP/dram"
+SCOPE_LIST_END
+
+GETSIGNALFORM_SCOPE_HIERARCHY_END
+
+

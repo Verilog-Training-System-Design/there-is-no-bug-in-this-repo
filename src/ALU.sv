@@ -14,7 +14,7 @@ logic [63:0] mul;
 always_comb begin
     mul = 64'd0;
     case (control)
-        5'd0 : begin
+        default : begin
             out = in1 + in2;
             zero = 1'd0;
         end

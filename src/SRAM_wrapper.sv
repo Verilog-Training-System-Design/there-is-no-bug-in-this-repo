@@ -76,9 +76,7 @@ localparam  idle = 2'b0,
 
 
 // logic [`AXI_IDS_BITS-1:0] ARID_reg;
-// logic [`AXI_LEN_BITS-1:0] ARLEN_reg;
 // logic [`AXI_IDS_BITS-1:0] AWID_reg;
-// logic [`AXI_LEN_BITS-1:0] AWLEN_reg;
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
 // logic RVALID_reg;
@@ -111,17 +109,26 @@ always_ff @( posedge ACLK or negedge ARESETn ) begin
     if(~ARESETn)begin
         arlen <= `AXI_LEN_BITS'b0;
         awlen <= `AXI_LEN_BITS'b0;
+        // ARID_reg <= `AXI_IDS_BITS'b0;
+        // AWID_reg <= `AXI_IDS_BITS'b0;
     end
     else begin
-        if(ARVALID_S & ARREADY_S)
+        if(ARVALID_S & ARREADY_S)begin
             arlen <= ARLEN_S;
-        else 
+            // ARID_reg <= ARID_S;
+        end
+        else begin
             arlen <= arlen;
-        
-        if(AWVALID_S & AWREADY_S)
+            // ARID_reg <= ARID_reg;
+        end
+        if(AWVALID_S & AWREADY_S)begin
             awlen <= AWLEN_S;
-        else
+            // AWID_reg <= AWID_S;
+        end
+        else begin
             awlen <= awlen;
+            // AWID_reg <= AWID_reg;
+        end
     end
 end
 
@@ -158,34 +165,6 @@ always_ff @( posedge ACLK or negedge ARESETn ) begin
         end
     end
 end
-
-//store read address and write address's id and len
-// always_ff @( posedge clk or negedge rst ) begin
-//     if(~rst)begin
-//         ARID_reg <= `AXI_IDS_BITS'b0;
-//         ARLEN_reg <= `AXI_LEN_BITS'b0;
-//         AWID_reg <= `AXI_IDS_BITS'b0;
-//         AWLEN_reg <= `AXI_LEN_BITS'b0;
-//     end 
-//     else begin
-//         if(ARVALID & ARREADY)begin
-//             ARID_reg <= ARID;
-//             ARLEN_reg <= ARLEN;
-//         end  
-//         else begin
-//             ARID_reg <= ARID_reg;
-//             ARLEN_reg <= ARLEN_reg;
-//         end
-//         if (AWVALID & AWREADY) begin
-//             AWID_reg <= AWID;
-//             AWLEN_reg <= AWLEN;
-//         end
-//         else begin
-//             AWID_reg <= AWID_reg;
-//             AWLEN_reg <= AWLEN_reg;
-//         end
-//     end
-// end
 
 //FSM for slave to switch channel
 
