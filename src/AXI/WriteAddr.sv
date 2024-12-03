@@ -83,6 +83,7 @@ logic [`AXI_LEN_BITS-1:0]    AWLEN_M0;
 logic [`AXI_SIZE_BITS-1:0]   AWSIZE_M0;
 logic [1:0]                  AWBURST_M0;
 logic                        AWVALID_M0;
+logic 			     		 AWREADY_M0;
 
 logic [`AXI_IDS_BITS-1:0]    AWID;
 logic [`AXI_ADDR_BITS-1:0]   AWADDR;
@@ -99,11 +100,11 @@ assign AWSIZE_M0 = `AXI_SIZE_BITS'b0;
 assign AWBURST_M0 = 2'b0;
 assign AWVALID_M0 = 1'b0;
 
-assign AWID_S0 = AWID;
-assign AWADDR_S0 = AWADDR;
-assign AWLEN_S0 = AWLEN;
-assign AWSIZE_S0 = AWSIZE;
-assign AWBURST_S0 = AWBURST;
+assign AWID_S0 = `AXI_IDS_BITS'b0;
+assign AWADDR_S0 = `AXI_ADDR_BITS'b0;
+assign AWLEN_S0 = `AXI_LEN_BITS'b0;
+assign AWSIZE_S0 = `AXI_SIZE_BITS'b0;
+assign AWBURST_S0 = 2'b0;
 
 assign AWID_S1 = AWID;
 assign AWADDR_S1 = AWADDR;

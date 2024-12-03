@@ -24,7 +24,15 @@ module MEMWB_reg (
 );
 
 always_ff @( posedge clk or negedge reset) begin
-    if(~reset | CSR_reset)begin
+    if(~reset)begin
+        WB_rd_data <= 32'h0;
+        WB_data_memory <= 32'h0;
+        WB_write_addr <= 5'd0;
+        WB_RegWrite <= 1'b0;
+        WB_MemtoReg <= 1'b0;
+        WB_f_RegWrite <= 1'b0;
+    end
+    else if(CSR_reset)begin
         WB_rd_data <= 32'h0;
         WB_data_memory <= 32'h0;
         WB_write_addr <= 5'd0;

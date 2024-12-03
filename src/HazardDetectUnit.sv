@@ -15,7 +15,7 @@ module HazardDetectUnit (               //add float number judgement
 );
 
 always_comb begin
-    if(Branch_Ctrl != 2'd0 | CSR_interrupt | CSR_ret)begin           //branch not equ to pc+4, stall two cycles
+    if(Branch_Ctrl != 2'd0 | CSR_ret)begin           //branch not equ to pc+4, stall two cycles
         PC_write_en = 1'b1;
         IFID_flush = 1'b1;
         Control_flush = 1'b1;

@@ -82,7 +82,7 @@
     logic   Raddr_done, Rdata_done, Waddr_done, Wdata_done, Wresp_done;
     logic   busy_check;
   //Data store
-    logic [3:0]               i;
+    integer               i;
     logic [`AXI_DATA_BITS -1: 0]                data_buffer [15:0];
 
 //---------------------- Main code -------------------------//
@@ -100,8 +100,9 @@
       always_comb begin
         case (S_cur)
           INITIAL:  begin
-            if(!DMAEN)      S_nxt  = PREPARE;
-            else            S_nxt  = INITIAL; 
+            S_nxt   = PREPARE;
+            // if(!DMAEN)      S_nxt  = PREPARE;
+            // else            S_nxt  = INITIAL; 
           end
           PREPARE:  begin
             if (DMAEN)      S_nxt = RADDR;
@@ -129,7 +130,11 @@
             else
               S_nxt = WRESP;
           end
-          default:  S_nxt  = INITIAL;   //FINISH
+          FINISH: begin
+            if(!DMAEN)      S_nxt  = INITIAL;
+            else            S_nxt  = FINISH;            
+          end
+          //default:  S_nxt  = INITIAL;   //FINISH
         endcase
       end
   //--------------------- Start Burst ---------------------//
@@ -173,7 +178,7 @@
         single_trans_data  <=  5'd0;
       else if(S_cur == PREPARE)
         single_trans_data  <=  (total_data < 32'd16)   ? total_data[4:0] : 5'd16;
-      else if(S_cur == WRESP)
+      else if(S_cur == WADDR)
         single_trans_data  <=  (remainder_data < 32'd16) ? remainder_data[4:0] : 5'd16;   
     end
 
@@ -279,13 +284,13 @@
     //store_load data (axi length = 16) (seq. timing have some problem) 
       always_ff @(posedge clk or negedge rst) begin
         if (!rst) begin
-          for(i = 4'd0; i <= 4'd15; i = i + 1)
+          for(i = 0; i <= 15; i = i + 1)
             data_buffer[i] <= 32'd0; 
         end 
         else begin
           if((S_cur == RDATA) && (Rdata_done)) begin
             data_buffer[0]  <=  M_RData;
-            for(i = 4'd0; i <= 4'd14; i = i + 1)
+            for(i = 0; i <= 14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end
           // else if ((S_cur == WADDR)) begin
@@ -294,7 +299,7 @@
           else if ((S_cur == WDATA) && (Wdata_done)) begin
             data_buffer[0] <= 32'd0;
             // M_WData <=  data_buffer[15];
-            for(i = 4'd0; i <= 4'd14; i = i + 1)
+            for(i = 0; i <= 14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end    
         end

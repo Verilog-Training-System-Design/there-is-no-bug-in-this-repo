@@ -24,36 +24,36 @@ module ForwardingUnit (         //add new float number judgement
 );
 
 always_comb begin
-    if(MEM_RegWrite && read_reg1_addr == MEM_write_addr && read_reg1_addr != 5'd0)
+    if((MEM_RegWrite) && (read_reg1_addr == MEM_write_addr) && (read_reg1_addr != 5'd0))
         forwarding_r1_sel = 2'd1;
-    else if(WB_RegWrite && read_reg1_addr == WB_write_addr && read_reg1_addr != 5'd0)
+    else if((WB_RegWrite) && (read_reg1_addr == WB_write_addr) && (read_reg1_addr != 5'd0))
         forwarding_r1_sel = 2'd2;
     else
         forwarding_r1_sel = 2'd0;
 end
 
 always_comb begin
-    if(MEM_RegWrite && read_reg2_addr == MEM_write_addr && read_reg2_addr != 5'd0)
+    if((MEM_RegWrite) && (read_reg2_addr == MEM_write_addr) && (read_reg2_addr != 5'd0))
         forwarding_r2_sel = 2'd1;
-    else if(WB_RegWrite && read_reg2_addr == WB_write_addr && read_reg2_addr != 5'd0)
+    else if((WB_RegWrite) && (read_reg2_addr == WB_write_addr) && (read_reg2_addr != 5'd0))
         forwarding_r2_sel = 2'd2;
     else 
         forwarding_r2_sel = 2'd0;
 end
 
 always_comb begin
-    if(MEM_f_RegWrite && read_reg1_addr == MEM_write_addr && read_reg1_addr != 5'd0)
+    if((MEM_f_RegWrite) && (read_reg1_addr == MEM_write_addr) && read_reg1_addr != 5'd0)
         forwarding_fr1_sel = 2'd1;
-    else if(WB_f_RegWrite && read_reg1_addr == WB_write_addr && read_reg1_addr != 5'd0)
+    else if((WB_f_RegWrite) && (read_reg1_addr == WB_write_addr) && read_reg1_addr != 5'd0)
         forwarding_fr1_sel = 2'd2;
     else
         forwarding_fr1_sel = 2'd0;
 end
 
 always_comb begin
-    if(MEM_f_RegWrite && read_reg2_addr == MEM_write_addr && read_reg2_addr != 5'd0)
+    if((MEM_f_RegWrite) && (read_reg2_addr == MEM_write_addr) && (read_reg2_addr != 5'd0))
         forwarding_fr2_sel = 2'd1;
-    else if(WB_f_RegWrite && read_reg2_addr == WB_write_addr && read_reg2_addr != 5'd0)
+    else if((WB_f_RegWrite) && (read_reg2_addr == WB_write_addr) && (read_reg2_addr != 5'd0))
         forwarding_fr2_sel = 2'd2;
     else
         forwarding_fr2_sel = 2'd0;

@@ -26,7 +26,7 @@ void boot() {
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  // dma_addr_boot[0x40] = 0; // disable DMA
   
   /*
   int *dram_i_start = &_dram_i_start;
@@ -49,7 +49,7 @@ void boot() {
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  // dma_addr_boot[0x40] = 0; // disable DMA
   
  
 //   int *data_paddr_start = &__data_paddr_start;
@@ -73,7 +73,7 @@ void boot() {
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  // dma_addr_boot[0x40] = 0; // disable DMA
   asm("li t6, 0x000");
   asm("csrw mie, t6"); // MEIE of mie
   

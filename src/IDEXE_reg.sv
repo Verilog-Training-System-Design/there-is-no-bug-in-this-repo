@@ -64,7 +64,35 @@ module IDEXE_reg (
 );
 
 always_ff @(posedge clk or negedge reset) begin
-    if(~reset | CSR_reset)begin
+    if(~reset)begin
+        EXE_pc_out <= 32'h0;
+        EXE_rd_reg1_data <= 32'h0;
+        EXE_rd_reg2_data <= 32'h0;
+        EXE_frd1_data <= 32'h0;
+        EXE_frd2_data <= 32'h0;
+        EXE_write_addr <= 5'd0;
+        EXE_funct3 <= 3'd0;
+        EXE_funct7 <= 7'd0;
+        EXE_rd_r1_addr <= 5'd0;
+        EXE_rd_r2_addr <= 5'd0;
+        EXE_immediate <= 32'h0;
+        EXE_ALUOp <= 3'd0;
+        EXE_ALUSrc <= 1'b0;
+        EXE_PCtoRegSrc <= 1'b0;
+        EXE_RDSrc <= 1'b0;
+        EXE_MemtoReg <= 1'b0;
+        EXE_MenWrite <= 1'b0;
+        EXE_MemRead <= 1'b0;
+        EXE_RegWrite <= 1'b0;
+        EXE_f_RegWrite <= 1'b0;
+        EXE_ALUSel_f <= 1'b0;
+        EXE_Branch <= 2'd0;
+        EXE_Memoryin_f <= 1'b0;
+        EXE_CSRSel <= 1'b0;
+        EXE_CSR_type <= 2'b0;
+        EXE_CSR_addr <= 11'b0;
+    end
+    else if(CSR_reset)begin
         EXE_pc_out <= 32'h0;
         EXE_rd_reg1_data <= 32'h0;
         EXE_rd_reg2_data <= 32'h0;

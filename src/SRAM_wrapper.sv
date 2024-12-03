@@ -51,7 +51,7 @@ module SRAM_wrapper (
 //         late_rst <= ARESETn;
 // end
 
-// logic CEB;
+logic CEB;
 logic WEB;
 logic [31:0] BWEB;
 logic [13:0] A, address, address_4;
@@ -75,20 +75,20 @@ localparam  idle = 2'b0,
 //             write_response = 3'b101;
 
 
-// logic [`AXI_IDS_BITS-1:0] ARID_reg;
-// logic [`AXI_IDS_BITS-1:0] AWID_reg;
+logic [`AXI_IDS_BITS-1:0] ARID_reg;
+logic [`AXI_IDS_BITS-1:0] AWID_reg;
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
 // logic RVALID_reg;
 logic ceb;
 
-assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
+assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : ARID_reg;
 // assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;
 assign RDATA_S = (RVALID_S & RREADY_S) ? DO : RDATA_reg;
 // assign RDATA_S = DO;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen)); 
-assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
+assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : AWID_reg;
 assign BRESP_S = `AXI_RESP_OKAY;
 
 always_ff @( posedge ACLK or negedge ARESETn ) begin
@@ -109,26 +109,17 @@ always_ff @( posedge ACLK or negedge ARESETn ) begin
     if(~ARESETn)begin
         arlen <= `AXI_LEN_BITS'b0;
         awlen <= `AXI_LEN_BITS'b0;
-        // ARID_reg <= `AXI_IDS_BITS'b0;
-        // AWID_reg <= `AXI_IDS_BITS'b0;
     end
     else begin
-        if(ARVALID_S & ARREADY_S)begin
+        if(ARVALID_S & ARREADY_S)
             arlen <= ARLEN_S;
-            // ARID_reg <= ARID_S;
-        end
-        else begin
+        else 
             arlen <= arlen;
-            // ARID_reg <= ARID_reg;
-        end
-        if(AWVALID_S & AWREADY_S)begin
+        
+        if(AWVALID_S & AWREADY_S)
             awlen <= AWLEN_S;
-            // AWID_reg <= AWID_S;
-        end
-        else begin
+        else
             awlen <= awlen;
-            // AWID_reg <= AWID_reg;
-        end
     end
 end
 
@@ -162,6 +153,28 @@ always_ff @( posedge ACLK or negedge ARESETn ) begin
     else if(stage == write_data)begin
         if(WVALID_S & WREADY_S)begin
             address <= address + 14'b1;
+        end
+    end
+end
+
+// store read address and write address's id and len
+always_ff @( posedge ACLK or negedge ARESETn ) begin
+    if(~ARESETn)begin
+        ARID_reg <= `AXI_IDS_BITS'b0;
+        AWID_reg <= `AXI_IDS_BITS'b0;
+    end 
+    else begin
+        if(ARVALID_S & ARREADY_S)begin
+            ARID_reg <= ARID_S;
+        end  
+        else begin
+            ARID_reg <= ARID_reg;
+        end
+        if (AWVALID_S & AWREADY_S) begin
+            AWID_reg <= AWID_S;
+        end
+        else begin
+            AWID_reg <= AWID_reg;
         end
     end
 end

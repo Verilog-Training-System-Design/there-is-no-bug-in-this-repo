@@ -35,6 +35,7 @@ trap_entry:
   sw x29, 28*4(sp)
   sw x30, 29*4(sp)
   sw x31, 30*4(sp)
+  jal trap_handler
   lw x1,   0*4(sp)
   lw x2,   1*4(sp)
   lw x3,   2*4(sp)

@@ -104,7 +104,7 @@
 // 	if(~rst)	
 // 		RDATA_reg <= 32'd0;
 // 	else 
-// 		RDATA_reg = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
+// 		RDATA_reg <= ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 // end
 
 // //get len
@@ -163,7 +163,9 @@
 // assign delay_done = (delay == 3'd5) ? 1'b1 : 1'b0;		//change
 
 // always_ff @( posedge clk or negedge rst ) begin 
-// 	if(~rst | ret_flag)
+// 	if(~rst) 
+// 		delay <= 3'd0;	
+// 	else if(ret_flag)
 // 		delay <= 3'd0;
 // 	else if(delay == 3'd5) begin
 // 		if (next_stage == read_data) begin
@@ -460,11 +462,11 @@ logic [`AXI_IDS_BITS-1:0] ARID_reg, AWID_reg;
 logic [`AXI_LEN_BITS-1:0] counter;
 
 assign B_done = BVALID_S & BREADY_S;
-assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : RID_S;
+assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : ARID_reg;
 assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
 assign RRESP_S = `AXI_RESP_OKAY;
 assign RLAST_S = ((stage == read_data) && (counter == arlen) && (delay == 3'd5)); 
-assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : BID_S;
+assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : AWID_reg;
 assign BRESP_S = `AXI_RESP_OKAY;
 
 //get size and burst data

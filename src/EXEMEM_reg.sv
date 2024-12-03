@@ -36,7 +36,7 @@ module EXEMEM_reg (
 );
 
 always_ff @( posedge clk or negedge reset) begin
-    if(~reset | CSR_reset)begin
+    if(~reset)begin
         MEM_ALU_out <= 32'h0;
         MEM_R_ALUout <= 32'h0;
         MEM_write_addr <= 5'd0;
@@ -51,6 +51,21 @@ always_ff @( posedge clk or negedge reset) begin
         MEM_RegWrite <= 1'b0;
         MEM_f_RegWrite <= 1'b0;
     end 
+	else if(CSR_reset)begin
+        MEM_ALU_out <= 32'h0;
+        MEM_R_ALUout <= 32'h0;
+        MEM_write_addr <= 5'd0;
+        MEM_funct3 <= 3'd0;
+        MEM_pc <= 32'd0;
+        MEM_memory_in <= 32'd0;
+        MEM_RDSrc <= 1'b0;
+        MEM_MemtoReg <= 1'b0;
+        MEM_MemWrite <= 4'h0;
+        MEM_write_signal <= 1'b0;
+        MEM_MemRead <= 1'b0;
+        MEM_RegWrite <= 1'b0;
+        MEM_f_RegWrite <= 1'b0;
+    end
     else if(im_stall  & ~dm_stall & ~CSR_stall) begin
         MEM_write_signal <= 1'b0;
         MEM_MemRead <= 1'b0;

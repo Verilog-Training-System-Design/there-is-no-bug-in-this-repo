@@ -124,12 +124,12 @@ always_ff @( posedge clk or negedge rst ) begin
 		ID_reg <= `AXI_IDS_BITS'b0;
 	end
 	else begin
-		// if(AWVALID_S0 & ~WREADY)		//since master.sv design after writeaddress is writedata
-		// 	WVALID_S0_reg <= AWVALID_S0;
-		// else if(WVALID & WREADY & WLAST)
-		// 	WVALID_S0_reg <= 1'b0;
-		// else 
-		// 	WVALID_S0_reg <= WVALID_S0_reg;
+		if(AWVALID_S0 & ~WREADY)		//since master.sv design after writeaddress is writedata
+			WVALID_S0_reg <= AWVALID_S0;
+		else if(WVALID & WREADY & WLAST)
+			WVALID_S0_reg <= 1'b0;
+		else 
+			WVALID_S0_reg <= WVALID_S0_reg;
 		
 		if(AWVALID_S1 & ~WREADY)begin
 			WVALID_S1_reg <= AWVALID_S1;
