@@ -91,7 +91,7 @@
           RDATA:  S_nxt  = (R_last)     ? SADDR   : RDATA; 
           WDATA:  S_nxt  = (W_last)     ? WRESP   : WDATA; 
           WRESP:  S_nxt  = (Wresp_done) ? SADDR   : WRESP; 
-          default:  S_nxt  = SADDR;
+          // default:  S_nxt  = SADDR;
         endcase
       end 
     //--------------------- Last Signal ---------------------//  
@@ -123,13 +123,13 @@
     //----------------- W-channel (priority) -----------------//
       //Addr
         always_ff @(posedge clk or negedge rst) begin
-          if(!rst)   reg_AWID     <=  `MEM_ADDR_LEN'd0;
+          if(!rst)   reg_AWID     <=  `AXI_IDS_BITS'd0;
           else      reg_AWID     <=  (Waddr_done)  ? S_AWID : reg_AWID;
         end   
 
         always_ff @(posedge clk or negedge rst) begin
-          if(!rst)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
-          else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:0] : reg_AWAddr;
+          if(!rst)   reg_AWAddr   <=  `AXI_ADDR_BITS'd0;
+          else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr : reg_AWAddr;
         end   
         
         always_ff @(posedge clk or negedge rst ) begin
@@ -164,12 +164,12 @@
         always_ff @(posedge clk or negedge rst) begin
           if(!rst) begin
             reg_ARID      <=  `AXI_IDS_BITS'd0;
-            reg_ARAddr    <=  `MEM_ADDR_LEN'd0;
+            reg_ARAddr    <=  `AXI_ADDR_BITS'd0;
             reg_ARLen     <=  `AXI_LEN_BITS'd0;
           end          
           else  begin
             reg_ARID     <=  (Raddr_done)  ? S_ARID : reg_ARID;
-            reg_ARAddr   <=  (Raddr_done)  ? S_ARAddr[15:2] : reg_ARAddr;
+            reg_ARAddr   <=  (Raddr_done)  ? S_ARAddr : reg_ARAddr;
             reg_ARLen    <=  (Raddr_done)  ? S_ARLen : reg_ARLen;
           end      
         end

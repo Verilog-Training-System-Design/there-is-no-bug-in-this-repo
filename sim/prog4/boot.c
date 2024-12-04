@@ -17,16 +17,16 @@ void boot() {
   asm("li t6, 0x800");
   asm("csrw mie, t6"); // MEIE of mie 
   //DMA source addr
-  dma_addr_boot[0x80] = &_dram_i_start;
+  dma_addr_boot[0x80] = (unsigned int)&_dram_i_start;
   //DMA dest addr
-  dma_addr_boot[0xC0] = &_imem_start;
+  dma_addr_boot[0xC0] = (unsigned int)&_imem_start;
   //DMA len
-  dma_addr_boot[0x100]= &_dram_i_end - &_dram_i_start + 1;
+  dma_addr_boot[0x100]= (unsigned int)&_dram_i_end - (unsigned int)&_dram_i_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  //dma_addr_boot[0x40] = 0; // disable DMA
   
   /*
   int *dram_i_start = &_dram_i_start;
@@ -40,16 +40,16 @@ void boot() {
   asm("li t6, 0x800");
   asm("csrw mie, t6"); // MEIE of mie 
   //DMA source addr
-  dma_addr_boot[0x80] = &__data_paddr_start;
+  dma_addr_boot[0x80] = (unsigned int)&__data_paddr_start;
   //DMA dest addr
-  dma_addr_boot[0xC0] = &__data_start;
+  dma_addr_boot[0xC0] = (unsigned int)&__data_start;
   //DMA len
-  dma_addr_boot[0x100]= &__data_end - &__data_start + 1;
+  dma_addr_boot[0x100]= (unsigned int)&__data_end - (unsigned int)&__data_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  //dma_addr_boot[0x40] = 0; // disable DMA
   
  
 //   int *data_paddr_start = &__data_paddr_start;
@@ -64,16 +64,16 @@ void boot() {
   asm("li t6, 0x800");
   asm("csrw mie, t6"); // MEIE of mie 
   //DMA source addr
-  dma_addr_boot[0x80] = &__sdata_paddr_start;
+  dma_addr_boot[0x80] = (unsigned int)&__sdata_paddr_start;
   //DMA dest addr
-  dma_addr_boot[0xC0] = &__sdata_start;
+  dma_addr_boot[0xC0] = (unsigned int)&__sdata_start;
   //DMA len
-  dma_addr_boot[0x100]= &__sdata_end - &__sdata_start + 1;
+  dma_addr_boot[0x100]= (unsigned int)&__sdata_end - (unsigned int)&__sdata_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  //dma_addr_boot[0x40] = 0; // disable DMA
   asm("li t6, 0x000");
   asm("csrw mie, t6"); // MEIE of mie
   

@@ -16,8 +16,13 @@
 `timescale 1ns/10ps
 `include "ROM/ROM.v"
 `include "DRAM/DRAM.sv"
-`define mem_word(addr) {TOP.DM1.i_SRAM.MEMORY[addr >> 5][(addr&6'b011111)]}
-`define dram_word(addr) {i_DRAM.Memory_byte3[addr], i_DRAM.Memory_byte2[addr], i_DRAM.Memory_byte1[addr], i_DRAM.Memory_byte0[addr]}
+`define mem_word(addr) \
+  {TOP.DM1.i_SRAM.MEMORY[addr >> 5][(addr&6'b011111)]}
+`define dram_word(addr) \
+  {i_DRAM.Memory_byte3[addr], \
+   i_DRAM.Memory_byte2[addr], \
+   i_DRAM.Memory_byte1[addr], \
+   i_DRAM.Memory_byte0[addr]}
 `define SIM_END 'h3fff
 `define SIM_END_CODE -32'd1
 `define TEST_START 'h40000

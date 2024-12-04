@@ -56,7 +56,7 @@ always_ff @( posedge clk or negedge rst ) begin
     end
     else begin
         {mcycleh, mcycle} <= {mcycleh, mcycle} + 64'd1;
-        if({mcycleh, mcycle} > 1 & ~im_stall & ~dm_stall)begin
+        if({mcycleh, mcycle} > 64'd1 & ~im_stall & ~dm_stall)begin
             case(CSR_type) 
                 2'd0 : {minstreth, minstret} <= {minstreth, minstret} - 64'd1;
                 2'd1 : {minstreth, minstret} <= {minstreth, minstret};
@@ -215,14 +215,14 @@ always_ff @( posedge clk or negedge rst ) begin
                             if(rs1_data == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc <= mepc || rs1_data;
+                                mepc <= mepc | rs1_data;
                             end
                         end
                         3'b011 : begin          //CSRRC
                             if(rs1_data == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc <= mepc && ~rs1_data;
+                                mepc <= mepc & (~rs1_data);
                             end
                         end
                         3'b101 : begin          //CSRRWI
@@ -232,14 +232,14 @@ always_ff @( posedge clk or negedge rst ) begin
                             if(imm == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc <= mepc || imm;
+                                mepc <= mepc | imm;
                             end
                         end
                         3'b111 : begin          //CSRRCI
                             if(imm == 32'b0)
                                 mepc <= mepc;
                             else begin
-                                mepc <= mepc && ~imm;
+                                mepc <= mepc & (~imm);
                             end
                         end
                         default:

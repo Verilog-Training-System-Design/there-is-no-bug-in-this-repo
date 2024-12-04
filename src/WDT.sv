@@ -16,7 +16,7 @@
   
 //---------------------- parameter -------------------------//
   logic     [1:0] S_cur, S_nxt;
-  parameter [1:0] INITIAL     = 2'b00,
+  parameter [1:0] INIT        = 2'b00,
                   CNTDOWN     = 2'b01,
                   RSTCNT      = 2'b10,
                   TIMEOUT     = 2'b11;
@@ -52,16 +52,24 @@
       if(!rst2) begin
         reg_clk2_WDLIVE_1 <=  1'b0;  
         reg_clk2_WDLIVE_2 <=  1'b0;
+      end
+      else begin
+        reg_clk2_WDLIVE_1 <=  reg_clk1_WDLIVE;  
+        reg_clk2_WDLIVE_2 <=  reg_clk2_WDLIVE_1;      
+      end
+    end
+
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if(!rst2) begin
         reg_clk2_WDEN_1   <=  1'b0;  
         reg_clk2_WDEN_2   <=  1'b0;
       end
       else begin
-        reg_clk2_WDLIVE_1 <=  reg_clk1_WDLIVE;  
-        reg_clk2_WDLIVE_2 <=  reg_clk2_WDLIVE_1; 
         reg_clk2_WDEN_1   <=  reg_clk1_WDEN;  
         reg_clk2_WDEN_2   <=  reg_clk2_WDEN_1;       
       end
     end
+
   //WTOCNT(mult bit syn problem, method 2, no load signal & feedback)
     always_ff @(posedge clk or negedge rst) begin
       if(!rst)
@@ -72,15 +80,15 @@
     //load stable
     always_ff @(posedge clk or negedge rst) begin
       if(!rst)
-        reg_clk1_load_stable <=  32'd0;
+        reg_clk1_load_stable <=  1'd0;
       else
-        reg_clk1_load_stable <=  (|WTOCNT);
+        reg_clk1_load_stable <=  (|reg_clk1_WTOCNT);
     end    
 
     always_ff @(posedge clk2 or negedge rst2) begin
       if(!rst2) begin
-        reg_clk2_load_stable_1 <=  32'd0;  
-        reg_clk2_load_stable_2 <=  32'd0;
+        reg_clk2_load_stable_1 <=  1'd0;  
+        reg_clk2_load_stable_2 <=  1'd0;
       end
       else begin
         reg_clk2_load_stable_1 <=  reg_clk1_load_stable;  
@@ -93,34 +101,34 @@
         reg_clk2_WTOCNT_1 <=  32'd0;
       end
       else begin
-        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_2) ? reg_clk1_WTOCNT : 32'd0;     
+        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_2) ? reg_clk1_WTOCNT : reg_clk2_WTOCNT_1;     
       end
     end    
 
 //------------------------- FSM -------------------------//
   always_ff @(posedge clk2 or negedge rst2) begin
-    if (!rst2)   S_cur <=  INITIAL;
+    if (!rst2)   S_cur <=  INIT;
     else        S_cur <=  S_nxt;
   end
 
   always_comb begin
     case (S_cur)
-      INITIAL: begin 
+      INIT: begin 
         if(reg_clk2_WDEN_2)         S_nxt = CNTDOWN;//Wait for enable
         else if (reg_clk2_WDLIVE_2) S_nxt = RSTCNT;
-        else                        S_nxt = INITIAL;
+        else                        S_nxt = INIT;
       end
       CNTDOWN: begin
         if(CNT_EXCEED)       S_nxt = TIMEOUT;
         else                 S_nxt = CNTDOWN;        
       end
       RSTCNT: begin
-        S_nxt = INITIAL;        
+        S_nxt = INIT;        
       end
       TIMEOUT:  begin
-        S_nxt = INITIAL;          
+        S_nxt = INIT;          
       end
-      default:    S_nxt = INITIAL; //WDT_CNT
+      // default:    S_nxt = INIT; //WDT_CNT
     endcase
   end
 
@@ -132,7 +140,7 @@
         WDT_CNT <=  32'd0;
       else begin
         case (S_cur)
-          INITIAL: WDT_CNT <=  reg_clk2_WTOCNT_1;
+          INIT: WDT_CNT <=  reg_clk2_WTOCNT_1;
           CNTDOWN: begin
             if(reg_clk2_WDLIVE_2)
               WDT_CNT <=  reg_clk2_WTOCNT_1;

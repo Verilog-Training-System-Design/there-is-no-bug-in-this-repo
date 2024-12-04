@@ -69,7 +69,7 @@
     //
   //----------------------- Main Code -----------------------//
     //------------------------- FSM -------------------------//
-      always_ff @(posedge ACLK ) begin
+      always_ff @(posedge ACLK or negedge ARESETn ) begin
           if(!ARESETn)   S_cur <=  SADDR;
           else          S_cur <=  S_nxt;
       end
@@ -91,7 +91,7 @@
           RDATA:  S_nxt  = (R_last)     ? SADDR   : RDATA; 
           WDATA:  S_nxt  = (W_last)     ? WRESP   : WDATA; 
           WRESP:  S_nxt  = (Wresp_done) ? SADDR   : WRESP; 
-          default:  S_nxt  = SADDR;
+          // default:  S_nxt  = SADDR;
         endcase
       end 
     //--------------------- Last Signal ---------------------//  
@@ -104,7 +104,7 @@
       assign  Wdata_done  = S_WValid  & S_WReady;
       assign  Wresp_done  = S_BValid  & S_BReady;
     //------------------------- CNT -------------------------//
-        always_ff @(posedge ACLK) begin
+        always_ff @(posedge ACLK or negedge ARESETn) begin
           if (!ARESETn) begin
             cnt   <=  `AXI_LEN_BITS'd0;
           end 
@@ -125,23 +125,23 @@
 
     //----------------- W-channel (priority) -----------------//
       //Addr
-        always_ff @(posedge ACLK) begin
-          if(!ARESETn)   reg_AWID     <=  `MEM_ADDR_LEN'd0;
+        always_ff @(posedge ACLK or negedge ARESETn) begin
+          if(!ARESETn)   reg_AWID     <=  `AXI_IDS_BITS'd0;
           else      reg_AWID     <=  (Waddr_done)  ? S_AWID : reg_AWID;
         end   
 
-        always_ff @(posedge ACLK) begin
+        always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
           else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:2] : reg_AWAddr;
         end   
         
-        always_ff @(posedge ACLK ) begin
+        always_ff @(posedge ACLK or negedge ARESETn ) begin
           if(!ARESETn)   reg_AWLen   <=  `AXI_LEN_BITS'd0;
           else      reg_AWLen   <=  (Waddr_done)  ? S_AWLen : reg_AWLen;
         end
         //awsize
         //awburst
-        always_ff @(posedge ACLK) begin
+        always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn) begin
             S_AWReady    <=   1'b0;
           end          
@@ -164,7 +164,7 @@
         assign  S_BValid  = (S_cur == WRESP)  ? 1'b1  : 1'b0;  
     //---------------------- R-channel ----------------------// 
       //Addr
-        always_ff @(posedge ACLK) begin
+        always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn) begin
             reg_ARID      <=  `AXI_IDS_BITS'd0;
             reg_ARAddr    <=  `MEM_ADDR_LEN'd0;
@@ -178,7 +178,7 @@
         end
         //Rsize
         //Rburst
-        always_ff @(posedge ACLK) begin
+        always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn) begin
             S_ARReady    <=   1'b0;
           end          

@@ -1,7 +1,7 @@
 #include <stdint.h>
 unsigned int *copy_addr; // = &_test_start;
 volatile unsigned int *WDT_addr = (int *) 0x10010000;
-volatile unsigned int *dma_addr_boot = (int *) 0x10020000;
+
 
 #define MIP_MEIP (1 << 11) // External interrupt pending
 #define MIP_MTIP (1 << 7)  // Timer interrupt pending
@@ -14,11 +14,15 @@ void timer_interrupt_handler(void) {
 }
 
 void external_interrupt_handler(void) {
-
+	volatile unsigned int *dma_addr_boot = (int *) 0x10020000;
+	asm("csrsi mstatus, 0x0"); // MIE of mstatus
+	dma_addr_boot[0x40] = 0; // disable DMA
 }
+
 
 void trap_handler(void) {
     uint32_t mip;
+
 
     // 讀取中斷狀態寄存器
     asm volatile("csrr %0, %1" : "=r"(mip) : "i"(MIP));
@@ -51,6 +55,8 @@ int main(void) {
   WDT_addr[0xc0] = 10000; // tonet
   WDT_addr[0x40] = 1; // WDT_en
   
+  int a = 1;
+  int b = 2;
   int c = 0;
   
 	  for(int i = 0; i < 100; i++){

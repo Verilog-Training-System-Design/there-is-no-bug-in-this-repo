@@ -1,27 +1,50 @@
 #modify clk period & edge{0 half clk period}, do not modify clk2
 current_design "top"
-clock -name "top.clk" -domain clk -tag clk -period 1 -edge {0 0.5}
-clock -name "top.clk2" -domain clk2 -tag clk2 -period 10 -edge {0 5}
-reset -name "top.rst" -value 1 -sync
-reset -name "top.rst2" -value 1 -sync
+clock -name "top.clk" -domain clk -tag clk -period 5 -edge {0 2.5}
+clock -name "top.clk2" -domain clk2 -tag clk2 -period 50 -edge {0 25}
+reset -name "top.rst" -value 1   -async
+reset -name "top.rst2" -value 1   -async
+
+#reset -name "top.CPU.cpu.rst" -value 1 -sync
+#reset -name "top.wdt.WDT_inst.rst2" -value 1 -async
 
 abstract_port -module TS1N16ADFPCLLLVTA512X45M4SWSHOD -ports SLP DSLP SD PUDELAY CEB WEB A D BWEB RTSEL WTSEL Q  -clock clk
 
+
+
+
 #reset CDC flip flops with initial value 0
 
-cdc_filter_coherency -unrelated top.WDT.WDT.WDEN_syn0 top.WDT.WDT.WDLIVE_syn0
+cdc_filter_coherency -unrelated top.wdt.WDT_inst.WDEN top.wdt.WDT_inst.WDLIVE
+cdc_filter_coherency -unrelated top.wdt.WDT_inst.reg_clk1_WDEN top.wdt.WDT_inst.reg_clk1_WDLIVE
+cdc_filter_coherency -unrelated top.wdt.WDT_inst.reg_clk2_WDEN_1 top.wdt.WDT_inst.reg_clk2_WDLIVE_1
+cdc_filter_coherency -unrelated top.wdt.WDT_inst.reg_clk2_WDEN_2 top.wdt.WDT_inst.reg_clk2_WDLIVE_2
 
 #s1
-define_tag -tag initState -name top.WDT.WDT.WDEN_syn0 -value 0
-define_tag -tag initState -name top.WDT.WDT.WDEN_syn1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.WDEN -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_WDEN -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WDEN_1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WDEN_2 -value 0
 
 #s2
-define_tag -tag initState -name top.WDT.WDT.WDLIVE_syn0 -value 0
-define_tag -tag initState -name top.WDT.WDT.WDLIVE_syn1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.WDLIVE -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_WDLIVE -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WDLIVE_1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WDLIVE_2 -value 0
+
+#for WDTCNT SIGNAL
+define_tag -tag initState -name top.wdt.WDT_inst.WTOCNT -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_WTOCNT -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_load_stable -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_load_stable_1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_load_stable_2 -value 0
+
 
 #s3
-define_tag -tag initState -name top.WDT.WDT.WTO_syn0 -value 0
-define_tag -tag initState -name top.WDT.WDT.WTO_syn1 -value 0
+define_tag -tag initState -name top.wdt.WDT_inst.WTO -value 0
+define_tag -tag initState -name top.wdt.WTO_clk2_result -value 0
+define_tag -tag initState -name top.wdt.WTO_clk1_result1 -value 0
+define_tag -tag initState -name top.wdt.WTO_clk1_result2 -value 0
 
 
 #if there are any fifos, set fifo memory

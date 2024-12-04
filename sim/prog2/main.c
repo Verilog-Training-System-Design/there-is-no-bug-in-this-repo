@@ -1,38 +1,38 @@
 // #include <stdint.h>
 
-// // #define MIP_MEIP (1 << 11) // External interrupt pending
-// // #define MIP_MTIP (1 << 7)  // Timer interrupt pending
-// // #define MIP 0x344
+// #define MIP_MEIP (1 << 11) // External interrupt pending
+// #define MIP_MTIP (1 << 7)  // Timer interrupt pending
+// #define MIP 0x344
 
-// // // extern unsigned int _binary_image_bmp_start
-// // // extern unsigned int _binary_image_bmp_end
-// // // extern unsigned int _binary_image_bmp_size
+// // extern unsigned int _binary_image_bmp_start
+// // extern unsigned int _binary_image_bmp_end
+// // extern unsigned int _binary_image_bmp_size
 
-// // volatile unsigned int *WDT_addr = (int *) 0x10010000;
-// // volatile unsigned int *dma_addr_boot = (int *) 0x10020000;
+// volatile unsigned int *WDT_addr = (int *) 0x10010000;
+// volatile unsigned int *dma_addr_boot = (int *) 0x10020000;
 
-// // void timer_interrupt_handler(void) {
-// //   asm("csrsi mstatus, 0x0"); // MIE of mstatus
-// //   WDT_addr[0x40] = 0; // WDT_en
-// //   asm("j _start");
-// // }
+// void timer_interrupt_handler(void) {
+//   asm("csrsi mstatus, 0x0"); // MIE of mstatus
+//   WDT_addr[0x40] = 0; // WDT_en
+//   asm("j _start");
+// }
 
-// // void external_interrupt_handler(void) {
+// void external_interrupt_handler(void) {
 
-// // } 
+// } 
 
-// // void trap_handler(void) {
-// //     uint32_t mip;
-// //     asm volatile("csrr %0, %1" : "=r"(mip) : "i"(MIP));
+// void trap_handler(void) {
+//     uint32_t mip;
+//     asm volatile("csrr %0, %1" : "=r"(mip) : "i"(MIP));
 	
-// //     if ((mip & MIP_MTIP) >> 7) {
-// //         timer_interrupt_handler();
-// //     }
+//     if ((mip & MIP_MTIP) >> 7) {
+//         timer_interrupt_handler();
+//     }
 
-// //     if ((mip & MIP_MEIP) >> 11) {
-// //         external_interrupt_handler();
-// //     }
-// // }
+//     if ((mip & MIP_MEIP) >> 11) {
+//         external_interrupt_handler();
+//     }
+// }
 
 // // float Grayscale(int8_t B, int8_t G, int8_t R){
 // //     float Gray_result;
@@ -63,7 +63,7 @@
 // //     return 0;
 // // }
 
-// int gray(int8_t red, int8_t green, int8_t blue) {          //r
+// int gray(int red, int green, int blue) {          //r
 //     unsigned int tmp, result = 0;
 //     tmp = red << 18;
 //     result += tmp;
@@ -122,9 +122,9 @@
 // int main(void)
 // {
 //   extern char _test_start;
-//   extern int8_t _binary_image_bmp_start;
-//   extern int8_t _binary_image_bmp_end;
-//   extern int8_t _binary_image_bmp_size;
+//   extern unsigned int _binary_image_bmp_start;
+//   extern unsigned int _binary_image_bmp_end;
+//   extern unsigned int _binary_image_bmp_size;
 
 //   int i;
 //   int j=0;
@@ -140,10 +140,10 @@
 //   int ans = 0;
 //   for (j = 54; j < _binary_image_bmp_size; j = j + 12)
 //   {
-//         int8_t temp1 = (&_binary_image_bmp_start)[13];
-//         int8_t temp2 = (&_binary_image_bmp_start)[14];
-//         int8_t temp3 = (&_binary_image_bmp_start)[15];
-//         int8_t temp4 = (&_binary_image_bmp_start)[16];
+//         int temp1 = (&_binary_image_bmp_start)[13];
+//         int temp2 = (&_binary_image_bmp_start)[14];
+//         int temp3 = (&_binary_image_bmp_start)[15];
+//         int temp4 = (&_binary_image_bmp_start)[16];
 //         r = (temp1 >> 16) & 0xff;
 //         g = (temp1 >> 24) & 0xff;
 //         b = temp2 & 0xff;
@@ -187,12 +187,6 @@
 #define MIP_MTIP (1 << 7)  // Timer interrupt pending
 #define MIP 0x344
 
-extern char _test_start;
-extern unsigned int _binary_image_bmp_start;
-//extern int _binary_image_bmp_start;
-extern unsigned int _binary_image_bmp_end;
-extern unsigned int _binary_image_bmp_size;
-
 volatile unsigned int *WDT_addr = (int *) 0x10010000;
 volatile unsigned int *dma_addr_boot = (int *) 0x10020000;
 
@@ -225,13 +219,14 @@ void trap_handler(void) {
         external_interrupt_handler();
     }
 }
-
+extern char _test_start;
+extern unsigned int _binary_image_bmp_start;
+extern unsigned int _binary_image_bmp_end;
+extern unsigned int _binary_image_bmp_size;
 int main(void)
 {
   //extern unsigned int _test_start;
-
-
-    int *bmp = &_binary_image_bmp_start;
+    unsigned  int *bmp = &_binary_image_bmp_start;
     char *test = &_test_start;
 
     int i = 0;
@@ -244,13 +239,17 @@ int main(void)
         test[i+1] = bmp[j] >> 8;
         test[i+2] = bmp[j] >> 16;
         test[i+3] = bmp[j] >> 24;
+        // (&_test_start)[i] = (&_binary_image_bmp_start)[j];
+        // (&_test_start)[i + 1] = (&_binary_image_bmp_start)[j] >> 8;
+        // (&_test_start)[i + 2] = (&_binary_image_bmp_start)[j] >> 16;
+        // (&_test_start)[i + 3] = (&_binary_image_bmp_start)[j] >> 24;
         j= j+1;
     }
     j = 13;
     i = 54;
   int a = 0, b = 0, c = 0;
   int result = 0, tmp = 0;
-  for (i = 54; i < (&_binary_image_bmp_size); i = i + 12)
+  for (i = 54; i < &_binary_image_bmp_size ; i = i + 12)
   {
 
     result = 0, tmp = 0;

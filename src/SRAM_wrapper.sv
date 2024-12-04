@@ -80,7 +80,7 @@ logic [`AXI_IDS_BITS-1:0] AWID_reg;
 logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_LEN_BITS-1:0] counter;
 // logic RVALID_reg;
-logic ceb;
+// logic ceb;
 
 assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : ARID_reg;
 // assign RDATA_S = (RVALID_S & RVALID_reg) ? RDATA_reg : DO;

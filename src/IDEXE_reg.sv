@@ -90,7 +90,7 @@ always_ff @(posedge clk or negedge reset) begin
         EXE_Memoryin_f <= 1'b0;
         EXE_CSRSel <= 1'b0;
         EXE_CSR_type <= 2'b0;
-        EXE_CSR_addr <= 11'b0;
+        EXE_CSR_addr <= 12'b0;
     end
     else if(CSR_reset)begin
         EXE_pc_out <= 32'h0;
@@ -118,7 +118,7 @@ always_ff @(posedge clk or negedge reset) begin
         EXE_Memoryin_f <= 1'b0;
         EXE_CSRSel <= 1'b0;
         EXE_CSR_type <= 2'b0;
-        EXE_CSR_addr <= 11'b0;
+        EXE_CSR_addr <= 12'b0;
     end
     else begin
         if(im_stall | dm_stall ) begin

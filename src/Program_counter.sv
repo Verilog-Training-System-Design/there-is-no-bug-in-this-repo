@@ -35,7 +35,9 @@ always_ff @( posedge clk or negedge reset ) begin
 end
 
 always_ff @(posedge clk or negedge reset) begin
-    if(~reset | CSR_reset)
+    if(~reset)
+        pc_out <= 32'h0;
+    else if(CSR_reset)
         pc_out <= 32'h0;
     else begin
         if(CSR_ret)

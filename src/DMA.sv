@@ -56,7 +56,7 @@
 //---------------------- Parameter -------------------------//
   //FSM
     logic   [2:0] S_cur, S_nxt;
-    parameter   INITIAL   = 3'd0,
+    parameter   INIT      = 3'd0,
                 PREPARE   = 3'd1,
                 RADDR     = 3'd2,
                 RDATA     = 3'd3,
@@ -69,7 +69,7 @@
     logic [`AXI_DATA_BITS -1:0] slave_dst;    
     logic [`AXI_DATA_BITS -1:0] total_data;
     logic [`AXI_DATA_BITS -1:0] remainder_data;
-    logic [`AXI_DATA_BITS -1:0] single_trans_data; 
+    logic [4:0] single_trans_data; 
   //Data register
     logic   [`AXI_DATA_BITS -1:0]  reg_RData;
   //CNT
@@ -92,17 +92,17 @@
   //----------------------  FSM ----------------------------//
       always_ff @(posedge clk or negedge rst) begin
           if(!rst)
-              S_cur   = INITIAL;
+              S_cur   <= INIT;
           else
-              S_cur   = S_nxt;
+              S_cur   <= S_nxt;
       end
 
       always_comb begin
         case (S_cur)
-          INITIAL:  begin
+          INIT:  begin
             S_nxt   = PREPARE;
             // if(!DMAEN)      S_nxt  = PREPARE;
-            // else            S_nxt  = INITIAL; 
+            // else            S_nxt  = INIT; 
           end
           PREPARE:  begin
             if (DMAEN)      S_nxt = RADDR;
@@ -131,10 +131,10 @@
               S_nxt = WRESP;
           end
           FINISH: begin
-            if(!DMAEN)      S_nxt  = INITIAL;
+            if(!DMAEN)      S_nxt  = INIT;
             else            S_nxt  = FINISH;            
           end
-          //default:  S_nxt  = INITIAL;   //FINISH
+          //default:  S_nxt  = INIT;   //FINISH
         endcase
       end
   //--------------------- Start Burst ---------------------//
@@ -166,11 +166,11 @@
   //------------------- DMA transfer Signal -------------------//
     always_ff @(posedge clk or negedge rst) begin
       if(!rst) 
-        remainder_data  <=  32'd0;
+        remainder_data  <=  5'd0;
       else if(S_cur == PREPARE)
         remainder_data  <=  total_data;
       else if(W_last)
-        remainder_data  <=  remainder_data -  single_trans_data;
+        remainder_data  <=  remainder_data -  {27'd0,single_trans_data};
     end
 
     always_ff @(posedge clk or negedge rst) begin
@@ -224,7 +224,7 @@
         M_AWValid   <=  1'b0;
       else begin
         case (S_cur)
-          INITIAL:  M_AWValid  <= (Start_burst_write) ? 1'b1 : 1'b0;
+          INIT:  M_AWValid  <= (Start_burst_write) ? 1'b1 : 1'b0;
           WADDR:    M_AWValid  <= (Waddr_done) ? 1'b0 : 1'b1;
           default:  M_AWValid  <=  1'b0;
         endcase          
@@ -256,7 +256,7 @@
         M_ARValid   <=  1'b0;
       else begin
         case (S_cur)
-          INITIAL:  M_ARValid  <= (Start_burst_read) ? 1'b1 : 1'b0;
+          INIT:  M_ARValid  <= (Start_burst_read) ? 1'b1 : 1'b0;
           RADDR:    M_ARValid  <= (Raddr_done) ? 1'b0 : 1'b1;
           default:  M_ARValid  <=  1'b0;
         endcase          

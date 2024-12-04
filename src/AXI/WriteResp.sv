@@ -236,12 +236,18 @@ always_comb begin
             BRESP_M1 = BRESP;
             BREADY = BREADY_M1;
             BVALID_M1 = BVALID;
+            BID_M2 = 4'b0;
+            BRESP_M2 = 2'b0;
+            BVALID_M2 = 1'b0;
         end
         4'b0100 : begin
             BID_M2 = BID;
             BRESP_M2 = BRESP;
             BREADY = BREADY_M2;
             BVALID_M2 = BVALID;
+            BID_M1 = 4'b0;
+            BRESP_M1 = 2'b0;
+            BVALID_M1 = 1'b0;
         end
         default : begin
             BID_M1 = 4'b0;
