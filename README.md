@@ -19,24 +19,23 @@
   - [x] 11/24 delay clock
   - [x] 11/25 input address assign
   - [x] 11/25 when reading/writing continous data how address increase
-- [ ] ROM_wrapper
-- [ ] WDT_wrapper
+- [x] ROM_wrapper
+- [x] WDT_wrapper
   - [x] Input signal for WDT
-  - [ ] Slave wrapper two version integration
-- [ ] WDT implementation
+  - [x] Slave wrapper two version integration
+- [x] WDT implementation
   - [x] 11/20 Clock problem - one bit
   - [ ] Clock domain - mult bit (11/23)
-- [ ] DMA_wrapper
-  - [ ] 3 submudule wire connect
-- [ ] DMA implementation
+- [x] DMA_wrapper
+  - [x] 3 submudule wire connect
+- [x] DMA implementation
   - [x] Slave Part (need to double check)
-  - [ ] Master Part (port integration)
-  - [ ] DMA Module
-    - [ ] Inner FSM
-    - [ ] register for data store
-    - [ ] data len to cal. data transfer
-
-- [ ] ROM implementation
+  - [x] Master Part (port integration)
+  - [x] DMA Module
+    - [x] Inner FSM
+    - [x] register for data store
+    - [x] data len to cal. data transfer
+- [x] ROM implementation
 - [ ] top module
   - [x] 11/25 DRAM wire connect
   - [ ] ROM wire connect
