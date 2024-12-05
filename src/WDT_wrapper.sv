@@ -222,7 +222,20 @@
 
        logic WTO_clk2_result;
        logic WTO_clk1_result1, WTO_clk1_result2;
-        
+       logic WTOCNT_load;
+
+        always_ff @(posedge clk or negedge rst) begin
+            if(!rst)
+              WTOCNT_load <=  1'b0;
+            else begin
+              if (Wdata_done && (reg_AWAddr[15:0] ==16'h0300)) begin
+                WTOCNT_load <=  1'b1;               
+              end 
+              else begin
+                WTOCNT_load <=  WTOCNT_load;                    
+              end
+            end
+        end
         always_ff @(posedge clk or negedge rst) begin
             if (!rst) begin
                 WTO_clk1_result1    <=  1'b0;
@@ -242,6 +255,7 @@
             .WDEN   (WDEN),
             .WDLIVE (WDLIVE),
             .WTOCNT (WTOCNT),
-            .WTO    (WTO_clk2_result)
+            .WTO    (WTO_clk2_result),
+            .WTOCNT_load (WTOCNT_load)
         );
     endmodule

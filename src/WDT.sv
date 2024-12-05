@@ -11,7 +11,8 @@
     input     WDEN,
     input     WDLIVE,
     input     [31:0]  WTOCNT,
-    output    logic   WTO
+    output    logic   WTO,
+    input     WTOCNT_load
   );
   
 //---------------------- parameter -------------------------//
@@ -70,19 +71,22 @@
       end
     end
 
-  //WTOCNT(mult bit syn problem, method 2, no load signal & feedback)
+  //WTOCNT(mult bit syn problem, method 1, have load signal & feedback)
     always_ff @(posedge clk or negedge rst) begin
       if(!rst)
         reg_clk1_WTOCNT <=  32'd0;
       else
-        reg_clk1_WTOCNT <=  WTOCNT;
+        if(WTOCNT_load)
+          reg_clk1_WTOCNT <=  WTOCNT;
+        else  
+          reg_clk1_WTOCNT <=  reg_clk1_WTOCNT;          
     end
-    //load stable
+    //load pulse
     always_ff @(posedge clk or negedge rst) begin
       if(!rst)
         reg_clk1_load_stable <=  1'd0;
       else
-        reg_clk1_load_stable <=  (|reg_clk1_WTOCNT);
+        reg_clk1_load_stable <=  (WTOCNT_load);
     end    
 
     always_ff @(posedge clk2 or negedge rst2) begin
@@ -91,17 +95,20 @@
         reg_clk2_load_stable_2 <=  1'd0;
       end
       else begin
-        reg_clk2_load_stable_1 <=  reg_clk1_load_stable;  
-        reg_clk2_load_stable_2 <=  reg_clk2_load_stable_1;        
+        reg_clk2_load_stable_1 <=  WTOCNT_load;  
+        reg_clk2_load_stable_2 <=  ~reg_clk2_load_stable_1;        
       end
     end
+    
+    logic load_pulse;
+    assign  load_pulse = reg_clk2_load_stable_1 & reg_clk2_load_stable_2;
     //check signaal stable
     always_ff @(posedge clk2 or negedge rst2) begin
       if(!rst2) begin
         reg_clk2_WTOCNT_1 <=  32'd0;
       end
       else begin
-        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_2) ? reg_clk1_WTOCNT : reg_clk2_WTOCNT_1;     
+        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_1) ? reg_clk1_WTOCNT : reg_clk2_WTOCNT_1;     
       end
     end    
 
@@ -119,14 +126,15 @@
         else                        S_nxt = INIT;
       end
       CNTDOWN: begin
-        if(CNT_EXCEED)       S_nxt = TIMEOUT;
-        else                 S_nxt = CNTDOWN;        
+        if(CNT_EXCEED)              S_nxt = TIMEOUT;
+        else                        S_nxt = CNTDOWN;        
       end
       RSTCNT: begin
         S_nxt = INIT;        
       end
       TIMEOUT:  begin
-        S_nxt = INIT;          
+        if(reg_clk2_WDEN_2)         S_nxt = INIT;
+        else                        S_nxt = TIMEOUT;        
       end
       // default:    S_nxt = INIT; //WDT_CNT
     endcase
