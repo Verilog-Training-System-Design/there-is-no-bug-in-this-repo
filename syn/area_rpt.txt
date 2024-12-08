@@ -1,0 +1,31 @@
+ 
+****************************************
+Report : area
+Design : top
+Version: O-2018.06
+Date   : Thu Dec  5 17:07:27 2024
+****************************************
+
+Library(s) Used:
+
+    N16ADFP_StdCellss0p72vm40c (File: /usr/cad/CBDK/Executable_Package/Collaterals/IP/stdcell/N16ADFP_StdCell/NLDM/N16ADFP_StdCellss0p72vm40c.db)
+    SRAM_ss0p72v0p72vm40c_100a (File: /home/user2/avsd24/avsd24130/LAB32/sim/SRAM/SRAM_ss0p72v0p72vm40c_100a.db)
+
+Number of ports:                        13541
+Number of nets:                         43092
+Number of cells:                        29919
+Number of combinational cells:          25666
+Number of sequential cells:              4163
+Number of macros/black boxes:               2
+Number of buf/inv:                       5490
+Number of references:                      12
+
+Combinational area:               9616.631252
+Buf/Inv area:                     1031.460507
+Noncombinational area:            4753.417134
+Macro/Black Box area:             9082.750000
+Net Interconnect area:      undefined  (Wire load has zero net area)
+
+Total cell area:                 23452.798385
+Total area:                 undefined
+1

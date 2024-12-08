@@ -70,10 +70,10 @@ void boot() {
   //DMA len
   dma_addr_boot[0x100]= (unsigned int)&__sdata_end - (unsigned int)&__sdata_start + 1;
   // Enable DMA Controller
-  //dma_addr_boot[0x40] = 1; // Enable DMA
+  dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
   // disable DMA Controller
-  dma_addr_boot[0x40] = 0; // disable DMA
+  //dma_addr_boot[0x40] = 0; // disable DMA
   asm("li t6, 0x000");
   asm("csrw mie, t6"); // MEIE of mie
   
