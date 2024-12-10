@@ -35,6 +35,9 @@ define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WDLIVE_2 -value 0
 #for WDTCNT SIGNAL
 define_tag -tag initState -name top.wdt.WDT_inst.WTOCNT -value 0
 define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_WTOCNT -value 0
+#define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_WTOCNT -value 0
+
+define_tag -tag initState -name top.wdt.WDT_inst.WTOCNT_load -value 0
 define_tag -tag initState -name top.wdt.WDT_inst.reg_clk1_load_stable -value 0
 define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_load_stable_1 -value 0
 define_tag -tag initState -name top.wdt.WDT_inst.reg_clk2_load_stable_2 -value 0

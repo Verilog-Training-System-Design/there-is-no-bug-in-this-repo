@@ -76,14 +76,14 @@
       if(!rst)
         reg_clk1_WTOCNT <=  32'd0;
       else
-        if(WTOCNT_load)
+        // if(WTOCNT_load)
           reg_clk1_WTOCNT <=  WTOCNT;
-        else  
-          reg_clk1_WTOCNT <=  reg_clk1_WTOCNT;          
+        // else  
+        //   reg_clk1_WTOCNT <=  reg_clk1_WTOCNT;          
     end
     //load pulse
-    always_ff @(posedge clk or negedge rst) begin
-      if(!rst)
+    always_ff @(posedge clk2 or negedge rst2) begin
+      if(!rst2)
         reg_clk1_load_stable <=  1'd0;
       else
         reg_clk1_load_stable <=  (WTOCNT_load);
@@ -95,7 +95,7 @@
         reg_clk2_load_stable_2 <=  1'd0;
       end
       else begin
-        reg_clk2_load_stable_1 <=  WTOCNT_load;  
+        reg_clk2_load_stable_1 <=  reg_clk1_load_stable;  
         reg_clk2_load_stable_2 <=  ~reg_clk2_load_stable_1;        
       end
     end
@@ -108,7 +108,7 @@
         reg_clk2_WTOCNT_1 <=  32'd0;
       end
       else begin
-        reg_clk2_WTOCNT_1 <= (reg_clk2_load_stable_1) ? reg_clk1_WTOCNT : reg_clk2_WTOCNT_1;     
+        reg_clk2_WTOCNT_1 <= (load_pulse) ? reg_clk1_WTOCNT : reg_clk2_WTOCNT_1;     
       end
     end    
 
