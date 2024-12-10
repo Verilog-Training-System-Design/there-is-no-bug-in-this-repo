@@ -4,44 +4,49 @@ module DRAM_wrapper (
     input clk,
     input rst,
     
-    //READ ADDRESS1
-	input [`AXI_IDS_BITS-1:0] 			ARID_S,
-	input [`AXI_ADDR_BITS-1:0] 			ARADDR_S,
-	input [`AXI_LEN_BITS-1:0] 			ARLEN_S,
-	input [`AXI_SIZE_BITS-1:0] 			ARSIZE_S,
-	input [1:0] 						ARBURST_S,
-	input 								ARVALID_S,
-	output logic 						ARREADY_S,
+    // //READ ADDRESS1
+	// input [`AXI_IDS_BITS-1:0] 			ARID_S,
+	// input [`AXI_ADDR_BITS-1:0] 			ARADDR_S,
+	// input [`AXI_LEN_BITS-1:0] 			ARLEN_S,
+	// input [`AXI_SIZE_BITS-1:0] 			ARSIZE_S,
+	// input [1:0] 						ARBURST_S,
+	// input 								ARVALID_S,
+	// output logic 						ARREADY_S,
+	RA.Slave S_AR,
 	
-	//READ DATA1
-	output logic [`AXI_IDS_BITS-1:0] 	RID_S,
-	output logic [`AXI_DATA_BITS-1:0] 	RDATA_S,
-	output logic [1:0] 					RRESP_S,
-	output logic 						RLAST_S,
-	output logic 						RVALID_S,
-	input 								RREADY_S,
+	// //READ DATA1
+	// output logic [`AXI_IDS_BITS-1:0] 	RID_S,
+	// output logic [`AXI_DATA_BITS-1:0] 	RDATA_S,
+	// output logic [1:0] 					RRESP_S,
+	// output logic 						RLAST_S,
+	// output logic 						RVALID_S,
+	// input 								RREADY_S,
+	R.Slave S_R,
 
-	//WRITE ADDRESS
-	input [`AXI_IDS_BITS-1:0] 			AWID_S,
-	input [`AXI_ADDR_BITS-1:0] 			AWADDR_S,
-	input [`AXI_LEN_BITS-1:0] 			AWLEN_S,
-	input [`AXI_SIZE_BITS-1:0] 			AWSIZE_S,
-	input [1:0] 						AWBURST_S,
-	input 								AWVALID_S,
-	output logic 						AWREADY_S,
+	// //WRITE ADDRESS
+	// input [`AXI_IDS_BITS-1:0] 			AWID_S,
+	// input [`AXI_ADDR_BITS-1:0] 			AWADDR_S,
+	// input [`AXI_LEN_BITS-1:0] 			AWLEN_S,
+	// input [`AXI_SIZE_BITS-1:0] 			AWSIZE_S,
+	// input [1:0] 						AWBURST_S,
+	// input 								AWVALID_S,
+	// output logic 						AWREADY_S,
+	WA.Slave S_AW,
 	
-	//WRITE DATA
-	input [`AXI_DATA_BITS-1:0] 			WDATA_S,
-	input [`AXI_STRB_BITS-1:0] 			WSTRB_S,
-	input 								WLAST_S,
-	input 								WVALID_S,
-	output logic 						WREADY_S,
+	// //WRITE DATA
+	// input [`AXI_DATA_BITS-1:0] 			WDATA_S,
+	// input [`AXI_STRB_BITS-1:0] 			WSTRB_S,
+	// input 								WLAST_S,
+	// input 								WVALID_S,
+	// output logic 						WREADY_S,
+	W.Slave S_W,
 	
-	//WRITE RESPONSE
-	output logic [`AXI_IDS_BITS-1:0] 	BID_S,
-	output logic [1:0] 					BRESP_S,
-	output logic 						BVALID_S,
-	input 								BREADY_S,
+	// //WRITE RESPONSE
+	// output logic [`AXI_IDS_BITS-1:0] 	BID_S,
+	// output logic [1:0] 					BRESP_S,
+	// output logic 						BVALID_S,
+	// input 								BREADY_S,
+	B.Slave S_B,
 
 	output logic 						DRAM_CSn,
     output logic [3:0]					DRAM_WEn,
@@ -72,13 +77,13 @@ logic [`AXI_LEN_BITS-1:0] arlen, awlen;
 logic [`AXI_IDS_BITS-1:0] ARID_reg, AWID_reg;
 logic [`AXI_LEN_BITS-1:0] counter;
 
-assign B_done = BVALID_S & BREADY_S;
-assign RID_S = (ARVALID_S & ARREADY_S) ? ARID_S : ARID_reg;
-assign RDATA_S = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
-assign RRESP_S = `AXI_RESP_OKAY;
-assign RLAST_S = ((stage == read_data) && (counter == arlen) && (delay == 3'd5)); 
-assign BID_S = (AWVALID_S & AWREADY_S) ? AWID_S : AWID_reg;
-assign BRESP_S = `AXI_RESP_OKAY;
+assign B_done = S_B.BVALID & S_B.BREADY;
+assign S_R.RID_S = (S_AR.ARVALID & S_AR.ARREADY) ? S_AR.ARID_S : ARID_reg;
+assign S_R.RDATA = ((stage == read_data) & DRAM_valid) ? DRAM_Q : RDATA_reg;
+assign S_R.RRESP = `AXI_RESP_OKAY;
+assign S_R.RLAST = ((stage == read_data) && (counter == arlen) && (delay == 3'd5)); 
+assign S_B.BID_S = (S_AW.AWVALID & S_AW.AWREADY) ? S_AW.AWID_S : AWID_reg;
+assign S_B.BRESP = `AXI_RESP_OKAY;
 
 //get size and burst data
 always_ff @( posedge clk or negedge rst ) begin 
@@ -86,13 +91,13 @@ always_ff @( posedge clk or negedge rst ) begin
 		SIZE_reg <= `AXI_SIZE_BITS'd0;
 		BURST_reg <= 2'd0;
 	end
-	else if(ARVALID_S & ARREADY_S)begin
-		SIZE_reg <= ARSIZE_S;
-		BURST_reg <= ARBURST_S;
+	else if(S_AR.ARVALID & S_AR.ARREADY)begin
+		SIZE_reg <= S_AR.ARSIZE;
+		BURST_reg <= S_AR.ARBURST;
 	end
-	else if(AWVALID_S & AWREADY_S)begin
-		SIZE_reg <= AWSIZE_S;
-		BURST_reg <= AWBURST_S;
+	else if(S_AW.AWVALID & S_AW.AWREADY)begin
+		SIZE_reg <= S_AW.AWSIZE;
+		BURST_reg <= S_AW.AWBURST;
 	end
 	else begin
 		SIZE_reg <= SIZE_reg;
@@ -117,17 +122,17 @@ always_ff @( posedge clk or negedge rst ) begin
 		AWID_reg <= `AXI_IDS_BITS'b0;
     end
     else begin
-        if(ARVALID_S & ARREADY_S)begin
-            arlen <= ARLEN_S;
-			ARID_reg <= ARID_S;
+        if(S_AR.ARVALID & S_AR.ARREADY)begin
+            arlen <= S_AR.ARLEN;
+			ARID_reg <= S_AR.ARID_S;
 		end
         else begin 
             arlen <= arlen;
 			ARID_reg <= ARID_reg;
 		end
-        if(AWVALID_S & AWREADY_S)begin
-            awlen <= AWLEN_S;
-			AWID_reg <= AWID_S;
+        if(S_AW.AWVALID & S_AW.AWREADY)begin
+            awlen <= S_AW.AWLEN;
+			AWID_reg <= S_AW.AWID_S;
 		end
         else begin
             awlen <= awlen;
@@ -143,15 +148,15 @@ always_ff @( posedge clk or negedge rst ) begin
         counter <= `AXI_LEN_BITS'b0;
     end 
     else if(stage == idle)begin
-        if(ARVALID_S & ARREADY_S)begin
-            ADDR_reg <= ARADDR_S;
+        if(S_AR.ARVALID & S_AR.ARREADY)begin
+            ADDR_reg <= S_AR.ARADDR;
         end
-        else if(AWVALID_S & AWREADY_S)begin
-            ADDR_reg <= AWADDR_S;
+        else if(S_AW.AWVALID & S_AW.AWREADY)begin
+            ADDR_reg <= S_AW.AWADDR;
         end
     end
     else if(stage == read_data)begin
-        if(RVALID_S & RREADY_S) begin           //in read data state and not read the end, increase address to get next data
+        if(S_R.RVALID & S_R.RREADY) begin           //in read data state and not read the end, increase address to get next data
             if(counter == arlen)begin
                 counter <= `AXI_LEN_BITS'b0;
             end
@@ -162,7 +167,7 @@ always_ff @( posedge clk or negedge rst ) begin
         end
     end
     else if(stage == write_data)begin
-        if(WVALID_S & WREADY_S)begin
+        if(S_W.WVALID & S_W.WREADY)begin
             ADDR_reg <= ADDR_reg + 32'd4;
         end
     end
@@ -199,9 +204,9 @@ end
 always_ff @( posedge clk or negedge rst) begin 
 	if(~rst)
 		write <= 1'b0;
-	else if(ARVALID_S & ARREADY_S)
+	else if(S_AR.ARVALID & S_AR.ARREADY)
 		write <= 1'b0;
-	else if(AWVALID_S & AWREADY_S)	
+	else if(S_AW.AWVALID & S_AW.AWREADY)	
 		write <= 1'b1;
 	else 
 		write <= write;
@@ -223,7 +228,7 @@ always_comb begin
     ret_flag = 1'b0;
 	case (stage)
         idle : begin
-            if(((ARVALID_S & ARREADY_S) | (AWVALID_S & AWREADY_S)) & delay_done)begin
+            if(((S_AR.ARVALID & S_AR.ARREADY) | (S_AW.AWVALID & S_AW.AWREADY)) & delay_done)begin
 				ret_flag = 1'b1;
 				next_stage = activate;
 			end
@@ -246,11 +251,11 @@ always_comb begin
 		end
         read_data : begin
 			if(delay_done)begin
-				if(RVALID_S & RREADY_S & RLAST_S)begin
+				if(S_R.RVALID & S_R.RREADY & S_R.RLAST)begin
 					ret_flag = 1'b1;
 					next_stage = precharge;
 				end
-				else if(RVALID_S & RREADY_S & !diffrow_dect)begin
+				else if(S_R.RVALID & S_R.RREADY & !diffrow_dect)begin
 					ret_flag = 1'b1;
 					next_stage = read_data;
 				end
@@ -266,7 +271,7 @@ always_comb begin
         end
         write_data : begin		//write multiple data??(different row problem)
 			if(delay_done)begin
-				if(WVALID_S & WREADY_S & WLAST_S)begin
+				if(S_W.WVALID & S_W.WREADY & S_W.WLAST)begin
 					ret_flag = 1'b1;
             	    next_stage = precharge;
 				end
@@ -313,7 +318,7 @@ always_comb begin
 			DRAM_RASn = 1'd1;
 			DRAM_WEn = 4'hf;
 			DRAM_D = 32'd0;
-			DRAM_A = (ARREADY_S & ARVALID_S) ? ARADDR_S[22:12] : ((AWVALID_S & AWREADY_S) ? AWADDR_S[22:12] : 11'd0);
+			DRAM_A = (S_AR.ARREADY & S_AR.ARVALID) ? S_AR.ARADDR[22:12] : ((S_AW.AWVALID & S_AW.AWREADY) ? S_AW.AWADDR[22:12] : 11'd0);
 		end
 		activate : begin
 			DRAM_CASn = 1'd1;
@@ -332,8 +337,8 @@ always_comb begin
 		write_data : begin
 			DRAM_CASn = (delay == 3'd0) ? 1'd0 : 1'd1;
 			DRAM_RASn = 1'd1;
-			DRAM_WEn = (delay == 3'd0) ? WSTRB_S : 4'hf;
-			DRAM_D = WDATA_S;
+			DRAM_WEn = (delay == 3'd0) ? S_W.WSTRB : 4'hf;
+			DRAM_D = S_W.WDATA;
 			DRAM_A = {1'b0, ADDR_reg[11:2]};
 		end 
 		default : begin
@@ -350,45 +355,45 @@ end
 always_comb begin
     case (stage)
         idle : begin
-            ARREADY_S = (delay_done) ? ~AWVALID_S : 1'b0;         //if want to write, write first
-            RVALID_S = 1'b0;
-            AWREADY_S = (delay_done) ? 1'b1 : 1'b0;
-            WREADY_S = 1'b0;
+            S_AR.ARREADY = (delay_done) ? ~S_AW.AWVALID : 1'b0;         //if want to write, write first
+            S_R.RVALID = 1'b0;
+            S_AW.AWREADY = (delay_done) ? 1'b1 : 1'b0;
+            S_W.WREADY = 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = (AWVALID_S) ? AWADDR_S[15:2] : ARADDR_S[15:2];
         end
 		activate : begin
-			ARREADY_S = 1'b0;
-            RVALID_S = 1'b0;
-            AWREADY_S = 1'b0;
-            WREADY_S = 1'b0;
+			S_AR.ARREADY = 1'b0;
+            S_R.RVALID = 1'b0;
+            S_AW.AWREADY = 1'b0;
+            S_W.WREADY = 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
 		end
         read_data : begin
-            ARREADY_S = 1'b0;
-            RVALID_S = (delay_done) ? 1'b1 : 1'b0;
-            AWREADY_S = 1'b0;
-            WREADY_S = 1'b0;
+            S_AR.ARREADY = 1'b0;
+            S_R.RVALID = (delay_done) ? 1'b1 : 1'b0;
+            S_AW.AWREADY = 1'b0;
+            S_W.WREADY = 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = (RVALID_S & RREADY_S & RLAST_S) ? address : (RVALID_S & RREADY_S) ? address_4 : address;
         end
         write_data : begin
-            ARREADY_S = 1'b0;
-            RVALID_S = 1'b0;
-            AWREADY_S = 1'b0;
-            WREADY_S = (delay_done) ? 1'b1 : 1'b0;
+            S_AR.ARREADY = 1'b0;
+            S_R.RVALID = 1'b0;
+            S_AW.AWREADY = 1'b0;
+            S_W.WREADY = (delay_done) ? 1'b1 : 1'b0;
             // BVALID_S = 1'b0;
 			DRAM_CSn = 1'b0;
             // A = address;
         end
         default : begin
-			ARREADY_S = 1'b0;
-            RVALID_S = 1'b0;
-            AWREADY_S = 1'b0;
-            WREADY_S = 1'b0;
+			S_AR.ARREADY = 1'b0;
+            S_R.RVALID = 1'b0;
+            S_AW.AWREADY = 1'b0;
+            S_W.WREADY = 1'b0;
             // BVALID_S = 1'b1;
 			DRAM_CSn = 1'b0;
 		end
@@ -397,14 +402,14 @@ end
 
 always_ff @( posedge clk or negedge rst ) begin 
 	if(~rst)
-		BVALID_S <= 1'b0;
+		S_B.BVALID <= 1'b0;
 	else begin
-		if(WVALID_S & WREADY_S & WLAST_S)
-			BVALID_S <= 1'b1;
+		if(S_W.WVALID & S_W.WREADY & S_W.WLAST)
+			S_B.BVALID <= 1'b1;
 		else if(B_done)
-			BVALID_S <= 1'b0;
+			S_B.BVALID <= 1'b0;
 		else 
-			BVALID_S <= BVALID_S;
+			S_B.BVALID <= S_B.BVALID;
 	end
 end
 

@@ -27,62 +27,69 @@ module CPU_wrapper (
     // input                                   BVALID_M0      ,
     // output logic                            BREADY_M0      ,
 
-    //READ ADDRESS0
-    output logic [`AXI_ID_BITS-1:0]         ARID_M0        ,
-    output logic [`AXI_ADDR_BITS-1:0]       ARADDR_M0      ,
-    output logic [`AXI_LEN_BITS-1:0]        ARLEN_M0       ,
-    output logic [`AXI_SIZE_BITS-1:0]       ARSIZE_M0      ,
-    output logic [1:0]                      ARBURST_M0     ,
-    output logic                            ARVALID_M0     ,
-    input                                   ARREADY_M0     ,
+    // //READ ADDRESS0
+    // output logic [`AXI_ID_BITS-1:0]         ARID_M0        ,
+    // output logic [`AXI_ADDR_BITS-1:0]       ARADDR_M0      ,
+    // output logic [`AXI_LEN_BITS-1:0]        ARLEN_M0       ,
+    // output logic [`AXI_SIZE_BITS-1:0]       ARSIZE_M0      ,
+    // output logic [1:0]                      ARBURST_M0     ,
+    // output logic                            ARVALID_M0     ,
+    // input                                   ARREADY_M0     ,
+    RA.Master M0_AR,
 
-    //READ DATA0
-    input [`AXI_ID_BITS-1:0]                RID_M0         ,
-    input [`AXI_DATA_BITS-1:0]              RDATA_M0       ,
-    input [1:0]                             RRESP_M0       ,
-    input                                   RLAST_M0       ,
-    input                                   RVALID_M0      ,
-    output logic                            RREADY_M0      ,
+    // //READ DATA0
+    // input [`AXI_ID_BITS-1:0]                RID_M0         ,
+    // input [`AXI_DATA_BITS-1:0]              RDATA_M0       ,
+    // input [1:0]                             RRESP_M0       ,
+    // input                                   RLAST_M0       ,
+    // input                                   RVALID_M0      ,
+    // output logic                            RREADY_M0      ,
+    R.Master M0_R,
 
+    // //WRITE ADDRESS
+    // output logic [`AXI_ID_BITS-1:0]         AWID_M1        ,
+    // output logic [`AXI_ADDR_BITS-1:0]       AWADDR_M1      ,
+    // output logic [`AXI_LEN_BITS-1:0]        AWLEN_M1       ,
+    // output logic [`AXI_SIZE_BITS-1:0]       AWSIZE_M1      ,
+    // output logic [1:0]                      AWBURST_M1     ,
+    // output logic                            AWVALID_M1     ,
+    // input                                   AWREADY_M1     ,
+    WA.Master M1_AW,
 
-    //WRITE ADDRESS
-    output logic [`AXI_ID_BITS-1:0]         AWID_M1        ,
-    output logic [`AXI_ADDR_BITS-1:0]       AWADDR_M1      ,
-    output logic [`AXI_LEN_BITS-1:0]        AWLEN_M1       ,
-    output logic [`AXI_SIZE_BITS-1:0]       AWSIZE_M1      ,
-    output logic [1:0]                      AWBURST_M1     ,
-    output logic                            AWVALID_M1     ,
-    input                                   AWREADY_M1     ,
-
-    //WRITE DATA
-    output logic [`AXI_DATA_BITS-1:0]       WDATA_M1       ,
-    output logic [`AXI_STRB_BITS-1:0]       WSTRB_M1       ,
-    output logic                            WLAST_M1       ,
-    output logic                            WVALID_M1      ,
-    input                                   WREADY_M1      ,
+    // //WRITE DATA
+    // output logic [`AXI_DATA_BITS-1:0]       WDATA_M1       ,
+    // output logic [`AXI_STRB_BITS-1:0]       WSTRB_M1       ,
+    // output logic                            WLAST_M1       ,
+    // output logic                            WVALID_M1      ,
+    // input                                   WREADY_M1      ,
+    W.Master M1_W,
 
     //WRITE RESPONSE
-    input [`AXI_ID_BITS-1:0]                BID_M1         ,
-    input [1:0]                             BRESP_M1       ,
-    input                                   BVALID_M1      ,
-    output logic                            BREADY_M1      ,
+    // input [`AXI_ID_BITS-1:0]                BID_M1         ,
+    // input [1:0]                             BRESP_M1       ,
+    // input                                   BVALID_M1      ,
+    // output logic                            BREADY_M1      ,
+    B.Master M1_B,
 
-    //READ ADDRESS1
-    output logic [`AXI_ID_BITS-1:0]         ARID_M1        ,
-    output logic [`AXI_ADDR_BITS-1:0]       ARADDR_M1      ,
-    output logic [`AXI_LEN_BITS-1:0]        ARLEN_M1       ,
-    output logic [`AXI_SIZE_BITS-1:0]       ARSIZE_M1      ,
-    output logic [1:0]                      ARBURST_M1     ,
-    output logic                            ARVALID_M1     ,
-    input                                   ARREADY_M1     ,
+    // //READ ADDRESS1
+    // output logic [`AXI_ID_BITS-1:0]         ARID_M1        ,
+    // output logic [`AXI_ADDR_BITS-1:0]       ARADDR_M1      ,
+    // output logic [`AXI_LEN_BITS-1:0]        ARLEN_M1       ,
+    // output logic [`AXI_SIZE_BITS-1:0]       ARSIZE_M1      ,
+    // output logic [1:0]                      ARBURST_M1     ,
+    // output logic                            ARVALID_M1     ,
+    // input                                   ARREADY_M1     ,
+    RA.Master M1_AR,
+
 
     //READ DATA1
-    input [`AXI_ID_BITS-1:0]                RID_M1         ,
-    input [`AXI_DATA_BITS-1:0]              RDATA_M1       ,
-    input [1:0]                             RRESP_M1       ,
-    input                                   RLAST_M1       ,
-    input                                   RVALID_M1      ,
-    output logic                            RREADY_M1      ,
+    // input [`AXI_ID_BITS-1:0]                RID_M1         ,
+    // input [`AXI_DATA_BITS-1:0]              RDATA_M1       ,
+    // input [1:0]                             RRESP_M1       ,
+    // input                                   RLAST_M1       ,
+    // input                                   RVALID_M1      ,
+    // output logic                            RREADY_M1      ,
+    R.Master M1_R,
 
     input                                   DMA_interrupt  ,
     input                                   WDT_timeout
@@ -169,21 +176,21 @@ Master M0(                          //IM
     .STALL(w_im_stall)          ,
     
     // Read address
-    .ARID(ARID_M0)              ,
-    .ARADDR(ARADDR_M0)          ,
-    .ARLEN(ARLEN_M0)            ,
-    .ARSIZE(ARSIZE_M0)          ,
-    .ARBURST(ARBURST_M0)        ,
-    .ARVALID(ARVALID_M0)        ,
-    .ARREADY(ARREADY_M0)        ,
+    .ARID(M0_AR.ARID)              ,
+    .ARADDR(M0_AR.ARADDR)          ,
+    .ARLEN(M0_AR.ARLEN)            ,
+    .ARSIZE(M0_AR.ARSIZE)          ,
+    .ARBURST(M0_AR.ARBURST)        ,
+    .ARVALID(M0_AR.ARVALID)        ,
+    .ARREADY(M0_AR.ARREADY)        ,
 
     // Read data
-    .RID(RID_M0)                ,
-    .RDATA(RDATA_M0)            ,
-    .RRESP(RRESP_M0)            ,
-    .RLAST(RLAST_M0)            ,
-    .RVALID(RVALID_M0)          ,
-    .RREADY(RREADY_M0)          ,
+    .RID(M0_R.RID)                ,
+    .RDATA(M0_R.RDATA)            ,
+    .RRESP(M0_R.RRESP)            ,
+    .RLAST(M0_R.RLAST)            ,
+    .RVALID(M0_R.RVALID)          ,
+    .RREADY(M0_R.RREADY)          ,
 
     //Write address
     .AWID(AWID_M0)              ,
@@ -225,43 +232,43 @@ Master M1(                          //DM
     .STALL(w_dm_stall)          ,
 
     // Read address
-    .ARID(ARID_M1)              ,
-    .ARADDR(ARADDR_M1)          ,
-    .ARLEN(ARLEN_M1)            ,
-    .ARSIZE(ARSIZE_M1)          ,
-    .ARBURST(ARBURST_M1)        ,
-    .ARVALID(ARVALID_M1)        ,
-    .ARREADY(ARREADY_M1)        ,
+    .ARID(M1_AR.ARID)              ,
+    .ARADDR(M1_AR.ARADDR)          ,
+    .ARLEN(M1_AR.ARLEN)            ,
+    .ARSIZE(M1_AR.ARSIZE)          ,
+    .ARBURST(M1_AR.ARBURST)        ,
+    .ARVALID(M1_AR.ARVALID)        ,
+    .ARREADY(M1_AR.ARREADY)        ,
 
     // Read data
-    .RID(RID_M1)                ,
-    .RDATA(RDATA_M1)            ,
-    .RRESP(RRESP_M1)            ,
-    .RLAST(RLAST_M1)            ,
-    .RVALID(RVALID_M1)          ,
-    .RREADY(RREADY_M1)          ,
+    .RID(M1_R.RID)                ,
+    .RDATA(M1_R.RDATA)            ,
+    .RRESP(M1_R.RRESP)            ,
+    .RLAST(M1_R.RLAST)            ,
+    .RVALID(M1_R.RVALID)          ,
+    .RREADY(M1_R.RREADY)          ,
 
     //Write address
-    .AWID(AWID_M1)              ,
-    .AWADDR(AWADDR_M1)          ,
-    .AWLEN(AWLEN_M1)            ,
-    .AWSIZE(AWSIZE_M1)          ,
-    .AWBURST(AWBURST_M1)        ,
-    .AWVALID(AWVALID_M1)        ,
-    .AWREADY(AWREADY_M1)        ,
+    .AWID(M1_AW.AWID)              ,
+    .AWADDR(M1_AW.AWADDR)          ,
+    .AWLEN(M1_AW.AWLEN)            ,
+    .AWSIZE(M1_AW.AWSIZE)          ,
+    .AWBURST(M1_AW.AWBURST)        ,
+    .AWVALID(M1_AW.AWVALID)        ,
+    .AWREADY(M1_AW.AWREADY)        ,
 
     // Write data
-    .WDATA(WDATA_M1)            ,
-    .WSTRB(WSTRB_M1)            ,
-    .WLAST(WLAST_M1)            ,
-    .WVALID(WVALID_M1)          ,
-    .WREADY(WREADY_M1)          ,
+    .WDATA(M1_W.WDATA)            ,
+    .WSTRB(M1_W.WSTRB)            ,
+    .WLAST(M1_W.WLAST)            ,
+    .WVALID(M1_W.WVALID)          ,
+    .WREADY(M1_W.WREADY)          ,
 
     // Write Response
-    .BID(BID_M1)                ,
-    .BRESP(BRESP_M1)            ,
-    .BVALID(BVALID_M1)          ,
-    .BREADY(BREADY_M1)       
+    .BID(M1_B.BID)                ,
+    .BRESP(M1_B.BRESP)            ,
+    .BVALID(M1_B.BVALID)          ,
+    .BREADY(M1_B.BREADY)       
 );
 
 

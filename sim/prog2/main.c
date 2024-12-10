@@ -219,14 +219,293 @@ void trap_handler(void) {
         external_interrupt_handler();
     }
 }
+// extern char _test_start;
+// extern unsigned int _binary_image_bmp_start;
+// extern unsigned int _binary_image_bmp_end;
+// extern unsigned int _binary_image_bmp_size;
+// int main(void)
+// {
+//   //extern unsigned int _test_start;
+//     unsigned  int *bmp = &_binary_image_bmp_start;
+//     char *test = &_test_start;
+
+//     int i = 0;
+//     int j = 0;
+// // test[0] = bmp[0] >> 0;
+// // test[1] = bmp[0] >> 8;
+
+//     for (i = 0; i < 53; i=i+4){
+//         test[i] = bmp[j];
+//         test[i+1] = bmp[j] >> 8;
+//         test[i+2] = bmp[j] >> 16;
+//         test[i+3] = bmp[j] >> 24;
+//         // (&_test_start)[i] = (&_binary_image_bmp_start)[j];
+//         // (&_test_start)[i + 1] = (&_binary_image_bmp_start)[j] >> 8;
+//         // (&_test_start)[i + 2] = (&_binary_image_bmp_start)[j] >> 16;
+//         // (&_test_start)[i + 3] = (&_binary_image_bmp_start)[j] >> 24;
+//         j= j+1;
+//     }
+//     j = 13;
+//     i = 54;
+//   int a = 0, b = 0, c = 0;
+//   int result = 0, tmp = 0;
+//   for (i = 54; i < &_binary_image_bmp_size ; i = i + 12)
+//   {
+
+//     result = 0, tmp = 0;
+//     c = (bmp[j]>> 16 )&0xff;
+//     b = (bmp[j]>> 24)&0xff;
+//     a = (bmp[j+1])&0xff;
+//     tmp = a << 18;
+//     result += tmp;
+//     tmp = a << 15;
+//     result += tmp;
+//     tmp = a << 14;
+//     result += tmp;
+//     tmp = a << 11;
+//     result += tmp;
+//     tmp = a << 10;
+//     result += tmp;
+//     tmp = a << 7;
+//     result += tmp;
+//     tmp = a << 6;
+//     result += tmp;
+//     tmp = a << 3;
+//     result += tmp;
+//     tmp = a << 2;
+//     result += tmp;
+//     result += a;
+
+//     tmp = b << 19;
+//     result += tmp;
+//     tmp = b << 16;
+//     result += tmp;
+//     tmp = b << 14;
+//     result += tmp;
+//     tmp = b << 13;
+//     result += tmp;
+//     tmp = b << 12;
+//     result += tmp;
+//     tmp = b << 7;
+//     result += tmp;
+//     tmp = b << 5;
+//     result += tmp;
+//     tmp = b << 2;
+//     result += tmp;
+
+//     tmp = c << 16;
+//     result += tmp;
+//     tmp = c << 15;
+//     result += tmp;
+//     tmp = c << 14;
+//     result += tmp;
+//     tmp = c << 9;
+//     result += tmp;
+//     tmp = c << 7;
+//     result += tmp;
+//     tmp = c << 4;
+//     result += tmp;
+
+//     result = result >> 20;
+
+//     test[i] = result;
+//     test[i + 1] = result;
+//     test[i + 2] = result;
+// //--------------------second loop-----------------//
+//     result = 0, tmp = 0;
+//     c = (bmp[j+1]>> 8 )&0xff;
+//     b = (bmp[j+1]>> 16)&0xff;
+    
+//     a = (bmp[j+1]>> 24)&0xff;
+//     tmp = a << 18;
+//     result += tmp;
+//     tmp = a << 15;
+//     result += tmp;
+//     tmp = a << 14;
+//     result += tmp;
+//     tmp = a << 11;
+//     result += tmp;
+//     tmp = a << 10;
+//     result += tmp;
+//     tmp = a << 7;
+//     result += tmp;
+//     tmp = a << 6;
+//     result += tmp;
+//     tmp = a << 3;
+//     result += tmp;
+//     tmp = a << 2;
+//     result += tmp;
+//     result += a;
+
+//     tmp = b << 19;
+//     result += tmp;
+//     tmp = b << 16;
+//     result += tmp;
+//     tmp = b << 14;
+//     result += tmp;
+//     tmp = b << 13;
+//     result += tmp;
+//     tmp = b << 12;
+//     result += tmp;
+//     tmp = b << 7;
+//     result += tmp;
+//     tmp = b << 5;
+//     result += tmp;
+//     tmp = b << 2;
+//     result += tmp;
+
+//     tmp = c << 16;
+//     result += tmp;
+//     tmp = c << 15;
+//     result += tmp;
+//     tmp = c << 14;
+//     result += tmp;
+//     tmp = c << 9;
+//     result += tmp;
+//     tmp = c << 7;
+//     result += tmp;
+//     tmp = c << 4;
+//     result += tmp;
+
+//     result = result >> 20;
+
+//     test[i + 3] = result;
+//     test[i + 4] = result;
+//     test[i + 5] = result;
+//     // 3rd loop
+//     result = 0, tmp = 0;
+//     c = (bmp[j+2]>> 0 )&0xff;
+//     b = (bmp[j+2]>> 8)&0xff;
+//     a = (bmp[j+2]>> 16)&0xff;
+//     tmp = a << 18;
+//     result += tmp;
+//     tmp = a << 15;
+//     result += tmp;
+//     tmp = a << 14;
+//     result += tmp;
+//     tmp = a << 11;
+//     result += tmp;
+//     tmp = a << 10;
+//     result += tmp;
+//     tmp = a << 7;
+//     result += tmp;
+//     tmp = a << 6;
+//     result += tmp;
+//     tmp = a << 3;
+//     result += tmp;
+//     tmp = a << 2;
+//     result += tmp;
+//     result += a;
+
+//     tmp = b << 19;
+//     result += tmp;
+//     tmp = b << 16;
+//     result += tmp;
+//     tmp = b << 14;
+//     result += tmp;
+//     tmp = b << 13;
+//     result += tmp;
+//     tmp = b << 12;
+//     result += tmp;
+//     tmp = b << 7;
+//     result += tmp;
+//     tmp = b << 5;
+//     result += tmp;
+//     tmp = b << 2;
+//     result += tmp;
+
+//     tmp = c << 16;
+//     result += tmp;
+//     tmp = c << 15;
+//     result += tmp;
+//     tmp = c << 14;
+//     result += tmp;
+//     tmp = c << 9;
+//     result += tmp;
+//     tmp = c << 7;
+//     result += tmp;
+//     tmp = c << 4;
+//     result += tmp;
+
+//     result = result >> 20;
+
+//     test[i + 6] = result;
+//     test[i + 7] = result;
+//     test[i + 8] = result;
+//     // 4th loop
+//     result = 0, tmp = 0;
+//     c = (bmp[j+2]>> 24 )&0xff;
+//     b = (bmp[j+3]>> 0)&0xff;
+//     a = (bmp[j+3]>> 8)&0xff;
+//     tmp = a << 18;
+//     result += tmp;
+//     tmp = a << 15;
+//     result += tmp;
+//     tmp = a << 14;
+//     result += tmp;
+//     tmp = a << 11;
+//     result += tmp;
+//     tmp = a << 10;
+//     result += tmp;
+//     tmp = a << 7;
+//     result += tmp;
+//     tmp = a << 6;
+//     result += tmp;
+//     tmp = a << 3;
+//     result += tmp;
+//     tmp = a << 2;
+//     result += tmp;
+//     result += a;
+
+//     tmp = b << 19;
+//     result += tmp;
+//     tmp = b << 16;
+//     result += tmp;
+//     tmp = b << 14;
+//     result += tmp;
+//     tmp = b << 13;
+//     result += tmp;
+//     tmp = b << 12;
+//     result += tmp;
+//     tmp = b << 7;
+//     result += tmp;
+//     tmp = b << 5;
+//     result += tmp;
+//     tmp = b << 2;
+//     result += tmp;
+
+//     tmp = c << 16;
+//     result += tmp;
+//     tmp = c << 15;
+//     result += tmp;
+//     tmp = c << 14;
+//     result += tmp;
+//     tmp = c << 9;
+//     result += tmp;
+//     tmp = c << 7;
+//     result += tmp;
+//     tmp = c << 4;
+//     result += tmp;
+
+//     result = result >> 20;
+
+//     test[i + 9] = result;
+//     test[i + 10] = result;
+//     test[i + 11] = result;
+
+//     j= j + 3;
+//   }
+//   return 0;
+// }
+
 extern char _test_start;
-extern unsigned int _binary_image_bmp_start;
-extern unsigned int _binary_image_bmp_end;
-extern unsigned int _binary_image_bmp_size;
+extern char _binary_image_bmp_start;
+extern char _binary_image_bmp_end;
+extern char _binary_image_bmp_size;
 int main(void)
 {
   //extern unsigned int _test_start;
-    unsigned  int *bmp = &_binary_image_bmp_start;
+    char *bmp = &_binary_image_bmp_start;
     char *test = &_test_start;
 
     int i = 0;
@@ -234,28 +513,20 @@ int main(void)
 // test[0] = bmp[0] >> 0;
 // test[1] = bmp[0] >> 8;
 
-    for (i = 0; i < 53; i=i+4){
-        test[i] = bmp[j];
-        test[i+1] = bmp[j] >> 8;
-        test[i+2] = bmp[j] >> 16;
-        test[i+3] = bmp[j] >> 24;
-        // (&_test_start)[i] = (&_binary_image_bmp_start)[j];
-        // (&_test_start)[i + 1] = (&_binary_image_bmp_start)[j] >> 8;
-        // (&_test_start)[i + 2] = (&_binary_image_bmp_start)[j] >> 16;
-        // (&_test_start)[i + 3] = (&_binary_image_bmp_start)[j] >> 24;
-        j= j+1;
+    for (i = 0; i < 53; i++){
+        test[i] = bmp[i];
     }
     j = 13;
-    i = 54;
+
   int a = 0, b = 0, c = 0;
   int result = 0, tmp = 0;
-  for (i = 54; i < &_binary_image_bmp_size ; i = i + 12)
+  for (i = 54; i < (unsigned int)&_binary_image_bmp_size ; i = i + 3)
   {
 
     result = 0, tmp = 0;
-    c = (bmp[j]>> 16 )&0xff;
-    b = (bmp[j]>> 24)&0xff;
-    a = (bmp[j+1])&0xff;
+    c = (bmp[i]);
+    b = (bmp[i+1]);
+    a = (bmp[i+2]);
     tmp = a << 18;
     result += tmp;
     tmp = a << 15;
@@ -311,189 +582,6 @@ int main(void)
     test[i] = result;
     test[i + 1] = result;
     test[i + 2] = result;
-//--------------------second loop-----------------//
-    result = 0, tmp = 0;
-    c = (bmp[j+1]>> 8 )&0xff;
-    b = (bmp[j+1]>> 16)&0xff;
-    
-    a = (bmp[j+1]>> 24)&0xff;
-    tmp = a << 18;
-    result += tmp;
-    tmp = a << 15;
-    result += tmp;
-    tmp = a << 14;
-    result += tmp;
-    tmp = a << 11;
-    result += tmp;
-    tmp = a << 10;
-    result += tmp;
-    tmp = a << 7;
-    result += tmp;
-    tmp = a << 6;
-    result += tmp;
-    tmp = a << 3;
-    result += tmp;
-    tmp = a << 2;
-    result += tmp;
-    result += a;
-
-    tmp = b << 19;
-    result += tmp;
-    tmp = b << 16;
-    result += tmp;
-    tmp = b << 14;
-    result += tmp;
-    tmp = b << 13;
-    result += tmp;
-    tmp = b << 12;
-    result += tmp;
-    tmp = b << 7;
-    result += tmp;
-    tmp = b << 5;
-    result += tmp;
-    tmp = b << 2;
-    result += tmp;
-
-    tmp = c << 16;
-    result += tmp;
-    tmp = c << 15;
-    result += tmp;
-    tmp = c << 14;
-    result += tmp;
-    tmp = c << 9;
-    result += tmp;
-    tmp = c << 7;
-    result += tmp;
-    tmp = c << 4;
-    result += tmp;
-
-    result = result >> 20;
-
-    test[i + 3] = result;
-    test[i + 4] = result;
-    test[i + 5] = result;
-    // 3rd loop
-    result = 0, tmp = 0;
-    c = (bmp[j+2]>> 0 )&0xff;
-    b = (bmp[j+2]>> 8)&0xff;
-    a = (bmp[j+2]>> 16)&0xff;
-    tmp = a << 18;
-    result += tmp;
-    tmp = a << 15;
-    result += tmp;
-    tmp = a << 14;
-    result += tmp;
-    tmp = a << 11;
-    result += tmp;
-    tmp = a << 10;
-    result += tmp;
-    tmp = a << 7;
-    result += tmp;
-    tmp = a << 6;
-    result += tmp;
-    tmp = a << 3;
-    result += tmp;
-    tmp = a << 2;
-    result += tmp;
-    result += a;
-
-    tmp = b << 19;
-    result += tmp;
-    tmp = b << 16;
-    result += tmp;
-    tmp = b << 14;
-    result += tmp;
-    tmp = b << 13;
-    result += tmp;
-    tmp = b << 12;
-    result += tmp;
-    tmp = b << 7;
-    result += tmp;
-    tmp = b << 5;
-    result += tmp;
-    tmp = b << 2;
-    result += tmp;
-
-    tmp = c << 16;
-    result += tmp;
-    tmp = c << 15;
-    result += tmp;
-    tmp = c << 14;
-    result += tmp;
-    tmp = c << 9;
-    result += tmp;
-    tmp = c << 7;
-    result += tmp;
-    tmp = c << 4;
-    result += tmp;
-
-    result = result >> 20;
-
-    test[i + 6] = result;
-    test[i + 7] = result;
-    test[i + 8] = result;
-    // 4th loop
-    result = 0, tmp = 0;
-    c = (bmp[j+2]>> 24 )&0xff;
-    b = (bmp[j+3]>> 0)&0xff;
-    a = (bmp[j+3]>> 8)&0xff;
-    tmp = a << 18;
-    result += tmp;
-    tmp = a << 15;
-    result += tmp;
-    tmp = a << 14;
-    result += tmp;
-    tmp = a << 11;
-    result += tmp;
-    tmp = a << 10;
-    result += tmp;
-    tmp = a << 7;
-    result += tmp;
-    tmp = a << 6;
-    result += tmp;
-    tmp = a << 3;
-    result += tmp;
-    tmp = a << 2;
-    result += tmp;
-    result += a;
-
-    tmp = b << 19;
-    result += tmp;
-    tmp = b << 16;
-    result += tmp;
-    tmp = b << 14;
-    result += tmp;
-    tmp = b << 13;
-    result += tmp;
-    tmp = b << 12;
-    result += tmp;
-    tmp = b << 7;
-    result += tmp;
-    tmp = b << 5;
-    result += tmp;
-    tmp = b << 2;
-    result += tmp;
-
-    tmp = c << 16;
-    result += tmp;
-    tmp = c << 15;
-    result += tmp;
-    tmp = c << 14;
-    result += tmp;
-    tmp = c << 9;
-    result += tmp;
-    tmp = c << 7;
-    result += tmp;
-    tmp = c << 4;
-    result += tmp;
-
-    result = result >> 20;
-
-    test[i + 9] = result;
-    test[i + 10] = result;
-    test[i + 11] = result;
-
-    j= j + 3;
   }
   return 0;
 }

@@ -7,40 +7,45 @@
 //------------------------- Module -------------------------//
     module ROM_wrapper(
         input   ACLK, ARESETn,
-      //AXI Waddr
-        input  [`AXI_IDS_BITS -1:0]         S_AWID,    
-        input  [`AXI_ADDR_BITS -1:0]        S_AWAddr,  
-        input  [`AXI_LEN_BITS -1:0]         S_AWLen,   
-        input  [`AXI_SIZE_BITS -1:0]        S_AWSize,  
-        input  [1:0]                        S_AWBurst, 
-        input                               S_AWValid, 
-        output  logic                       S_AWReady,
-      //AXI Wdata     
-        input  [`AXI_DATA_BITS -1:0]        S_WData,   
-        input  [`AXI_STRB_BITS -1:0]        S_WStrb,   
-        input                               S_WLast,   
-        input                               S_WValid,  
-        output  logic                       S_WReady,
-      //AXI Wresp
-        output  logic [`AXI_IDS_BITS -1:0]  S_BID,
-        output  logic [1:0]                 S_BResp,
-        output  logic                       S_BValid,
-        input                               S_BReady,           
-      //AXI Raddr
-        input  [`AXI_IDS_BITS -1:0]         S_ARID,    
-        input  [`AXI_ADDR_BITS -1:0]        S_ARAddr,  
-        input  [`AXI_LEN_BITS -1:0]         S_ARLen,   
-        input  [`AXI_SIZE_BITS -1:0]        S_ARSize,  
-        input  [1:0]                        S_ARBurst, 
-        input                               S_ARValid, 
-        output  logic                       S_ARReady,
-      //AXI Rdata   
-        output  logic [`AXI_IDS_BITS  -1:0] S_RID,         
-        output  logic [`AXI_DATA_BITS -1:0] S_RData,   
-        output  logic [1:0]                 S_RResp,   
-        output  logic                       S_RLast,   
-        output  logic                       S_RValid,  
-        input                               S_RReady,
+      // //AXI Waddr
+      //   input  [`AXI_IDS_BITS -1:0]         S_AWID,    
+      //   input  [`AXI_ADDR_BITS -1:0]        S_AWAddr,  
+      //   input  [`AXI_LEN_BITS -1:0]         S_AWLen,   
+      //   input  [`AXI_SIZE_BITS -1:0]        S_AWSize,  
+      //   input  [1:0]                        S_AWBurst, 
+      //   input                               S_AWValid, 
+      //   output  logic                       S_AWReady,
+      // //AXI Wdata     
+      //   input  [`AXI_DATA_BITS -1:0]        S_WData,   
+      //   input  [`AXI_STRB_BITS -1:0]        S_WStrb,   
+      //   input                               S_WLast,   
+      //   input                               S_WValid,  
+      //   output  logic                       S_WReady,
+      // //AXI Wresp
+      //   output  logic [`AXI_IDS_BITS -1:0]  S_BID,
+      //   output  logic [1:0]                 S_BResp,
+      //   output  logic                       S_BValid,
+      //   input                               S_BReady,           
+      // //AXI Raddr
+      //   input  [`AXI_IDS_BITS -1:0]         S_ARID,    
+      //   input  [`AXI_ADDR_BITS -1:0]        S_ARAddr,  
+      //   input  [`AXI_LEN_BITS -1:0]         S_ARLen,   
+      //   input  [`AXI_SIZE_BITS -1:0]        S_ARSize,  
+      //   input  [1:0]                        S_ARBurst, 
+      //   input                               S_ARValid, 
+      //   output  logic                       S_ARReady,
+      // //AXI Rdata   
+      //   output  logic [`AXI_IDS_BITS  -1:0] S_RID,         
+      //   output  logic [`AXI_DATA_BITS -1:0] S_RData,   
+      //   output  logic [1:0]                 S_RResp,   
+      //   output  logic                       S_RLast,   
+      //   output  logic                       S_RValid,  
+      //   input                               S_RReady,
+      RA.Slave S_AR,
+      R.Slave S_R, 
+      WA.Slave S_AW,
+      W.Slave S_W,
+      B.Slave S_B,
       //ROM for testbanch
         input         [`AXI_DATA_BITS -1:0] ROM_out,
         output  logic                       ROM_read,
@@ -95,14 +100,14 @@
         endcase
       end 
     //--------------------- Last Signal ---------------------//  
-      assign  W_last  = S_WLast & Wdata_done;
-      assign  R_last  = S_RLast & Rdata_done;  
+      assign  W_last  = S_W.WLAST & Wdata_done;
+      assign  R_last  = S_R.RLAST & Rdata_done;  
     //--------------------- Done Signal ---------------------//
-      assign  Raddr_done  = S_ARValid & S_ARReady; 
-      assign  Rdata_done  = S_RValid  & S_RReady;
-      assign  Waddr_done  = S_AWValid & S_AWReady;
-      assign  Wdata_done  = S_WValid  & S_WReady;
-      assign  Wresp_done  = S_BValid  & S_BReady;
+      assign  Raddr_done  = S_AR.ARVALID & S_AR.ARREADY; 
+      assign  Rdata_done  = S_R.RVALID  & S_R.RREADY;
+      assign  Waddr_done  = S_AW.AWVALID & S_AW.AWREADY;
+      assign  Wdata_done  = S_W.WVALID  & S_W.WREADY;
+      assign  Wresp_done  = S_B.BVALID  & S_B.BREADY;
     //------------------------- CNT -------------------------//
         always_ff @(posedge ACLK or negedge ARESETn) begin
           if (!ARESETn) begin
@@ -127,29 +132,29 @@
       //Addr
         always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn)   reg_AWID     <=  `AXI_IDS_BITS'd0;
-          else      reg_AWID     <=  (Waddr_done)  ? S_AWID : reg_AWID;
+          else      reg_AWID     <=  (Waddr_done)  ? S_AW.AWID_S : reg_AWID;
         end   
 
         always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn)   reg_AWAddr   <=  `MEM_ADDR_LEN'd0;
-          else      reg_AWAddr   <=  (Waddr_done)  ? S_AWAddr[15:2] : reg_AWAddr;
+          else      reg_AWAddr   <=  (Waddr_done)  ? S_AW.AWADDR[15:2] : reg_AWAddr;
         end   
         
         always_ff @(posedge ACLK or negedge ARESETn ) begin
           if(!ARESETn)   reg_AWLen   <=  `AXI_LEN_BITS'd0;
-          else      reg_AWLen   <=  (Waddr_done)  ? S_AWLen : reg_AWLen;
+          else      reg_AWLen   <=  (Waddr_done)  ? S_AW.AWLEN : reg_AWLen;
         end
         //awsize
         //awburst
         always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn) begin
-            S_AWReady    <=   1'b0;
+            S_AW.AWREADY    <=   1'b0;
           end          
           else  begin
             case (S_cur)
-              SADDR:      S_AWReady   <= (Waddr_done) ? 1'b0 : 1'b1;
-              WRESP:      S_AWReady   <=   1'b0;  
-              default:    S_AWReady   <=   1'b0;
+              SADDR:      S_AW.AWREADY   <= (Waddr_done) ? 1'b0 : 1'b1;
+              WRESP:      S_AW.AWREADY   <=   1'b0;  
+              default:    S_AW.AWREADY   <=   1'b0;
             endcase
           end      
         end    
@@ -157,11 +162,11 @@
         //Wdata(MEM)
         //Wstrb(MEM)
         //WLast(Last Signal)
-        assign  S_WReady  = (S_cur == WDATA)  ? 1'b1  : 1'b0;       
+        assign  S_W.WREADY  = (S_cur == WDATA)  ? 1'b1  : 1'b0;       
       //Resp
-        assign  S_BID     = reg_AWID; 
-        assign  S_BResp   = `AXI_RESP_OKAY;
-        assign  S_BValid  = (S_cur == WRESP)  ? 1'b1  : 1'b0;  
+        assign  S_B.BID_S     = reg_AWID; 
+        assign  S_B.BRESP   = `AXI_RESP_OKAY;
+        assign  S_B.BVALID  = (S_cur == WRESP)  ? 1'b1  : 1'b0;  
     //---------------------- R-channel ----------------------// 
       //Addr
         always_ff @(posedge ACLK or negedge ARESETn) begin
@@ -171,33 +176,33 @@
             reg_ARLen     <=  `AXI_LEN_BITS'd0;
           end          
           else  begin
-            reg_ARID     <=  (Raddr_done)  ? S_ARID : reg_ARID;
-            reg_ARAddr   <=  (Raddr_done)  ? S_ARAddr[15:2] : reg_ARAddr;
-            reg_ARLen    <=  (Raddr_done)  ? S_ARLen : reg_ARLen;
+            reg_ARID     <=  (Raddr_done)  ? S_AR.ARID_S : reg_ARID;
+            reg_ARAddr   <=  (Raddr_done)  ? S_AR.ARADDR[15:2] : reg_ARAddr;
+            reg_ARLen    <=  (Raddr_done)  ? S_AR.ARLEN : reg_ARLen;
           end      
         end
         //Rsize
         //Rburst
         always_ff @(posedge ACLK or negedge ARESETn) begin
           if(!ARESETn) begin
-            S_ARReady    <=   1'b0;
+            S_AR.ARREADY    <=   1'b0;
           end          
           else  begin
             case (S_cur)
-              SADDR:      S_ARReady   <= (Raddr_done) ? 1'b0 : 1'b1;
-              WRESP:      S_ARReady   <=   1'b0;  
-              default:    S_ARReady   <=   1'b0;
+              SADDR:      S_AR.ARREADY   <= (Raddr_done) ? 1'b0 : 1'b1;
+              WRESP:      S_AR.ARREADY   <=   1'b0;  
+              default:    S_AR.ARREADY   <=   1'b0;
             endcase
           end      
         end        
       //data
-        assign  S_RID     = reg_ARID;
+        assign  S_R.RID_S     = reg_ARID;
         //Data problem (need to solve)
-        assign  S_RData   = ROM_out;
+        assign  S_R.RDATA   = ROM_out;
 
-        assign  S_RResp   = `AXI_RESP_OKAY;
-        assign  S_RLast   = ((cnt == reg_ARLen) && (S_cur == RDATA))  ? 1'b1  : 1'b0;    
-        assign  S_RValid  = (S_cur == RDATA)    ? 1'b1  : 1'b0;          
+        assign  S_R.RRESP   = `AXI_RESP_OKAY;
+        assign  S_R.RLAST   = ((cnt == reg_ARLen) && (S_cur == RDATA))  ? 1'b1  : 1'b0;    
+        assign  S_R.RVALID  = (S_cur == RDATA)    ? 1'b1  : 1'b0;          
     //-------------------- for ROM --------------------------//   
         // always_comb begin
         //   case (S_cur)
@@ -210,19 +215,19 @@
         //ROM --> OE
         always_comb begin
             case (S_cur)
-                SADDR:      ROM_read    =   (~S_AWValid) & Raddr_done;
+                SADDR:      ROM_read    =   (~S_AW.AWVALID) & Raddr_done;
                 RDATA:      ROM_read    =   1'b1; 
                 default:    ROM_read    =   1'b0;  
             endcase
         end        
         //ROM --> CS
-        assign  ROM_enable  =   (S_cur == SADDR) ? (S_ARValid | S_AWValid) : 1'b0;
+        assign  ROM_enable  =   (S_cur == SADDR) ? (S_AR.ARVALID | S_AW.AWVALID) : 1'b0;
         //ROM --> A
         // assign  Rom_address =    
 
         always_comb begin
           case (S_cur)
-            SADDR:  Rom_address = (Waddr_done)  ? S_AWAddr[15:2]  :  S_ARAddr[15:2];
+            SADDR:  Rom_address = (Waddr_done)  ? S_AW.AWADDR[15:2]  :  S_AR.ARADDR[15:2];
             //offset for burst incr. type
             RDATA:  Rom_address = reg_ARAddr + incr; 
             WDATA:  Rom_address = reg_AWAddr;

@@ -21,7 +21,7 @@ void boot() {
   //DMA dest addr
   dma_addr_boot[0xC0] = (unsigned int)&_imem_start;
   //DMA len
-  dma_addr_boot[0x100]= (unsigned int)&_dram_i_end - (unsigned int)&_dram_i_start + 1;
+  dma_addr_boot[0x100]= &_dram_i_end - &_dram_i_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
@@ -44,7 +44,7 @@ void boot() {
   //DMA dest addr
   dma_addr_boot[0xC0] = (unsigned int)&__data_start;
   //DMA len
-  dma_addr_boot[0x100]= (unsigned int)&__data_end - (unsigned int)&__data_start + 1;
+  dma_addr_boot[0x100]= &__data_end - &__data_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");
@@ -68,7 +68,7 @@ void boot() {
   //DMA dest addr
   dma_addr_boot[0xC0] = (unsigned int)&__sdata_start;
   //DMA len
-  dma_addr_boot[0x100]= (unsigned int)&__sdata_end - (unsigned int)&__sdata_start + 1;
+  dma_addr_boot[0x100]= &__sdata_end - &__sdata_start + 1;
   // Enable DMA Controller
   dma_addr_boot[0x40] = 1; // Enable DMA
   asm("wfi");

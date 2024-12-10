@@ -3,7 +3,7 @@
     //INFO        :   slave FSM
     //                master FSM
     //                mstrb--> 尚未改完
-    //                補 data pointer 
+    //                 data pointer 
 //----------------------- Environment -----------------------//
     // `include "DMA_Master.sv"
     // `include "DMA_Slave.sv"    
@@ -17,40 +17,45 @@
       input  [31:0]   DMALEN,
       output logic    DMA_interrupt,
     //Master Port
-    //AXI Waddr
-      output  logic   [`AXI_ID_BITS -1:0]     M_AWID,    
-      output  logic   [`AXI_ADDR_BITS -1:0]   M_AWAddr,  
-      output  logic   [`AXI_LEN_BITS -1:0]    M_AWLen,   
-      output  logic   [`AXI_SIZE_BITS -1:0]   M_AWSize,  
-      output  logic   [1:0]                   M_AWBurst, 
-      output  logic                           M_AWValid, 
-      input                                   M_AWReady,
-    //AXI Wdata     
-      output  logic   [`AXI_DATA_BITS -1:0]   M_WData,   
-      output  logic   [`AXI_STRB_BITS -1:0]   M_WStrb,   
-      output  logic                           M_WLast,   
-      output  logic                           M_WValid,  
-      input                                   M_WReady,
-    //AXI Wresp
-      input         [`AXI_ID_BITS -1:0]       M_BID,
-      input         [1:0]                     M_BResp,
-      input                                   M_BValid,
-      output  logic                           M_BReady,                   
-    //AXI Raddr
-      output  logic   [`AXI_ID_BITS -1:0]     M_ARID,    
-      output  logic   [`AXI_ADDR_BITS -1:0]   M_ARAddr,  
-      output  logic   [`AXI_LEN_BITS -1:0]    M_ARLen,   
-      output  logic   [`AXI_SIZE_BITS -1:0]   M_ARSize,  
-      output  logic   [1:0]                   M_ARBurst, 
-      output  logic                           M_ARValid, 
-      input                                   M_ARReady,
-    //AXI Rdata   
-      input           [`AXI_ID_BITS   -1:0]   M_RID,         
-      input           [`AXI_DATA_BITS -1:0]   M_RData,   
-      input           [1:0]                   M_RResp,   
-      input                                   M_RLast,   
-      input                                   M_RValid,  
-      output  logic                           M_RReady
+    // //AXI Waddr
+    //   output  logic   [`AXI_ID_BITS -1:0]     M_AWID,    
+    //   output  logic   [`AXI_ADDR_BITS -1:0]   M_AWAddr,  
+    //   output  logic   [`AXI_LEN_BITS -1:0]    M_AWLen,   
+    //   output  logic   [`AXI_SIZE_BITS -1:0]   M_AWSize,  
+    //   output  logic   [1:0]                   M_AWBurst, 
+    //   output  logic                           M_AWValid, 
+    //   input                                   M_AWReady,
+    // //AXI Wdata     
+    //   output  logic   [`AXI_DATA_BITS -1:0]   M_WData,   
+    //   output  logic   [`AXI_STRB_BITS -1:0]   M_WStrb,   
+    //   output  logic                           M_WLast,   
+    //   output  logic                           M_WValid,  
+    //   input                                   M_WReady,
+    // //AXI Wresp
+    //   input         [`AXI_ID_BITS -1:0]       M_BID,
+    //   input         [1:0]                     M_BResp,
+    //   input                                   M_BValid,
+    //   output  logic                           M_BReady,                   
+    // //AXI Raddr
+    //   output  logic   [`AXI_ID_BITS -1:0]     M_ARID,    
+    //   output  logic   [`AXI_ADDR_BITS -1:0]   M_ARAddr,  
+    //   output  logic   [`AXI_LEN_BITS -1:0]    M_ARLen,   
+    //   output  logic   [`AXI_SIZE_BITS -1:0]   M_ARSize,  
+    //   output  logic   [1:0]                   M_ARBurst, 
+    //   output  logic                           M_ARValid, 
+    //   input                                   M_ARReady,
+    // //AXI Rdata   
+    //   input           [`AXI_ID_BITS   -1:0]   M_RID,         
+    //   input           [`AXI_DATA_BITS -1:0]   M_RData,   
+    //   input           [1:0]                   M_RResp,   
+    //   input                                   M_RLast,   
+    //   input                                   M_RValid,  
+    //   output  logic                           M_RReady
+      WA.Master M_AW,
+      W.Master M_W,
+      B.Master M_B,
+      RA.Master M_AR,
+      R.Master M_R
   );
 
 //---------------------- Parameter -------------------------//
@@ -155,14 +160,14 @@
         endcase
     end
   //--------------------- Last Signal ---------------------//  
-    assign  W_last  = M_WLast & Wdata_done;
-    assign  R_last  = M_RLast & Rdata_done;
+    assign  W_last  = M_W.WLAST & Wdata_done;
+    assign  R_last  = M_R.RLAST & Rdata_done;
   //--------------------- Done Signal ---------------------//
-    assign  Raddr_done  = M_ARValid & M_ARReady; 
-    assign  Rdata_done  = M_RValid  & M_RReady;
-    assign  Waddr_done  = M_AWValid & M_AWReady;
-    assign  Wdata_done  = M_WValid  & M_WReady;
-    assign  Wresp_done  = M_BValid  & M_BReady;
+    assign  Raddr_done  = M_AR.ARVALID & M_AR.ARREADY; 
+    assign  Rdata_done  = M_R.RVALID  & M_R.RREADY;
+    assign  Waddr_done  = M_AW.AWVALID & M_AW.AWREADY;
+    assign  Wdata_done  = M_W.WVALID  & M_W.WREADY;
+    assign  Wresp_done  = M_B.BVALID  & M_B.BREADY;
   //------------------- DMA transfer Signal -------------------//
     always_ff @(posedge clk or negedge rst) begin
       if(!rst) 
@@ -211,59 +216,59 @@
     end
   //---------------------- W-channel ----------------------//
     //Addr
-    assign  M_AWID      = `AXI_ID_BITS'b0100;//4'b0010;
+    assign  M_AW.AWID      = `AXI_ID_BITS'b0100;//4'b0010;
 
     //assign    M_AWLen     = single_trans_data -1;
-     assign  M_AWLen     = `AXI_LEN_BITS'hf;
-    assign  M_AWSize    = `AXI_SIZE_BITS'd0;
-    assign  M_AWBurst   = `AXI_BURST_INC; 
-    assign  M_AWAddr    = slave_dst;
+     assign  M_AW.AWLEN     = `AXI_LEN_BITS'hf;
+    assign  M_AW.AWSIZE    = `AXI_SIZE_BITS'd0;
+    assign  M_AW.AWBURST   = `AXI_BURST_INC; 
+    assign  M_AW.AWADDR    = slave_dst;
   
     always_ff @(posedge clk or negedge rst) begin
       if (!rst)
-        M_AWValid   <=  1'b0;
+        M_AW.AWVALID   <=  1'b0;
       else begin
         case (S_cur)
-          INIT:  M_AWValid  <= (Start_burst_write) ? 1'b1 : 1'b0;
-          WADDR:    M_AWValid  <= (Waddr_done) ? 1'b0 : 1'b1;
-          default:  M_AWValid  <=  1'b0;
+          INIT:  M_AW.AWVALID  <= (Start_burst_write) ? 1'b1 : 1'b0;
+          WADDR:    M_AW.AWVALID  <= (Waddr_done) ? 1'b0 : 1'b1;
+          default:  M_AW.AWVALID  <=  1'b0;
         endcase          
       end
     end  
     //Data
     always_comb begin
       if(cnt >= single_trans_data)
-        M_WStrb = `AXI_STRB_BITS'hf;
+        M_W.WSTRB = `AXI_STRB_BITS'hf;
       else
-        M_WStrb = `AXI_STRB_BITS'h0;      
+        M_W.WSTRB = `AXI_STRB_BITS'h0;      
     end
-    assign  M_WLast   =   ((S_cur == WDATA) && (cnt == M_AWLen))  ? 1'b1  : 1'b0; 
+    assign  M_W.WLAST   =   ((S_cur == WDATA) && (cnt == M_AW.AWLEN))  ? 1'b1  : 1'b0; 
     //assign  M_WData   =   Memory_Din;
-    assign  M_WValid  =   (S_cur == WDATA)  ? 1'b1 : 1'b0;
+    assign  M_W.WVALID  =   (S_cur == WDATA)  ? 1'b1 : 1'b0;
     //Response
-    assign  M_BReady  =   (S_cur == WRESP || S_cur == WDATA)? 1'b1 : 1'b0;  
+    assign  M_B.BREADY  =   (S_cur == WRESP || S_cur == WDATA)? 1'b1 : 1'b0;  
   //---------------------- R-channel ----------------------//
     //Addr
-    assign  M_ARID      = `AXI_ID_BITS'd0;
+    assign  M_AR.ARID      = `AXI_ID_BITS'd0;
     //assign  M_ARLen     = single_trans_data -1;
-    assign  M_ARLen     = `AXI_LEN_BITS'hf;
-    assign  M_ARSize    = `AXI_SIZE_BITS'd0;
-    assign  M_ARBurst   = `AXI_BURST_INC; 
-    assign  M_ARAddr    = slave_src; 
+    assign  M_AR.ARLEN     = `AXI_LEN_BITS'hf;
+    assign  M_AR.ARSIZE    = `AXI_SIZE_BITS'd0;
+    assign  M_AR.ARBURST   = `AXI_BURST_INC; 
+    assign  M_AR.ARADDR    = slave_src; 
 
     always_ff @(posedge clk or negedge rst) begin
       if (!rst)
-        M_ARValid   <=  1'b0;
+        M_AR.ARVALID   <=  1'b0;
       else begin
         case (S_cur)
-          INIT:  M_ARValid  <= (Start_burst_read) ? 1'b1 : 1'b0;
-          RADDR:    M_ARValid  <= (Raddr_done) ? 1'b0 : 1'b1;
-          default:  M_ARValid  <=  1'b0;
+          INIT:  M_AR.ARVALID  <= (Start_burst_read) ? 1'b1 : 1'b0;
+          RADDR:    M_AR.ARVALID  <= (Raddr_done) ? 1'b0 : 1'b1;
+          default:  M_AR.ARVALID  <=  1'b0;
         endcase          
       end
     end    
   //------------------------ Data -------------------------//
-    assign  M_RReady    = (S_cur == RDATA)  ? 1'b1 : 1'b0; 
+    assign  M_R.RREADY    = (S_cur == RDATA)  ? 1'b1 : 1'b0; 
     //slave info for DMA
       always_ff @(posedge clk or negedge rst) begin
         if (!rst) begin
@@ -289,7 +294,7 @@
         end 
         else begin
           if((S_cur == RDATA) && (Rdata_done)) begin
-            data_buffer[0]  <=  M_RData;
+            data_buffer[0]  <=  M_R.RDATA;
             for(i = 0; i <= 14; i = i + 1)
               data_buffer[i+1] <= data_buffer[i];
           end
@@ -305,7 +310,7 @@
         end
       end
 
-    assign M_WData = data_buffer[15];  
+    assign M_W.WDATA = data_buffer[15];  
     // always_ff @(posedge clk) begin
     //   if (rst) begin
     //     data_pointer  <=  4'd0;        

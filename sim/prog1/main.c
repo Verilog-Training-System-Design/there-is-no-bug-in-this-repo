@@ -158,51 +158,78 @@ void trap_handler(void) {
 
 
 
-extern unsigned int array_size;
-extern int array_addr;
-extern int _test_start;
+// extern unsigned int array_size;
+// extern int array_addr;
+// extern int _test_start;
 
-void bubb_sort(int array[], int n, int test[]){
-	int tmp, data1, data2, min;
-	int num[128];
-	int key;
-	// for(int i=n-1 ; i>0 ; i--){
-	int i = 0;
-	for(int j=0 ; j < n ; j+=2){
-		key = array[i];
-		data1	=	(key & 0xffff0000);
-		data2	=	((key << 16));
-		num[j] = data1;
-		num[j+1] = data2;
-		i++;
-	}
+// void bubb_sort(int array[], int n, int test[]){
+// 	int tmp, data1, data2, min;
+// 	int num[128];
+// 	int key;
+// 	// for(int i=n-1 ; i>0 ; i--){
+// 	int i = 0;
+// 	for(int j=0 ; j < n ; j+=2){
+// 		key = array[i];
+// 		data1	=	(key & 0xffff0000);
+// 		data2	=	((key << 16));
+// 		num[j] = data1;
+// 		num[j+1] = data2;
+// 		i++;
+// 	}
+// 	for(int i=n-1 ; i>0 ; i--){
+// 		for(int j=0 ; j <= i-1 ;j++){
+// 			if(num[j] > num[j+1]){
+// 				tmp = num[j];
+// 				num[j] = num[j+1];
+// 				num[j+1] = tmp;
+// 				// swap(&array[j], &array[j+1]);
+// 			}	
+// 		}
+// 	}
+// 	// }
+// 	// unsigned int temp;
+	
+//         // temp = array[j];
+// 		// temp = temp << 16;
+// 		// temp = temp + (unsigned int)(array[j+1]);
+// 		// test[i] = temp;
+// 		// j = j+2;
+// 	int j=0;
+// 	for(int i=0 ; i<n/2 ;i++){
+// 		key	=	((((int)num[j] >> 16)) & 0x0000ffff) | (((int)num[j+1]));	
+// 		test[i] = key;
+// 		j = j + 2;
+// 	}
+// }
+
+// int main(){
+// 	bubb_sort(&array_addr, array_size, &_test_start);
+// 	return 0;
+// }
+
+extern int array_size;
+extern short array_addr;
+extern short _test_start;
+
+void swap(short* a, short* b){
+	short temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void bubble_sort(short array[], int n, short test[]){
 	for(int i=n-1 ; i>0 ; i--){
 		for(int j=0 ; j <= i-1 ;j++){
-			if(num[j] > num[j+1]){
-				tmp = num[j];
-				num[j] = num[j+1];
-				num[j+1] = tmp;
-				// swap(&array[j], &array[j+1]);
-			}	
+			if(array[j] > array[j+1]){
+				swap(&array[j], &array[j+1]);
+			}
 		}
 	}
-	// }
-	// unsigned int temp;
-	
-        // temp = array[j];
-		// temp = temp << 16;
-		// temp = temp + (unsigned int)(array[j+1]);
-		// test[i] = temp;
-		// j = j+2;
-	int j=0;
-	for(int i=0 ; i<n/2 ;i++){
-		key	=	((((int)num[j] >> 16)) & 0x0000ffff) | (((int)num[j+1]));	
-		test[i] = key;
-		j = j + 2;
-	}
+	for(int i=0 ; i<n ; i++)
+		test[i] = array[i];
 }
 
 int main(){
-	bubb_sort(&array_addr, array_size, &_test_start);
+	bubble_sort(&array_addr, array_size, &_test_start);
 	return 0;
 }

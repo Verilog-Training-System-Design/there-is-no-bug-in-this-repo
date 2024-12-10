@@ -50,12 +50,72 @@ always_ff @( posedge clk or negedge reset) begin
     end
     else begin
         if((MEM_f_RegWrite | MEM_RegWrite) & !MEM_MemtoReg)begin
+            // case (MEM_funct3)
+            //     3'd0 : WB_data_memory <= {{24{MEM_data_memory[7]}}, MEM_data_memory[7:0]}; //LB
+            //     3'd1 : WB_data_memory <= {{16{MEM_data_memory[15]}}, MEM_data_memory[15:0]}; //LH
+            //     3'd2 : WB_data_memory <= MEM_data_memory; //LW FLW
+            //     3'd5 : WB_data_memory <= {{16{1'b0}}, MEM_data_memory[15:0]}; //LHU     //LHU跟LBU funt3文件上是相反的
+            //     3'd4 : WB_data_memory <= {{24{1'b0}}, MEM_data_memory[7:0]}; //LBU
+            //     default: WB_data_memory <= MEM_data_memory;
+            // endcase
             case (MEM_funct3)
-                3'd0 : WB_data_memory <= {{24{MEM_data_memory[7]}}, MEM_data_memory[7:0]}; //LB
-                3'd1 : WB_data_memory <= {{16{MEM_data_memory[15]}}, MEM_data_memory[15:0]}; //LH
+                3'd0 : begin            //LB
+                    case(MEM_rd_data[1:0])
+                        2'd0 : begin
+                            WB_data_memory <= {{24{MEM_data_memory[7]}}, MEM_data_memory[7:0]}; //LB
+                        end
+                        2'd1 : begin
+                            WB_data_memory <= {{24{MEM_data_memory[15]}}, MEM_data_memory[15:8]}; //LB
+                        end
+                        2'd2 : begin
+                            WB_data_memory <= {{24{MEM_data_memory[23]}}, MEM_data_memory[23:16]}; //LB
+                        end
+                        2'd3 : begin
+                            WB_data_memory <= {{24{MEM_data_memory[31]}}, MEM_data_memory[31:24]}; //LB
+                        end
+                    endcase
+                    // WB_data_memory <= {{24{MEM_data_memory[{MEM_data_memory[1:0], 3'b0} + 5'd7]}}, MEM_data_memory[{MEM_data_memory[1:0], 3'b0}+:8]}; //LB
+                end
+                3'd1 : begin
+                    case(MEM_rd_data[1])
+                        1'd0 : begin
+                            WB_data_memory <= {{16{MEM_data_memory[15]}},MEM_data_memory[15:0]}; //LH
+                        end
+                        1'd1 : begin
+                            WB_data_memory <= {{16{MEM_data_memory[31]}},MEM_data_memory[31:16]}; //LH
+                        end
+                    endcase
+                end 
+                // WB_data_memory <= {{16{MEM_data_memory[{ MEM_data_memory[1], 4'b0} + 5'd15]}},MEM_data_memory[{ MEM_data_memory[1], 4'b0}+:16]}; //LH
                 3'd2 : WB_data_memory <= MEM_data_memory; //LW FLW
-                3'd5 : WB_data_memory <= {{16{1'b0}}, MEM_data_memory[15:0]}; //LHU     //LHU跟LBU funt3文件上是相反的
-                3'd4 : WB_data_memory <= {{24{1'b0}}, MEM_data_memory[7:0]}; //LBU
+                3'd5 : begin            //LHU
+                    case(MEM_rd_data[1])
+                        1'd0 : begin
+                            WB_data_memory <= {{16{1'b0}}, MEM_data_memory[15:0]};
+                        end
+                        1'd1 : begin
+                            WB_data_memory <= {{16{1'b0}}, MEM_data_memory[31:16]};
+                        end
+                    endcase
+                    // WB_data_memory <= {{16{1'b0}}, MEM_data_memory[{ MEM_data_memory[1], 4'b0}+:16]}; //LHU     //LHU跟LBU funt3文件上是相反的
+                end
+                3'd4 : begin            //LBU
+                    case(MEM_rd_data[1:0])
+                        2'd0 : begin
+                            WB_data_memory <= {{24{1'b0}}, MEM_data_memory[7:0]}; //LBU
+                        end
+                        2'd1 : begin
+                            WB_data_memory <= {{24{1'b0}}, MEM_data_memory[15:8]}; //LBU
+                        end
+                        2'd2 : begin
+                            WB_data_memory <= {{24{1'b0}}, MEM_data_memory[23:16]}; //LBU
+                        end
+                        2'd3 : begin
+                            WB_data_memory <= {{24{1'b0}}, MEM_data_memory[31:24]}; //LBU
+                        end
+                    endcase
+                    // WB_data_memory <= {{24{1'b0}},MEM_data_memory[{MEM_data_memory[1:0], 3'b0}+:8]}; //LBU
+                end
                 default: WB_data_memory <= MEM_data_memory;
             endcase
         end
